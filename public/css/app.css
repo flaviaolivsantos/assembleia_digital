@@ -1,0 +1,470 @@
+/* ============================================================
+   Assembleia Digital — Identidade Visual
+   ============================================================ */
+
+/* --- Variáveis de cor ---------------------------------------- */
+:root {
+    /* Marca */
+    --ad-azul:      #2C3E50;
+    --ad-ciano:     #00BCD4;
+    --ad-ciano-hover: #00A5BB;
+
+    /* Neutras */
+    --ad-bg:        #F0F2F5;
+    --ad-cinza-claro: #F8F9FA;
+    --ad-cinza-medio: #CED4DA;
+    --ad-cinza-escuro: #495057;
+    --ad-preto:     #212529;
+
+    /* Perfis */
+    --ad-admin:       #E74C3C;
+    --ad-responsavel: #28A745;
+    --ad-maquina:     #FFC107;
+    --ad-mesario:     #6F42C1;
+
+    /* Bootstrap overrides */
+    --bs-primary:     #00BCD4;
+    --bs-primary-rgb: 0,188,212;
+    --bs-body-bg:     #F0F2F5;
+    --bs-body-font-family: 'Roboto', sans-serif;
+    --bs-body-color:  #495057;
+}
+
+/* --- Tipografia ---------------------------------------------- */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--ad-bg);
+    color: var(--ad-cinza-escuro);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--ad-preto);
+    font-weight: 600;
+}
+
+/* --- Navbar -------------------------------------------------- */
+.navbar {
+    background-color: var(--ad-azul) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+}
+
+.navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: .3px;
+    color: var(--ad-ciano) !important;
+}
+
+.navbar-brand:hover {
+    color: #fff !important;
+}
+
+/* badge de perfil na navbar */
+.badge-perfil {
+    font-size: .7rem;
+    font-weight: 600;
+    padding: .3em .6em;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+.badge-perfil.perfil-admin       { background-color: var(--ad-admin);       color: #fff; }
+.badge-perfil.perfil-responsavel { background-color: var(--ad-responsavel); color: #fff; }
+.badge-perfil.perfil-maquina     { background-color: var(--ad-maquina);     color: #212529; }
+.badge-perfil.perfil-mesario     { background-color: var(--ad-mesario);     color: #fff; }
+
+/* --- Botões -------------------------------------------------- */
+.btn-primary {
+    background-color: var(--ad-ciano);
+    border-color: var(--ad-ciano);
+    color: #fff;
+    font-weight: 500;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--ad-ciano-hover);
+    border-color: var(--ad-ciano-hover);
+    color: #fff;
+}
+
+.btn-outline-primary {
+    color: var(--ad-ciano);
+    border-color: var(--ad-ciano);
+}
+.btn-outline-primary:hover {
+    background-color: var(--ad-ciano);
+    border-color: var(--ad-ciano);
+    color: #fff;
+}
+
+/* botão de logout (outline-light na navbar) */
+.navbar .btn-outline-light {
+    font-size: .8rem;
+}
+
+/* --- Cards --------------------------------------------------- */
+.card {
+    border: none;
+    border-radius: .6rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid var(--ad-cinza-medio);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .95rem;
+    border-radius: .6rem .6rem 0 0 !important;
+}
+
+/* cards de atalho (links clicáveis) */
+a.card {
+    transition: box-shadow .15s, transform .1s;
+    color: var(--ad-preto);
+}
+a.card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .1);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+/* --- Tabelas ------------------------------------------------- */
+.table-light th {
+    background-color: var(--ad-cinza-claro);
+    color: var(--ad-cinza-escuro);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    border-bottom: 2px solid var(--ad-cinza-medio);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 188, 212, .04);
+}
+
+/* --- Badges de status --------------------------------------- */
+.badge {
+    font-weight: 500;
+    letter-spacing: .3px;
+}
+
+/* --- Alertas ------------------------------------------------ */
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+/* --- Formulários -------------------------------------------- */
+.form-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--ad-cinza-escuro);
+    margin-bottom: .3rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--ad-ciano);
+    box-shadow: 0 0 0 .2rem rgba(0, 188, 212, .2);
+}
+
+/* --- Tela de Login ------------------------------------------ */
+@keyframes bg-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.login-wrapper {
+    min-height: 100vh;
+    /* gradiente animado */
+    background: linear-gradient(135deg, #1a252f 0%, var(--ad-azul) 50%, #1e3a4a 100%);
+    background-size: 300% 300%;
+    animation: bg-shift 12s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* padrão de pontos sobreposto */
+    position: relative;
+}
+
+.login-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,.12) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    border-radius: .8rem;
+    /* sombra elevada — efeito "flutuante" */
+    box-shadow: 0 16px 48px rgba(0, 0, 0, .45), 0 4px 12px rgba(0, 0, 0, .2);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.login-header {
+    background-color: var(--ad-azul);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    border-bottom: 3px solid var(--ad-ciano);
+}
+
+.login-header .brand-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;       /* Bold para o nome */
+    color: #fff;
+    letter-spacing: .5px;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.login-header .brand-sub {
+    font-family: 'Roboto', sans-serif;
+    font-size: .75rem;
+    font-weight: 300;       /* Light para o subtítulo */
+    color: var(--ad-ciano);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: .4rem;
+}
+
+.login-body {
+    background: #fff;
+    padding: 1.75rem 1.5rem;
+}
+
+/* Focus mais pronunciado nos inputs da tela de login */
+.login-body .form-control:focus {
+    border-color: var(--ad-ciano);
+    box-shadow: 0 0 0 3px rgba(0, 188, 212, .2);
+}
+
+/* Botão Entrar — transição suave e elevação no hover */
+.login-body .btn-primary {
+    transition: all .25s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    letter-spacing: .5px;
+}
+.login-body .btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 6px 16px rgba(0, 188, 212, .35);
+}
+
+/* --- Dashboard Admin: cards de métrica ---------------------- */
+.metric-card {
+    background: linear-gradient(135deg, #F8F9FA 0%, #FFFFFF 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .10) !important;
+    transition: box-shadow .2s, transform .15s;
+}
+.metric-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .13) !important;
+    transform: translateY(-2px);
+}
+
+.metric-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--ad-cinza-escuro);
+}
+
+.metric-icon {
+    font-size: 1.5rem;
+    color: var(--ad-ciano);
+    opacity: .85;
+}
+
+.metric-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--ad-azul);
+    line-height: 1;
+}
+
+/* --- Dashboard Admin: cards de acesso rápido --------------- */
+.quick-card {
+    border: 1px solid var(--ad-cinza-medio) !important;
+    transition: border-color .15s, box-shadow .15s, transform .1s;
+    color: var(--ad-preto);
+}
+.quick-card:hover {
+    border-color: var(--ad-ciano) !important;
+    box-shadow: 0 6px 18px rgba(0, 188, 212, .12) !important;
+    transform: translateY(-2px);
+    color: var(--ad-preto);
+}
+
+.quick-icon {
+    display: block;
+    font-size: 1.8rem;
+    color: var(--ad-ciano);
+    margin-bottom: .5rem;
+}
+
+.quick-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: .9rem;
+    color: var(--ad-cinza-escuro);
+}
+
+.quick-sub {
+    font-size: .8rem;
+    color: var(--ad-cinza-medio);
+    margin-top: .15rem;
+}
+
+/* --- Tabela: cabeçalho Azul Profundo ----------------------- */
+.thead-azul th {
+    background-color: var(--ad-azul) !important;
+    color: #fff !important;
+    border-bottom: none !important;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+/* --- Botão "Abrir" da tabela ------------------------------- */
+.btn-abrir {
+    border: 1px solid var(--ad-ciano);
+    color: var(--ad-ciano);
+    background: transparent;
+    font-size: .8rem;
+    transition: all .15s;
+}
+.btn-abrir:hover {
+    background-color: var(--ad-ciano);
+    color: #fff;
+}
+
+/* --- Painel do Responsável ---------------------------------- */
+.eleicao-card {
+    border: 1px solid #F8F9FA !important;
+    border-radius: .75rem !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .06) !important;
+    transition: box-shadow .2s, transform .15s;
+}
+.eleicao-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .1) !important;
+    transform: translateY(-1px);
+}
+
+.eleicao-titulo {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--ad-azul);
+}
+
+.eleicao-data {
+    font-size: .88rem;
+    color: var(--ad-cinza-medio);
+    margin-bottom: 0;
+}
+
+.resp-metric-label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--ad-cinza-escuro);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+.resp-metric-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--ad-azul);
+    line-height: 1.2;
+}
+
+/* Tags de status */
+.status-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: .75rem;
+    font-weight: 500;
+    padding: .3em .7em;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+.status-aguardando { background-color: #FFC107; color: #212529; }
+.status-aberta     { background-color: var(--ad-ciano); color: #fff; }
+.status-encerrada  { background-color: var(--ad-responsavel); color: #fff; }
+
+/* Botões do responsável */
+.btn-resp-primario {
+    background-color: var(--ad-responsavel);
+    border-color: var(--ad-responsavel);
+    color: #fff;
+    font-weight: 500;
+    transition: all .2s;
+}
+.btn-resp-primario:hover {
+    background-color: #218838;
+    border-color: #218838;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-resp-secundario {
+    background-color: #fff;
+    border: 1px solid var(--ad-cinza-medio);
+    color: var(--ad-cinza-escuro);
+    font-weight: 500;
+    transition: all .15s;
+}
+.btn-resp-secundario:hover {
+    border-color: var(--ad-cinza-escuro);
+    color: var(--ad-preto);
+}
+
+.btn-resp-encerrar {
+    background-color: var(--ad-admin);
+    border-color: var(--ad-admin);
+    color: #fff;
+    font-weight: 500;
+    transition: all .2s;
+}
+.btn-resp-encerrar:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-resp-resultado {
+    background-color: transparent;
+    border: 1px solid var(--ad-responsavel);
+    color: var(--ad-responsavel);
+    font-weight: 500;
+    transition: all .15s;
+}
+.btn-resp-resultado:hover {
+    background-color: var(--ad-responsavel);
+    color: #fff;
+}
+
+/* --- Utilitários de perfil ---------------------------------- */
+.text-admin       { color: var(--ad-admin) !important; }
+.text-responsavel { color: var(--ad-responsavel) !important; }
+.text-maquina     { color: var(--ad-maquina) !important; }
+.text-mesario     { color: var(--ad-mesario) !important; }

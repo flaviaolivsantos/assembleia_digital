@@ -1,0 +1,91 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Novo Usuário</h2>
+    <a href="{{ route('admin.usuarios.index') }}" class="btn btn-outline-secondary">Voltar</a>
+</div>
+
+<div class="card" style="max-width: 560px;">
+    <div class="card-body">
+        @if($errors->any())
+            <div class="alert alert-danger">
+                @foreach($errors->all() as $erro)
+                    <div>{{ $erro }}</div>
+                @endforeach
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('admin.usuarios.store') }}">
+            @csrf
+
+            <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" name="nome" class="form-control" value="{{ old('nome') }}" required autofocus>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">E-mail</label>
+                <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Senha</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Confirmar Senha</label>
+                <input type="password" name="password_confirmation" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Perfil</label>
+                <select name="perfil" class="form-select" required id="select-perfil">
+                    <option value="">Selecione...</option>
+                    <option value="admin"       {{ old('perfil') === 'admin'       ? 'selected' : '' }}>Administrador</option>
+                    <option value="responsavel" {{ old('perfil') === 'responsavel' ? 'selected' : '' }}>Responsável Local</option>
+                    <option value="mesario"     {{ old('perfil') === 'mesario'     ? 'selected' : '' }}>Mesário</option>
+                    <option value="maquina"     {{ old('perfil') === 'maquina'     ? 'selected' : '' }}>Máquina de Votação</option>
+                </select>
+            </div>
+
+            <div class="mb-3" id="campo-cidade">
+                <label class="form-label">Missão</label>
+                <select name="cidade_id" class="form-select">
+                    <option value="">— Nenhuma —</option>
+                    @foreach($cidades as $cidade)
+                        <option value="{{ $cidade->id }}" {{ old('cidade_id') == $cidade->id ? 'selected' : '' }}>
+                            {{ $cidade->nome }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="form-text">Obrigatória para responsável, mesário e máquina.</div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Acesso válido até <span class="text-muted small">(opcional)</span></label>
+                <input type="datetime-local" name="acesso_ate" class="form-control @error('acesso_ate') is-invalid @enderror"
+                       value="{{ old('acesso_ate') }}">
+                @error('acesso_ate')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <div class="form-text">Deixe em branco para acesso ilimitado.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Criar Usuário</button>
+        </form>
+    </div>
+</div>
+
+<script>
+const perfil      = document.getElementById('select-perfil');
+const campoCidade = document.getElementById('campo-cidade');
+
+perfil.addEventListener('change', function () {
+    campoCidade.style.display = this.value === 'admin' ? 'none' : '';
+});
+
+if (perfil.value === 'admin') campoCidade.style.display = 'none';
+</script>
+@endsection
