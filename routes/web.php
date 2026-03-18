@@ -42,6 +42,8 @@ Route::middleware(['auth', 'acesso.ate', 'perfil:admin'])->prefix('admin')->name
     Route::resource('eleicoes.perguntas', PerguntaController::class)
         ->except(['index', 'show'])
         ->parameters(['eleicoes' => 'eleicao']);
+    Route::get('eleicoes/{eleicao}/perguntas/{pergunta}/preview', [PerguntaController::class, 'preview'])
+        ->name('eleicoes.perguntas.preview');
     Route::resource('eleicoes.perguntas.opcoes', OpcaoController::class)
         ->except(['show'])
         ->parameters(['eleicoes' => 'eleicao', 'opcoes' => 'opcao']);

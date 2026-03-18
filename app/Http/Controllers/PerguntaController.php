@@ -80,4 +80,11 @@ class PerguntaController extends Controller
         $pergunta->delete();
         return redirect()->route('admin.eleicoes.show', $eleicao)->with('sucesso', 'Pergunta removida.');
     }
+
+    public function preview(Eleicao $eleicao, Pergunta $pergunta)
+    {
+        $opcoes  = $pergunta->opcoes()->with('cidade')->get();
+        $cidades = $eleicao->cidades()->with('cidade')->get();
+        return view('admin.perguntas.preview', compact('eleicao', 'pergunta', 'opcoes', 'cidades'));
+    }
 }

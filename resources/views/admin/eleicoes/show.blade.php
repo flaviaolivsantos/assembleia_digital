@@ -81,8 +81,12 @@
                     <strong>{{ $loop->iteration }}.</strong> {{ $pergunta->pergunta }}
                     <span class="text-muted small ms-2">({{ $pergunta->qtd_respostas }} resposta(s) obrigatoria(s))</span>
                 </div>
-                @if(!$eleicao->estaAberta())
-                    <div class="d-flex gap-1 ms-3 flex-shrink-0">
+                <div class="d-flex gap-1 ms-3 flex-shrink-0">
+                    <button class="btn btn-sm btn-outline-info"
+                            onclick="abrirPreview('{{ route('admin.eleicoes.perguntas.preview', ['eleicao' => $eleicao->id, 'pergunta' => $pergunta->id]) }}', '{{ addslashes($pergunta->pergunta) }}')">
+                        Visualizar
+                    </button>
+                    @if(!$eleicao->estaAberta())
                         <a href="{{ route('admin.eleicoes.perguntas.opcoes.index', ['eleicao' => $eleicao->id, 'pergunta' => $pergunta->id]) }}"
                             class="btn btn-sm btn-outline-primary">Candidatos</a>
                         <a href="{{ route('admin.eleicoes.perguntas.edit', ['eleicao' => $eleicao->id, 'pergunta' => $pergunta->id]) }}"
@@ -93,12 +97,50 @@
                             @method('DELETE')
                             <button class="btn btn-sm btn-outline-danger">Remover</button>
                         </form>
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
         @empty
             <p class="text-muted">Nenhuma pergunta cadastrada.</p>
         @endforelse
     </div>
 </div>
+
+{{-- Modal de Preview --}}
+<div class="modal fade" id="modalPreview" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Prévia da votação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalPreviewBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+function abrirPreview(url, titulo) {
+    const body = document.getElementById('modalPreviewBody');
+    body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>';
+
+    const modal = new bootstrap.Modal(document.getElementById('modalPreview'));
+    modal.show();
+
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.text())
+        .then(html => { body.innerHTML = html; })
+        .catch(() => { body.innerHTML = '<p class="text-danger">Erro ao carregar prévia.</p>'; });
+}
+</script>
+@endpush
+
 @endsection
