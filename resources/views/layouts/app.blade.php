@@ -11,7 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 @auth
 @php
@@ -75,11 +75,11 @@
 </nav>
 @endauth
 
-<main class="container py-4">
+<main class="container py-4 flex-grow-1">
     @yield('content')
 </main>
 
-<footer class="text-center text-muted small py-3 mt-4 border-top">
+<footer class="text-center text-muted small py-3 mt-auto border-top">
     Desenvolvido por Assessoria de Gestão
 </footer>
 
