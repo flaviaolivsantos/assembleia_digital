@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Editar Eleicao</h2>
+    <h2>Editar Eleição</h2>
     <a href="{{ route('admin.eleicoes.show', $eleicao) }}" class="btn btn-outline-secondary">Voltar</a>
 </div>
 
@@ -13,7 +13,7 @@
             @method('PUT')
 
             <div class="mb-3">
-                <label for="titulo" class="form-label">Titulo</label>
+                <label for="titulo" class="form-label">Título</label>
                 <input type="text" id="titulo" name="titulo"
                     class="form-control @error('titulo') is-invalid @enderror"
                     value="{{ old('titulo', $eleicao->titulo) }}" autofocus required>
@@ -23,7 +23,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="data_eleicao" class="form-label">Data da Eleicao</label>
+                <label for="data_eleicao" class="form-label">Data da Eleição</label>
                 <input type="date" id="data_eleicao" name="data_eleicao"
                     class="form-control @error('data_eleicao') is-invalid @enderror"
                     value="{{ old('data_eleicao', $eleicao->data_eleicao->format('Y-m-d')) }}" required>

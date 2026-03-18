@@ -17,7 +17,7 @@
                 <tr>
                     <th>#</th>
                     <th>Nome</th>
-                    <th class="text-end">Acoes</th>
+                    <th class="text-end">Ações</th>
                 </tr>
             </thead>
             <tbody>

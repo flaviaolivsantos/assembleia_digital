@@ -2,8 +2,8 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Eleicoes</h2>
-    <a href="{{ route('admin.eleicoes.create') }}" class="btn btn-primary">+ Nova Eleicao</a>
+    <h2>Eleições</h2>
+    <a href="{{ route('admin.eleicoes.create') }}" class="btn btn-primary">+ Nova Eleição</a>
 </div>
 
 @if(session('sucesso'))
@@ -15,11 +15,11 @@
         <table class="table table-hover mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Titulo</th>
+                    <th>Título</th>
                     <th>Data</th>
                     <th>Status</th>
                     <th>Missões</th>
-                    <th class="text-end">Acoes</th>
+                    <th class="text-end">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -51,7 +51,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-4">Nenhuma eleicao cadastrada.</td>
+                        <td colspan="5" class="text-center text-muted py-4">Nenhuma eleição cadastrada.</td>
                     </tr>
                 @endforelse
             </tbody>
