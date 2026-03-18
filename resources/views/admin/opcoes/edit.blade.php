@@ -12,7 +12,7 @@
 <div class="card" style="max-width: 500px;">
     <div class="card-body">
         <form method="POST" action="{{ route('admin.eleicoes.perguntas.opcoes.update', [$eleicao, $pergunta, $opcao]) }}"
-              enctype="multipart/form-data">
+              enctype="multipart/form-data" id="form-candidato">
             @csrf
             @method('PUT')
 
@@ -50,24 +50,25 @@
             </div>
 
             <div class="mb-4">
-                <label for="foto" class="form-label">Foto do Candidato</label>
+                <label class="form-label">Foto do Candidato</label>
 
-                @if($opcao->foto)
-                    <div class="mb-2">
-                        <img id="preview" src="{{ $opcao->foto_url }}" alt="{{ $opcao->nome }}"
-                            class="rounded" style="width: 120px; height: 120px; object-fit: cover;">
-                    </div>
-                @else
-                    <img id="preview" src="" alt="" class="mt-2 rounded d-none"
-                        style="width: 120px; height: 120px; object-fit: cover;">
-                @endif
+                <div id="preview-wrap" class="{{ $opcao->foto ? '' : 'd-none' }} mb-2">
+                    <img id="preview" src="{{ $opcao->foto_url }}" alt="{{ $opcao->nome }}"
+                        style="width: 120px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #dee2e6;">
+                </div>
 
-                <input type="file" id="foto" name="foto" accept="image/*"
-                    class="form-control @error('foto') is-invalid @enderror"
-                    onchange="previewFoto(this)">
-                <div class="form-text">Deixe em branco para manter a foto atual.</div>
+                <div>
+                    <input type="file" id="foto-input" accept="image/*" class="d-none">
+                    <input type="file" id="foto" name="foto" accept="image/*" class="d-none"
+                        @error('foto') aria-invalid="true" @enderror>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                            onclick="document.getElementById('foto-input').click()">
+                        {{ $opcao->foto ? 'Trocar foto' : 'Selecionar foto' }}
+                    </button>
+                    <span class="text-muted small ms-2">Deixe em branco para manter a atual.</span>
+                </div>
                 @error('foto')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="text-danger small mt-1">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -76,17 +77,85 @@
     </div>
 </div>
 
+{{-- Modal Cropper --}}
+<div class="modal fade" id="modalCrop" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Posicionar foto</h5>
+            </div>
+            <div class="modal-body text-center" style="background:#f0f0f0; max-height:60vh; overflow:hidden;">
+                <img id="crop-img" src="" style="max-width:100%; display:block;">
+            </div>
+            <div class="modal-footer justify-content-between">
+                <span class="text-muted small">Arraste para posicionar. Role para zoom.</span>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary" id="btn-cancelar-crop">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirmar-crop">Confirmar corte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 <script>
-function previewFoto(input) {
-    const preview = document.getElementById('preview');
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            preview.src = e.target.result;
-            preview.classList.remove('d-none');
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
+let cropper = null;
+const modal = new bootstrap.Modal(document.getElementById('modalCrop'));
+
+document.getElementById('foto-input').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = document.getElementById('crop-img');
+        img.src = e.target.result;
+
+        if (cropper) { cropper.destroy(); cropper = null; }
+
+        modal.show();
+
+        setTimeout(function () {
+            cropper = new Cropper(img, {
+                aspectRatio: 3 / 2,
+                viewMode: 1,
+                autoCropArea: 0.9,
+                movable: true,
+                zoomable: true,
+                rotatable: false,
+                scalable: false,
+            });
+        }, 300);
+    };
+    reader.readAsDataURL(file);
+});
+
+document.getElementById('btn-confirmar-crop').addEventListener('click', function () {
+    if (!cropper) return;
+
+    cropper.getCroppedCanvas({ width: 450, height: 300 }).toBlob(function (blob) {
+        const file = new File([blob], 'foto.jpg', { type: 'image/jpeg' });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        document.getElementById('foto').files = dt.files;
+
+        document.getElementById('preview').src = URL.createObjectURL(blob);
+        document.getElementById('preview-wrap').classList.remove('d-none');
+
+        cropper.destroy(); cropper = null;
+        modal.hide();
+        document.getElementById('foto-input').value = '';
+    }, 'image/jpeg', 0.9);
+});
+
+document.getElementById('btn-cancelar-crop').addEventListener('click', function () {
+    if (cropper) { cropper.destroy(); cropper = null; }
+    modal.hide();
+    document.getElementById('foto-input').value = '';
+});
 </script>
+@endpush
 @endsection

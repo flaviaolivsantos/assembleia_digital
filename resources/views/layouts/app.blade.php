@@ -79,6 +79,10 @@
     @yield('content')
 </main>
 
+<footer class="text-center text-muted small py-3 mt-4 border-top">
+    Desenvolvido por Assessoria de Gestão
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @stack('scripts')
 </body>
