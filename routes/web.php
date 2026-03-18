@@ -16,6 +16,15 @@ use App\Http\Controllers\MesarioController;
 use App\Http\Controllers\VotacaoPublicaController;
 use Illuminate\Support\Facades\Route;
 
+// Serve arquivos de storage via Laravel (sem depender de symlink)
+Route::get('/storage/{path}', function (string $path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath) || !is_file($fullPath)) {
+        abort(404);
+    }
+    return response()->file($fullPath);
+})->where('path', '.*');
+
 // Raiz — redireciona para login ou dashboard
 Route::get('/', function () {
     return auth()->check()
