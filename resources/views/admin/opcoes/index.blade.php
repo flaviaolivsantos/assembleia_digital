@@ -58,15 +58,13 @@
 @else
     {{-- Realidade de Aliança: candidatos por missão --}}
     @foreach($cidades as $ec)
+        @if($opcoesPorCidade[$ec->cidade_id]->isNotEmpty())
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <strong>{{ $ec->cidade->nome }} <span class="text-muted fw-normal small ms-1">({{ $opcoesPorCidade[$ec->cidade_id]->count() }})</span></strong>
                 <span class="badge text-bg-secondary">Realidade de Aliança</span>
             </div>
             <div class="card-body">
-                @if($opcoesPorCidade[$ec->cidade_id]->isEmpty())
-                    <p class="text-muted mb-0">Nenhum candidato cadastrado para esta missão.</p>
-                @else
                     <div class="row g-3">
                         @foreach($opcoesPorCidade[$ec->cidade_id] as $opcao)
                             <div class="col-sm-6 col-md-4 col-lg-3">
@@ -90,9 +88,9 @@
                             </div>
                         @endforeach
                     </div>
-                @endif
             </div>
         </div>
+        @endif
     @endforeach
 @endif
 @endsection
