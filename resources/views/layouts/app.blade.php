@@ -57,6 +57,11 @@
                             <i class="bi bi-people"></i> Mesário
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('acompanhamento.index') }}">
+                            <i class="bi bi-bar-chart-line"></i> Painel
+                        </a>
+                    </li>
                 @endif
             </ul>
 

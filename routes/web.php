@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AcompanhamentoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CidadeController;
 use App\Http\Controllers\DashboardController;
@@ -92,4 +93,10 @@ Route::middleware(['auth', 'acesso.ate', 'perfil:maquina'])->prefix('votacao')->
     Route::get('/votar',        [VotacaoController::class, 'votar'])->name('votar');
     Route::post('/votar',       [VotacaoController::class, 'confirmarVoto'])->name('confirmarVoto');
     Route::get('/confirmado',   [VotacaoController::class, 'confirmado'])->name('confirmado');
+});
+
+// Painel de acompanhamento (admin, responsável, mesário)
+Route::middleware(['auth', 'acesso.ate', 'perfil:mesario'])->prefix('painel')->name('acompanhamento.')->group(function () {
+    Route::get('/',      [AcompanhamentoController::class, 'index'])->name('index');
+    Route::get('/dados', [AcompanhamentoController::class, 'dados'])->name('dados');
 });
