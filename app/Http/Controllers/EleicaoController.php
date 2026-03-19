@@ -102,4 +102,43 @@ class EleicaoController extends Controller
 
         return redirect()->route('admin.eleicoes.index')->with('sucesso', 'Eleicao removida com sucesso.');
     }
+
+    public function duplicate(Eleicao $eleicao)
+    {
+        abort_if($eleicao->estaAberta(), 403, 'Nao e possivel duplicar uma eleicao aberta.');
+
+        $copia = Eleicao::create([
+            'titulo'       => 'Cópia de ' . $eleicao->titulo,
+            'data_eleicao' => $eleicao->data_eleicao,
+            'status'       => 'rascunho',
+        ]);
+
+        // Missões
+        foreach ($eleicao->cidades as $ec) {
+            $copia->cidades()->create(['cidade_id' => $ec->cidade_id]);
+        }
+
+        // Perguntas e candidatos
+        foreach ($eleicao->perguntas as $pergunta) {
+            $novaPergunta = $copia->perguntas()->create([
+                'pergunta'      => $pergunta->pergunta,
+                'qtd_respostas' => $pergunta->qtd_respostas,
+                'escopo'        => $pergunta->escopo,
+                'ordem'         => $pergunta->ordem,
+            ]);
+
+            foreach ($pergunta->opcoes as $opcao) {
+                $novaPergunta->opcoes()->create([
+                    'cidade_id' => $opcao->cidade_id,
+                    'nome'      => $opcao->nome,
+                    'foto'      => $opcao->foto,
+                    'ordem'     => $opcao->ordem,
+                ]);
+            }
+        }
+
+        LogEleicao::registrar($copia->id, 'eleicao_criada', "Eleição criada como cópia de \"{$eleicao->titulo}\".");
+
+        return redirect()->route('admin.eleicoes.show', $copia)->with('sucesso', 'Eleição duplicada. Edite o título antes de usar.');
+    }
 }

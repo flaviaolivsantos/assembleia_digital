@@ -40,6 +40,7 @@ Route::middleware(['auth', 'acesso.ate', 'perfil:admin'])->prefix('admin')->name
     Route::resource('cidades', CidadeController::class);
     Route::resource('eleicoes', EleicaoController::class)
         ->parameters(['eleicoes' => 'eleicao']);
+    Route::post('eleicoes/{eleicao}/duplicate', [EleicaoController::class, 'duplicate'])->name('eleicoes.duplicate');
     Route::resource('eleicoes.perguntas', PerguntaController::class)
         ->except(['index', 'show'])
         ->parameters(['eleicoes' => 'eleicao']);

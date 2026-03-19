@@ -40,6 +40,11 @@
                             <a href="{{ route('admin.eleicoes.show', $eleicao) }}" class="btn btn-sm btn-outline-primary">Ver</a>
                             @if(!$eleicao->estaAberta())
                                 <a href="{{ route('admin.eleicoes.edit', $eleicao) }}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                                <form method="POST" action="{{ route('admin.eleicoes.duplicate', $eleicao) }}" class="d-inline"
+                                      onsubmit="return confirm('Duplicar {{ $eleicao->titulo }}?')">
+                                    @csrf
+                                    <button class="btn btn-sm btn-outline-info">Duplicar</button>
+                                </form>
                                 <form method="POST" action="{{ route('admin.eleicoes.destroy', $eleicao) }}" class="d-inline"
                                       onsubmit="return confirm('Remover {{ $eleicao->titulo }}?')">
                                     @csrf
