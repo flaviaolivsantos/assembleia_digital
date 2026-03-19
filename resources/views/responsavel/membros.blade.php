@@ -58,6 +58,7 @@
                 Total: <strong id="total">{{ $eleicaoCidade->qtd_membros }}</strong> membros
             </div>
 
+            @if($eleicaoCidade->aberta || $eleicaoCidade->data_encerramento)
             <div class="mb-4">
                 <label class="form-label fw-semibold">Justificativa da alteração</label>
                 <textarea name="justificativa" class="form-control @error('justificativa') is-invalid @enderror"
@@ -68,6 +69,7 @@
                 @enderror
                 <div class="form-text">Obrigatório. Será registrado no log da eleição.</div>
             </div>
+            @endif
 
             <button type="submit" class="btn btn-primary">Salvar</button>
         </form>

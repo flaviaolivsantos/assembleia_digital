@@ -125,7 +125,9 @@ class ResponsavelController extends Controller
             'qtd_eleitorado' => ['required', 'integer', 'min:0'],
             'qtd_presencial' => ['required', 'integer', 'min:0'],
             'qtd_remoto'     => ['required', 'integer', 'min:' . $totalTokensGerados],
-            'justificativa'  => ['required', 'string', 'min:10'],
+            'justificativa'  => $eleicaoCidade->aberta || $eleicaoCidade->data_encerramento
+                ? ['required', 'string', 'min:10']
+                : ['nullable', 'string'],
         ], [
             'qtd_remoto.min'     => "Quantidade remoto nao pode ser menor que os tokens ja gerados ({$totalTokensGerados}).",
             'justificativa.min'  => 'A justificativa deve ter pelo menos 10 caracteres.',
@@ -154,7 +156,7 @@ class ResponsavelController extends Controller
         LogEleicao::registrar(
             $eleicaoCidade->eleicao_id,
             'membros_alterados',
-            "Membros em {$eleicaoCidade->cidade->nome} alterados de {$anterior} para {$qtdTotal} ({$qtdPresencial} presencial + {$qtdRemoto} remoto). Justificativa: {$request->justificativa}"
+            "Membros em {$eleicaoCidade->cidade->nome} alterados de {$anterior} para {$qtdTotal} ({$qtdPresencial} presencial + {$qtdRemoto} remoto)." . ($request->justificativa ? " Justificativa: {$request->justificativa}" : '')
         );
 
         return redirect()->route('responsavel.index')->with('sucesso', 'Quantidade de membros atualizada.');
