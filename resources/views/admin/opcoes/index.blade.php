@@ -22,7 +22,7 @@
     {{-- Realidade de Vida: candidatos nacionais, sem agrupamento por missão --}}
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>Candidatos Nacionais</strong>
+            <strong>Candidatos Realidade de Vida <span class="text-muted fw-normal small ms-1">({{ $opcoes->count() }})</span></strong>
             <span class="badge text-bg-primary">Realidade de Vida</span>
         </div>
         <div class="card-body">
@@ -60,7 +60,7 @@
     @foreach($cidades as $ec)
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <strong>{{ $ec->cidade->nome }}</strong>
+                <strong>{{ $ec->cidade->nome }} <span class="text-muted fw-normal small ms-1">({{ $opcoesPorCidade[$ec->cidade_id]->count() }})</span></strong>
                 <span class="badge text-bg-secondary">Realidade de Aliança</span>
             </div>
             <div class="card-body">
