@@ -35,7 +35,7 @@
             </div>
             @else
             <div class="alert alert-primary py-2 small mb-3">
-                <strong>Realidade de Vida</strong> — candidato nacional, visível para todas as missões.
+                <strong>Realidade de Vida</strong> — Visível para todas as missões.
             </div>
             @endif
 
