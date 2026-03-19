@@ -26,8 +26,10 @@ class TokenVotacao extends Model
 
     public static function gerar(int $eleicaoId, int $cidadeId): array
     {
-        $token = strtoupper(Str::random(5)) . '-' . strtoupper(Str::random(5)) . '-' . strtoupper(Str::random(5));
-        $hash  = hash('sha256', $token);
+        do {
+            $token = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $hash  = hash('sha256', $token);
+        } while (self::where('token_hash', $hash)->where('usado', false)->exists());
 
         self::create([
             'token_hash' => $hash,

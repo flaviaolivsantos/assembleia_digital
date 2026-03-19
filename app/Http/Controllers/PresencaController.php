@@ -44,14 +44,15 @@ class PresencaController extends Controller
             ])->withInput();
         }
 
+        $resultado = TokenVotacao::gerar($eleicaoCidade->eleicao_id, $eleicaoCidade->cidade_id);
+
         Presenca::create([
             'eleicao_id' => $eleicaoCidade->eleicao_id,
             'cidade_id'  => $eleicaoCidade->cidade_id,
             'nome'       => $request->nome,
+            'token'      => $resultado['token'],
             'votou'      => false,
         ]);
-
-        $resultado = TokenVotacao::gerar($eleicaoCidade->eleicao_id, $eleicaoCidade->cidade_id);
 
         return redirect()->route('mesario.presencas.token', [
             'eleicaoCidade' => $eleicaoCidade->id,
@@ -111,14 +112,16 @@ class PresencaController extends Controller
 
         $resultados = [];
         foreach ($linhas as $nome) {
+            $gerado = TokenVotacao::gerar($eleicaoCidade->eleicao_id, $eleicaoCidade->cidade_id);
+
             Presenca::create([
                 'eleicao_id' => $eleicaoCidade->eleicao_id,
                 'cidade_id'  => $eleicaoCidade->cidade_id,
                 'nome'       => $nome,
+                'token'      => $gerado['token'],
                 'votou'      => false,
             ]);
 
-            $gerado = TokenVotacao::gerar($eleicaoCidade->eleicao_id, $eleicaoCidade->cidade_id);
             $resultados[] = ['nome' => $nome, 'token' => $gerado['token']];
         }
 

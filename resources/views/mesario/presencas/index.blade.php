@@ -115,6 +115,7 @@
             <thead class="table-light">
                 <tr>
                     <th>Nome</th>
+                    <th class="text-center">Token</th>
                     <th class="text-center">Status</th>
                 </tr>
             </thead>
@@ -122,6 +123,18 @@
                 @forelse($presencas as $presenca)
                     <tr>
                         <td>{{ $presenca->nome }}</td>
+                        <td class="text-center">
+                            @if(!$presenca->votou && $presenca->token)
+                                <span class="font-monospace token-oculto" id="token-{{ $presenca->id }}">••••••</span>
+                                <button class="btn btn-link btn-sm p-0 ms-1 text-muted"
+                                        onclick="toggleToken({{ $presenca->id }}, '{{ $presenca->token }}')"
+                                        id="btn-{{ $presenca->id }}" title="Ver token">
+                                    <i class="bi bi-eye" id="ico-{{ $presenca->id }}"></i>
+                                </button>
+                            @else
+                                <span class="text-muted small">—</span>
+                            @endif
+                        </td>
                         <td class="text-center">
                             @if($presenca->votou)
                                 <span class="badge text-bg-success">Votou</span>
@@ -139,4 +152,19 @@
         </table>
     </div>
 </div>
+@push('scripts')
+<script>
+function toggleToken(id, token) {
+    const span = document.getElementById('token-' + id);
+    const ico  = document.getElementById('ico-' + id);
+    if (span.textContent === '••••••') {
+        span.textContent = token;
+        ico.className = 'bi bi-eye-slash';
+    } else {
+        span.textContent = '••••••';
+        ico.className = 'bi bi-eye';
+    }
+}
+</script>
+@endpush
 @endsection
