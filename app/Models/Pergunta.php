@@ -18,7 +18,7 @@ class Pergunta extends Model
 
     public function opcoes()
     {
-        return $this->hasMany(Opcao::class)->orderBy('ordem');
+        return $this->hasMany(Opcao::class)->orderBy('nome');
     }
 
     public function opcoesPorCidade(int $cidadeId)
