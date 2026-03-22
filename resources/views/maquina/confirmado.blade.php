@@ -12,14 +12,14 @@
 
         <div class="display-1 text-success mb-3">&#10003;</div>
         <h2 class="mb-2">Voto Registrado!</h2>
-        <p class="text-muted mb-5">Seu voto foi computado com sucesso de forma anonima.<br>Obrigado pela sua participacao.</p>
+        <p class="text-muted mb-5">Seu voto foi computado com sucesso de forma anônima.<br>Obrigado pela sua participação.</p>
 
         <a href="{{ route('maquina.index') }}" class="btn btn-primary btn-lg">
-            Proxima Votacao
+            Próxima Votação
         </a>
 
         <p class="text-muted small mt-4">
-            Esta pagina sera redirecionada automaticamente em <span id="conta">10</span>s.
+            Esta página será redirecionada automaticamente em <span id="conta">10</span>s.
         </p>
     </div>
 </div>

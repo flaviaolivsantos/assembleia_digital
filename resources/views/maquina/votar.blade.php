@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votacao — Assembleia Digital</title>
+    <title>Votação — Assembleia Digital</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .candidato-card { cursor: pointer; transition: border 0.15s, background 0.15s; }
@@ -17,7 +17,7 @@
 <div class="container py-4" style="max-width: 860px;">
     <div class="text-center mb-5">
         <h3>{{ $eleicaoCidade->eleicao->titulo }}</h3>
-        <p class="text-muted">Leia com atencao cada pergunta e selecione a quantidade indicada de candidatos.</p>
+        <p class="text-muted">Leia com atenção cada pergunta e selecione a quantidade indicada de candidatos.</p>
     </div>
 
     @if($errors->any())
@@ -71,7 +71,7 @@
             <button type="submit" class="btn btn-success btn-lg px-5" id="btn-votar" disabled>
                 Confirmar Voto
             </button>
-            <p class="text-muted small mt-2">Revise suas escolhas antes de confirmar. Esta acao e irreversivel.</p>
+            <p class="text-muted small mt-2">Revise suas escolhas antes de confirmar. Esta ação é irreversível.</p>
         </div>
     </form>
 </div>

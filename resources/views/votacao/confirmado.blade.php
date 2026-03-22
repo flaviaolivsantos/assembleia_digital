@@ -13,12 +13,12 @@
         <div class="display-1 text-success mb-3">&#10003;</div>
         <h2 class="mb-2">Voto Registrado!</h2>
         <p class="text-muted mb-5">
-            Seu voto foi computado com sucesso de forma anonima.<br>
-            Obrigado pela sua participacao.
+            Seu voto foi computado com sucesso de forma anônima.<br>
+            Obrigado pela sua participação.
         </p>
 
         <p class="text-muted small mt-4">
-            Assembleia Digital &mdash; Votacao segura e anonima.
+            Assembleia Digital &mdash; Votação segura e anônima.
         </p>
     </div>
 </div>

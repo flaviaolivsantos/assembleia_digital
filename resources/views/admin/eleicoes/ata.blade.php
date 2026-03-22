@@ -33,7 +33,7 @@
 </div>
 
 {{-- Participação por missão --}}
-<div class="section-title">1. Participacao</div>
+<div class="section-title">1. Participação</div>
 <table class="table table-bordered table-sm">
     <thead>
         <tr>
@@ -143,7 +143,7 @@
     @foreach($eleicao->cidades as $ec)
         <div class="col-6 mb-4">
             <div class="linha-assinatura"></div>
-            <p class="mb-0 mt-1">Responsavel — {{ $ec->cidade->nome }}</p>
+            <p class="mb-0 mt-1">Responsável — {{ $ec->cidade->nome }}</p>
         </div>
     @endforeach
 </div>

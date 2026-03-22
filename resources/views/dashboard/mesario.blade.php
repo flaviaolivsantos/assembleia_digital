@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-<h2 class="mb-4">Painel do Mesario</h2>
+<h2 class="mb-4">Painel do Mesário</h2>
 
 @if(session('sucesso'))
     <div class="alert alert-success">{{ session('sucesso') }}</div>
 @endif
 
 @if($eleicoesCidade->isEmpty())
-    <div class="alert alert-info">Nenhuma votacao aberta no momento para sua missão.</div>
+    <div class="alert alert-info">Nenhuma votação aberta no momento para sua missão.</div>
 @else
-    <p class="text-muted">Selecione a votacao que deseja gerenciar:</p>
+    <p class="text-muted">Selecione a votação que deseja gerenciar:</p>
     <div class="row g-3">
         @foreach($eleicoesCidade as $ec)
             <div class="col-md-6">

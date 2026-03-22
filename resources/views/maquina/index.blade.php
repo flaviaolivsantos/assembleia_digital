@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votacao — Assembleia Digital</title>
+    <title>Votação — Assembleia Digital</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background: #f8f9fa; }
@@ -14,10 +14,10 @@
     <div class="text-center" style="width: 100%; max-width: 440px; padding: 1rem;">
 
         <h2 class="mb-1">Assembleia Digital</h2>
-        <p class="text-muted mb-4">Maquina de Votacao</p>
+        <p class="text-muted mb-4">Máquina de Votação</p>
 
         @if(!$eleicaoCidade)
-            <div class="alert alert-warning">Nenhuma votacao aberta para esta missão no momento.</div>
+            <div class="alert alert-warning">Nenhuma votação aberta para esta missão no momento.</div>
         @else
             <div class="card shadow-sm">
                 <div class="card-body p-4">
@@ -41,7 +41,7 @@
                     @endif
 
                     <p class="text-muted small text-start mb-3">
-                        Digite sua senha para liberar a votacao para um eleitor presencial.
+                        Digite sua senha para liberar a votação para um eleitor presencial.
                     </p>
                     <form method="POST" action="{{ route('maquina.presencial') }}">
                         @csrf
@@ -52,7 +52,7 @@
                                 autocomplete="current-password"
                                 autofocus required>
                         </div>
-                        <button type="submit" class="btn btn-success btn-lg w-100">Liberar Votacao</button>
+                        <button type="submit" class="btn btn-success btn-lg w-100">Liberar Votação</button>
                     </form>
                 </div>
             </div>

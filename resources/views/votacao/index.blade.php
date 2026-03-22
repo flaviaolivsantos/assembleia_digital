@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votacao Remota — Assembleia Digital</title>
+    <title>Votação Remota — Assembleia Digital</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background: #f8f9fa; }
@@ -15,7 +15,7 @@
     <div class="text-center" style="width: 100%; max-width: 440px; padding: 1rem;">
 
         <h2 class="mb-1">Assembleia Digital</h2>
-        <p class="text-muted mb-4">Votacao Remota</p>
+        <p class="text-muted mb-4">Votação Remota</p>
 
         <div class="card shadow-sm">
             <div class="card-body p-4">
@@ -25,7 +25,7 @@
                 @endif
 
                 <p class="text-muted small mb-3">
-                    Insira o token recebido do mesario para acessar a votacao.
+                    Insira o token recebido do mesário para acessar a votação.
                 </p>
 
                 <form method="POST" action="{{ route('votacao.token') }}">
@@ -44,7 +44,7 @@
         </div>
 
         <p class="text-muted small mt-4">
-            Assembleia Digital &mdash; Votacao segura e anonima.
+            Assembleia Digital &mdash; Votação segura e anônima.
         </p>
     </div>
 </div>

@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2>Encerrar Votacao</h2>
+        <h2>Encerrar Votação</h2>
         <p class="text-muted mb-0">{{ $eleicaoCidade->eleicao->titulo }}</p>
     </div>
     <a href="{{ route('responsavel.index') }}" class="btn btn-outline-secondary">Voltar</a>
@@ -11,11 +11,11 @@
 
 <div class="card border-danger" style="max-width: 480px;">
     <div class="card-header bg-danger text-white">
-        <strong>Confirmacao de Encerramento</strong>
+        <strong>Confirmação de Encerramento</strong>
     </div>
     <div class="card-body">
         <div class="alert alert-warning">
-            <strong>Atencao:</strong> Esta acao e irreversivel. Apos encerrar, nenhum voto adicional sera aceito.
+            <strong>Atenção:</strong> Esta ação é irreversível. Após encerrar, nenhum voto adicional será aceito.
         </div>
 
         <p class="text-muted small mb-4">
@@ -29,7 +29,7 @@
                 <label for="justificativa" class="form-label">Justificativa do encerramento</label>
                 <textarea id="justificativa" name="justificativa" rows="3"
                     class="form-control @error('justificativa') is-invalid @enderror"
-                    placeholder="Ex: Todos os membros presentes ja votaram." required>{{ old('justificativa') }}</textarea>
+                    placeholder="Ex: Todos os membros presentes já votaram." required>{{ old('justificativa') }}</textarea>
                 @error('justificativa')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror

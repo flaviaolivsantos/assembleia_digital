@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2>Abrir Votacao</h2>
+        <h2>Abrir Votação</h2>
         <p class="text-muted mb-0">{{ $eleicaoCidade->eleicao->titulo }}</p>
     </div>
     <a href="{{ route('responsavel.index') }}" class="btn btn-outline-secondary">Voltar</a>
@@ -11,11 +11,11 @@
 
 <div class="card border-success" style="max-width: 480px;">
     <div class="card-header bg-success text-white">
-        <strong>Confirmacao de Abertura</strong>
+        <strong>Confirmação de Abertura</strong>
     </div>
     <div class="card-body">
-        <p>Ao confirmar, a votacao sera <strong>aberta imediatamente</strong> para sua cidade.</p>
-        <p class="text-muted small mb-4">Esta acao fica registrada com seu usuario e horario.</p>
+        <p>Ao confirmar, a votação será <strong>aberta imediatamente</strong> para sua cidade.</p>
+        <p class="text-muted small mb-4">Esta ação fica registrada com seu usuário e horário.</p>
 
         <form method="POST" action="{{ route('responsavel.confirmarAbrir', $eleicaoCidade) }}">
             @csrf

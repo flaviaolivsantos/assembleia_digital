@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2>Controle de Presenca</h2>
+        <h2>Controle de Presença</h2>
         <p class="text-muted mb-0">
             {{ $eleicaoCidade->eleicao->titulo }} &mdash; {{ $eleicaoCidade->cidade->nome }}
         </p>
@@ -19,10 +19,10 @@
 @endif
 
 @if(!$eleicaoCidade->aberta)
-    <div class="alert alert-warning">A votacao nao esta aberta. Aguarde o responsavel local abrir a votacao.</div>
+    <div class="alert alert-warning">A votação não está aberta. Aguarde o responsável local abrir a votação.</div>
 @else
     <div class="card mb-4" style="max-width: 480px;">
-        <div class="card-header"><strong>Registrar Presenca</strong></div>
+        <div class="card-header"><strong>Registrar Presença</strong></div>
         <div class="card-body">
             <form method="POST" action="{{ route('mesario.presencas.store', $eleicaoCidade) }}">
                 @csrf
@@ -50,7 +50,7 @@
                     @csrf
                     <div class="mb-2">
                         <input type="file" name="csv" class="form-control form-control-sm" accept=".csv,.txt" required>
-                        <div class="form-text">Arquivo .csv com um nome por linha. Cabecalho "nome" e opcional.</div>
+                        <div class="form-text">Arquivo .csv com um nome por linha. Cabeçalho "nome" é opcional.</div>
                     </div>
                     <button type="submit" class="btn btn-outline-primary btn-sm">Importar e Gerar Tokens</button>
                 </form>

@@ -30,7 +30,7 @@
     <p>Missão: {{ $eleicaoCidade->cidade->nome }} &middot; Data: {{ $eleicao->data_eleicao->format('d/m/Y') }}</p>
 </div>
 
-<div class="section-title">1. Participacao</div>
+<div class="section-title">1. Participação</div>
 @php
     $adPct = $eleicaoCidade->qtd_eleitorado > 0 ? round($eleicaoCidade->qtd_membros / $eleicaoCidade->qtd_eleitorado * 100, 1) : 0;
     $apPct = $eleicaoCidade->qtd_membros    > 0 ? round($eleicaoCidade->votos_registrados / $eleicaoCidade->qtd_membros * 100, 1) : 0;
@@ -124,7 +124,7 @@
 
 <div class="section-title mt-4">3. Assinatura</div>
 <div class="linha-assinatura mt-4"></div>
-<p class="mb-0 mt-1">Responsavel — {{ $eleicaoCidade->cidade->nome }}</p>
+<p class="mb-0 mt-1">Responsável — {{ $eleicaoCidade->cidade->nome }}</p>
 
 <p class="mt-4 text-muted small text-end">
     Documento gerado automaticamente pelo sistema Assembleia Digital em {{ now()->format('d/m/Y H:i') }}.

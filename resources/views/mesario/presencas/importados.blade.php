@@ -19,7 +19,7 @@
     <button onclick="window.print()" class="btn btn-dark btn-sm">Imprimir / Salvar PDF</button>
     <a href="{{ route('mesario.presencas.index', $eleicaoCidade) }}" class="btn btn-outline-secondary btn-sm">Voltar</a>
     <span class="text-muted small ms-2">
-        Estes tokens nao serao exibidos novamente. Imprima antes de sair desta pagina.
+        Estes tokens não serão exibidos novamente. Imprima antes de sair desta página.
     </span>
 </div>
 
@@ -34,7 +34,7 @@
         <tr>
             <th>#</th>
             <th>Nome</th>
-            <th>Token de Votacao</th>
+            <th>Token de Votação</th>
         </tr>
     </thead>
     <tbody>
@@ -49,7 +49,7 @@
 </table>
 
 <p class="text-muted small mt-3 no-print">
-    Cada token e de uso unico. Entregue individualmente a cada membro antes de iniciar a votacao.
+    Cada token é de uso único. Entregue individualmente a cada membro antes de iniciar a votação.
 </p>
 
 </body>
