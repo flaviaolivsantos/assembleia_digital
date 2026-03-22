@@ -122,7 +122,42 @@
     @endif
 @endforeach
 
-<div class="section-title mt-4">3. Assinatura</div>
+<div class="section-title mt-4">3. Auditoria</div>
+<table class="table table-bordered table-sm">
+    <tbody>
+        <tr>
+            <th style="width:40%">Horário de abertura</th>
+            <td>{{ $eleicaoCidade->data_abertura?->format('d/m/Y H:i') ?? '—' }}</td>
+        </tr>
+        <tr>
+            <th>Horário de encerramento</th>
+            <td>{{ $eleicaoCidade->data_encerramento?->format('d/m/Y H:i') ?? '—' }}</td>
+        </tr>
+        <tr>
+            <th>Aberta por</th>
+            <td>{{ $eleicaoCidade->abertaPor?->nome ?? '—' }}</td>
+        </tr>
+        <tr>
+            <th>Encerrada por</th>
+            <td>{{ $eleicaoCidade->encerradaPor?->nome ?? '—' }}</td>
+        </tr>
+        <tr>
+            <th>Total esperado de votos</th>
+            <td>{{ $eleicaoCidade->qtd_membros }}</td>
+        </tr>
+        <tr>
+            <th>Total realizado</th>
+            <td>
+                {{ $eleicaoCidade->votos_registrados }}
+                @if($eleicaoCidade->qtd_membros > 0)
+                    ({{ round($eleicaoCidade->votos_registrados / $eleicaoCidade->qtd_membros * 100, 1) }}%)
+                @endif
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="section-title mt-4">4. Assinatura</div>
 <div class="linha-assinatura mt-4"></div>
 <p class="mb-0 mt-1">Responsável — {{ $eleicaoCidade->cidade->nome }}</p>
 

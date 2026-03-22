@@ -137,8 +137,42 @@
     @endif
 @endforeach
 
+{{-- Auditoria --}}
+<div class="section-title mt-4">3. Auditoria</div>
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr>
+            <th>Missão</th>
+            <th class="text-center">Abertura</th>
+            <th class="text-center">Encerramento</th>
+            <th>Aberta por</th>
+            <th>Encerrada por</th>
+            <th class="text-center">Esperado</th>
+            <th class="text-center">Realizado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($eleicao->cidades as $ec)
+        <tr>
+            <td>{{ $ec->cidade->nome }}</td>
+            <td class="text-center">{{ $ec->data_abertura?->format('d/m/Y H:i') ?? '—' }}</td>
+            <td class="text-center">{{ $ec->data_encerramento?->format('d/m/Y H:i') ?? '—' }}</td>
+            <td>{{ $ec->abertaPor?->nome ?? '—' }}</td>
+            <td>{{ $ec->encerradaPor?->nome ?? '—' }}</td>
+            <td class="text-center">{{ $ec->qtd_membros }}</td>
+            <td class="text-center">
+                {{ $ec->votos_registrados }}
+                @if($ec->qtd_membros > 0)
+                    ({{ round($ec->votos_registrados / $ec->qtd_membros * 100, 1) }}%)
+                @endif
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+
 {{-- Assinaturas --}}
-<div class="section-title mt-4">3. Assinaturas</div>
+<div class="section-title mt-4">4. Assinaturas</div>
 <div class="assinatura row">
     @foreach($eleicao->cidades as $ec)
         <div class="col-6 mb-4">

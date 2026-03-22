@@ -31,7 +31,7 @@ class ResultadoController extends Controller
             abort(403, 'Ata disponível apenas após o encerramento da eleição.');
         }
 
-        $eleicao->load('cidades.cidade', 'perguntas.opcoes');
+        $eleicao->load('cidades.cidade', 'cidades.abertaPor', 'cidades.encerradaPor', 'perguntas.opcoes');
 
         $votosRaw = $this->carregarVotos($eleicao);
 
@@ -66,7 +66,7 @@ class ResultadoController extends Controller
         }
 
         $eleicao->load('perguntas.opcoes', 'cidades.cidade');
-        $eleicaoCidade->load('cidade');
+        $eleicaoCidade->load('cidade', 'abertaPor', 'encerradaPor');
 
         $votosRaw    = $this->carregarVotos($eleicao);
         $todasCidades = $eleicao->cidades;
