@@ -42,7 +42,7 @@
                     @enderror
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-3">
                     <label for="password" class="form-label">Senha</label>
                     <input
                         type="password"
@@ -51,6 +51,13 @@
                         class="form-control"
                         required
                     >
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                        <label class="form-check-label text-muted small" for="remember">Lembrar-me</label>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">Entrar</button>
