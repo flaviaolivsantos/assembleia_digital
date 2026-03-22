@@ -90,9 +90,9 @@ class ResultadoController extends Controller
         // Votos remotos: cidade vem do token
         $remotos = Voto::whereIn('votos.pergunta_id', $perguntaIds)
             ->where('votos.origem', 'remoto')
-            ->join('tokens_votacao', 'votos.token_hash', '=', 'tokens_votacao.token_hash')
-            ->select('votos.pergunta_id', 'votos.opcao_id', 'tokens_votacao.cidade_id', DB::raw('count(*) as total'))
-            ->groupBy('votos.pergunta_id', 'votos.opcao_id', 'tokens_votacao.cidade_id')
+            ->join('token_votacaos', 'votos.token_hash', '=', 'token_votacaos.token_hash')
+            ->select('votos.pergunta_id', 'votos.opcao_id', 'token_votacaos.cidade_id', DB::raw('count(*) as total'))
+            ->groupBy('votos.pergunta_id', 'votos.opcao_id', 'token_votacaos.cidade_id')
             ->get();
 
         // Votos presenciais: cidade vem do usuário (maquina)
