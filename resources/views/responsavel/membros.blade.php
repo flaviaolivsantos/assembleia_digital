@@ -62,7 +62,7 @@
             <div class="mb-4">
                 <label class="form-label fw-semibold">Justificativa da alteração</label>
                 <textarea name="justificativa" class="form-control @error('justificativa') is-invalid @enderror"
-                          rows="3" required minlength="10"
+                          rows="3" required
                           placeholder="Explique o motivo da alteração...">{{ old('justificativa') }}</textarea>
                 @error('justificativa')
                     <div class="invalid-feedback">{{ $message }}</div>
