@@ -1,88 +1,270 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2>Resultados — {{ $eleicao->titulo }}</h2>
-        <span class="text-muted">{{ $eleicaoCidade->cidade->nome }} &middot; {{ $eleicao->data_eleicao->format('d/m/Y') }}</span>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('responsavel.ata', $eleicaoCidade) }}" class="btn btn-outline-dark" target="_blank">
-            Imprimir Ata
-        </a>
-        <a href="{{ route('responsavel.index') }}" class="btn btn-outline-secondary">Voltar</a>
-    </div>
-</div>
 
-{{-- Resumo --}}
-<div class="card mb-4">
-    <div class="card-body">
-        @php
-            $eleitorado     = $eleicaoCidade->qtd_eleitorado;
-            $compareceram   = $eleicaoCidade->qtd_membros;
-            $votaram        = $eleicaoCidade->votos_registrados;
-            $pctAderencia   = $eleitorado   > 0 ? round($compareceram / $eleitorado   * 100, 1) : 0;
-            $pctAproveit    = $compareceram > 0 ? round($votaram      / $compareceram * 100, 1) : 0;
-        @endphp
-        <h5 class="text-center mb-4">{{ $eleicaoCidade->cidade->nome }}</h5>
-        <div class="row text-center g-3">
-            <div class="col-4">
-                <div class="fs-3 fw-bold">{{ $eleitorado }}</div>
-                <div class="text-muted small">Eleitores aptos</div>
-            </div>
-            <div class="col-4">
-                <div class="fs-3 fw-bold text-primary">{{ $compareceram }}</div>
-                <div class="text-muted small">Compareceram</div>
-            </div>
-            <div class="col-4">
-                <div class="fs-3 fw-bold text-success">{{ $votaram }}</div>
-                <div class="text-muted small">Votaram</div>
-            </div>
-        </div>
-        <hr class="my-3">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="d-flex justify-content-between mb-1">
-                    <small class="fw-semibold">Aderência</small>
-                    <small>{{ $compareceram }} / {{ $eleitorado }} &middot; <strong>{{ $pctAderencia }}%</strong></small>
-                </div>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-primary" style="width: {{ $pctAderencia }}%"></div>
-                </div>
-                <div class="form-text">Dos eleitores aptos, quantos compareceram.</div>
-            </div>
-            <div class="col-md-6">
-                <div class="d-flex justify-content-between mb-1">
-                    <small class="fw-semibold">Aproveitamento</small>
-                    <small>{{ $votaram }} / {{ $compareceram }} &middot; <strong>{{ $pctAproveit }}%</strong></small>
-                </div>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-success" style="width: {{ $pctAproveit }}%"></div>
-                </div>
-                <div class="form-text">Dos que compareceram, quantos efetivamente votaram.</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Auditoria por máquina (apenas desta missão) --}}
 @php
+    $eleitorado   = $eleicaoCidade->qtd_eleitorado;
+    $compareceram = $eleicaoCidade->qtd_membros;
+    $votaram      = $eleicaoCidade->votos_registrados;
+    $pctAderencia = $eleitorado   > 0 ? round($compareceram / $eleitorado   * 100, 1) : 0;
+    $pctAproveit  = $compareceram > 0 ? round($votaram      / $compareceram * 100, 1) : 0;
     $maquinasDaMissao = $votosPorMaquina->filter(fn($r) => $r->maquina?->cidade_id === $eleicaoCidade->cidade_id);
 @endphp
+
+<style>
+    /* --- Dashboard de Resultados -------------------------------- */
+    .dash-header-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #2C3E50; margin-bottom: .1rem; }
+    .dash-header-sub   { font-size: .9rem; color: #6c757d; }
+
+    /* Cards de métrica */
+    .res-metric-card {
+        background: linear-gradient(135deg, #F8F9FA 0%, #FFFFFF 100%);
+        border: none !important;
+        border-radius: .75rem !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08) !important;
+        transition: transform .15s, box-shadow .15s;
+    }
+    .res-metric-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,.12) !important;
+    }
+    .res-metric-icon {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        background: rgba(0, 188, 212, .1);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem;
+        color: #00BCD4;
+        flex-shrink: 0;
+    }
+    .res-metric-value {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.4rem; font-weight: 700;
+        color: #2C3E50; line-height: 1;
+    }
+    .res-metric-label {
+        font-family: 'Montserrat', sans-serif;
+        font-size: .82rem; font-weight: 600;
+        color: #495057; text-transform: uppercase; letter-spacing: .4px;
+        margin-top: .25rem;
+    }
+
+    /* Cards de gráfico */
+    .chart-card {
+        border: none !important;
+        border-radius: .75rem !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08) !important;
+    }
+    .chart-card .card-header {
+        background: transparent;
+        border-bottom: 1px solid #F0F2F5;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600; font-size: .9rem;
+        color: #2C3E50;
+        padding: 1rem 1.25rem .75rem;
+    }
+    .chart-wrap {
+        position: relative;
+        width: 200px; height: 200px;
+        margin: 0 auto;
+    }
+    .chart-center-label {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center; pointer-events: none;
+    }
+    .chart-center-pct {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2rem; font-weight: 700;
+        color: #2C3E50; line-height: 1;
+    }
+    .chart-center-sub {
+        font-size: .75rem; color: #495057;
+        margin-top: .2rem;
+    }
+    .chart-legend {
+        font-size: .82rem; color: #495057;
+        text-align: center; margin-top: .75rem;
+    }
+    .chart-legend-dot {
+        display: inline-block;
+        width: 10px; height: 10px;
+        border-radius: 50%; margin-right: 4px;
+    }
+
+    /* Tabelas estilizadas */
+    .res-table { border-collapse: collapse; width: 100%; }
+    .res-table thead tr {
+        background-color: #2C3E50 !important;
+    }
+    .res-table thead th {
+        color: #fff !important;
+        font-family: 'Montserrat', sans-serif;
+        font-size: .78rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: .5px;
+        padding: .65rem .85rem;
+        border: none !important;
+    }
+    .res-table tbody tr:nth-child(odd)  { background-color: #fff; }
+    .res-table tbody tr:nth-child(even) { background-color: #F8F9FA; }
+    .res-table tbody tr:hover { background-color: rgba(0,188,212,.05) !important; }
+    .res-table tbody td {
+        padding: .6rem .85rem;
+        border: 1px solid #dee2e6;
+        font-size: .9rem; color: #495057;
+        vertical-align: middle;
+    }
+    .res-table tfoot td {
+        padding: .6rem .85rem;
+        border: 1px solid #dee2e6;
+        background: #F8F9FA;
+        font-size: .88rem;
+    }
+
+    /* Linha vencedora */
+    .res-table tbody tr.winner td { background-color: rgba(0,188,212,.08) !important; }
+    .res-table tbody tr.winner td:first-child { border-left: 3px solid #00BCD4; }
+    .winner-name { color: #00BCD4; font-weight: 600; }
+
+    /* Barra de progresso inline */
+    .mini-bar { display: flex; align-items: center; gap: 6px; }
+    .mini-bar .progress { height: 6px; flex: 1; background: #e9ecef; border-radius: 4px; }
+    .mini-bar .progress-bar { background: #00BCD4; border-radius: 4px; transition: width .6s ease; }
+    .mini-bar small { min-width: 38px; text-align: right; font-size: .78rem; color: #6c757d; }
+
+    /* Seção título */
+    .section-heading {
+        font-family: 'Montserrat', sans-serif;
+        font-size: .78rem; font-weight: 700;
+        color: #6c757d; text-transform: uppercase;
+        letter-spacing: .8px; margin-bottom: .75rem;
+    }
+
+    /* Badge de tipo */
+    .badge-vida     { background: rgba(0,188,212,.15); color: #00899e; }
+    .badge-alianca  { background: rgba(73,80,87,.12);  color: #495057; }
+    .badge-tipo { font-family: 'Montserrat', sans-serif; font-size: .72rem; font-weight: 600;
+                  padding: .3em .7em; border-radius: 4px; text-transform: uppercase; letter-spacing: .3px; }
+</style>
+
+{{-- ── Header ────────────────────────────────────────────────── --}}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h2 class="dash-header-title mb-1">Resultados — {{ $eleicao->titulo }}</h2>
+        <span class="dash-header-sub">
+            <i class="bi bi-geo-alt me-1"></i>{{ $eleicaoCidade->cidade->nome }}
+            &nbsp;&middot;&nbsp;
+            <i class="bi bi-calendar3 me-1"></i>{{ $eleicao->data_eleicao->format('d/m/Y') }}
+        </span>
+    </div>
+    <div class="d-flex gap-2 flex-shrink-0">
+        <a href="{{ route('responsavel.ata', $eleicaoCidade) }}" class="btn btn-outline-dark btn-sm" target="_blank">
+            <i class="bi bi-printer me-1"></i>Imprimir Ata
+        </a>
+        <a href="{{ route('responsavel.index') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+    </div>
+</div>
+
+{{-- ── Cards de Métricas ──────────────────────────────────────── --}}
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card res-metric-card">
+            <div class="card-body d-flex align-items-center gap-3 py-3">
+                <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
+                <div>
+                    <div class="res-metric-value">{{ $eleitorado }}</div>
+                    <div class="res-metric-label">Eleitores Aptos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card res-metric-card">
+            <div class="card-body d-flex align-items-center gap-3 py-3">
+                <div class="res-metric-icon"><i class="bi bi-person-check-fill"></i></div>
+                <div>
+                    <div class="res-metric-value">{{ $compareceram }}</div>
+                    <div class="res-metric-label">Compareceram</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card res-metric-card">
+            <div class="card-body d-flex align-items-center gap-3 py-3">
+                <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
+                <div>
+                    <div class="res-metric-value">{{ $votaram }}</div>
+                    <div class="res-metric-label">Votaram</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ── Gráficos de Rosca ──────────────────────────────────────── --}}
+<div class="row g-3 mb-4">
+    {{-- Aderência --}}
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-header"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Aderência</div>
+            <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                <div class="chart-wrap">
+                    <canvas id="chartAderencia"></canvas>
+                    <div class="chart-center-label">
+                        <div class="chart-center-pct">{{ $pctAderencia }}%</div>
+                        <div class="chart-center-sub">Aderência</div>
+                    </div>
+                </div>
+                <div class="chart-legend mt-3">
+                    <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Compareceram ({{ $compareceram }})</span>
+                    &nbsp;&nbsp;
+                    <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Ausentes ({{ $eleitorado - $compareceram }})</span>
+                </div>
+                <p class="text-muted small mt-2 mb-0 text-center">Dos eleitores aptos, quantos compareceram.</p>
+            </div>
+        </div>
+    </div>
+
+    {{-- Aproveitamento --}}
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aproveitamento</div>
+            <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                <div class="chart-wrap">
+                    <canvas id="chartAproveitamento"></canvas>
+                    <div class="chart-center-label">
+                        <div class="chart-center-pct">{{ $pctAproveit }}%</div>
+                        <div class="chart-center-sub">Aproveitamento</div>
+                    </div>
+                </div>
+                <div class="chart-legend mt-3">
+                    <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $votaram }})</span>
+                    &nbsp;&nbsp;
+                    <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Não votaram ({{ $compareceram - $votaram }})</span>
+                </div>
+                <p class="text-muted small mt-2 mb-0 text-center">Dos que compareceram, quantos efetivamente votaram.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ── Auditoria por Máquina ──────────────────────────────────── --}}
 @if($maquinasDaMissao->isNotEmpty())
-<div class="card mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Auditoria — Votos por Máquina</strong>
+<div class="card mb-4" style="border-radius:.75rem!important;border:none!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important;">
+    <div class="card-header d-flex justify-content-between align-items-center"
+         style="background:transparent;border-bottom:1px solid #F0F2F5;">
+        <span style="font-family:'Montserrat',sans-serif;font-weight:600;font-size:.9rem;color:#2C3E50;">
+            <i class="bi bi-display me-2 text-primary"></i>Votos por Máquina
+        </span>
         <span class="badge text-bg-secondary">{{ $maquinasDaMissao->count() }} máquina(s)</span>
     </div>
     <div class="card-body p-0">
-        <table class="table table-sm table-hover mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>Máquina</th>
-                    <th class="text-end">Votos registrados</th>
-                </tr>
-            </thead>
+        <table class="res-table">
+            <thead><tr><th>Máquina</th><th class="text-end">Votos</th></tr></thead>
             <tbody>
                 @foreach($maquinasDaMissao as $row)
                     <tr>
@@ -91,9 +273,9 @@
                     </tr>
                 @endforeach
             </tbody>
-            <tfoot class="table-light">
+            <tfoot>
                 <tr>
-                    <td class="fw-semibold">Total presencial</td>
+                    <td class="fw-semibold">Total</td>
                     <td class="text-end fw-bold">{{ $maquinasDaMissao->sum('total_votos') }}</td>
                 </tr>
             </tfoot>
@@ -102,7 +284,7 @@
 </div>
 @endif
 
-{{-- Resultados por pergunta --}}
+{{-- ── Resultados por Pergunta ────────────────────────────────── --}}
 @foreach($eleicao->perguntas->sortBy('ordem') as $pergunta)
     @php
         $isVida = $pergunta->escopo === 'vida';
@@ -122,140 +304,210 @@
                 })->sortByDesc('total_votos');
         }
         $totalVotosPergunta = $opcoesCidade->sum('total_votos');
+        $maxVotos = $opcoesCidade->max('total_votos');
     @endphp
 
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>{{ $loop->iteration }}. {{ $pergunta->pergunta }}</strong>
-            <span class="badge {{ $isVida ? 'text-bg-primary' : 'text-bg-secondary' }}">
-                Realidade de {{ $isVida ? 'Vida' : 'Aliança' }}
+    <div class="card mb-4" style="border-radius:.75rem!important;border:none!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important;">
+        <div class="card-header d-flex justify-content-between align-items-center"
+             style="background:transparent;border-bottom:1px solid #F0F2F5;">
+            <span style="font-family:'Montserrat',sans-serif;font-weight:600;font-size:.9rem;color:#2C3E50;">
+                {{ $loop->iteration }}. {{ $pergunta->pergunta }}
+            </span>
+            <span class="badge-tipo {{ $isVida ? 'badge-vida' : 'badge-alianca' }}">
+                {{ $isVida ? 'Realidade de Vida' : 'Realidade de Aliança' }}
             </span>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
 
-            @if(!$isVida)
-                <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">
-                    Realidade de Aliança ({{ $eleicaoCidade->cidade->nome }})
-                </p>
-            @else
-                <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">
-                    Realidade de Vida ({{ $nomesMissoes }})
-                </p>
-            @endif
-
-            {{-- Placar --}}
             @if($isVida)
                 {{-- Vida: tabela com colunas por missão --}}
-                <table class="table table-sm table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Candidato</th>
-                            @foreach($todasCidades as $ec)
-                                <th class="text-end">{{ $ec->cidade->nome }}</th>
-                            @endforeach
-                            <th class="text-end">Total</th>
-                            <th style="width:140px">%</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($opcoesCidade as $i => $opcao)
-                            <tr @if($i === 0 && $totalVotosPergunta > 0) class="table-success" @endif>
-                                <td class="text-muted">{{ $i + 1 }}</td>
-                                <td>{{ $opcao->nome }}</td>
+                <div class="table-responsive">
+                    <table class="res-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Candidato</th>
                                 @foreach($todasCidades as $ec)
-                                    <td class="text-end text-muted">
-                                        {{ $votosPorCidade["{$pergunta->id}_{$opcao->id}_{$ec->cidade_id}"] ?? 0 }}
-                                    </td>
+                                    <th class="text-center">{{ $ec->cidade->nome }}</th>
                                 @endforeach
-                                <td class="text-end fw-semibold">{{ $opcao->total_votos }}</td>
+                                <th class="text-center">Total</th>
+                                <th style="min-width:140px">Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($opcoesCidade as $i => $opcao)
+                                @php
+                                    $pctOpcao = $totalVotosPergunta > 0 ? round($opcao->total_votos / $totalVotosPergunta * 100, 1) : 0;
+                                    $isWinner = $i === 0 && $totalVotosPergunta > 0 && $opcao->total_votos === $maxVotos;
+                                @endphp
+                                <tr class="{{ $isWinner ? 'winner' : '' }}">
+                                    <td class="text-muted">{{ $i + 1 }}</td>
+                                    <td class="{{ $isWinner ? 'winner-name' : '' }}">
+                                        @if($isWinner)<i class="bi bi-trophy-fill me-1" style="color:#00BCD4;font-size:.75rem;"></i>@endif
+                                        {{ $opcao->nome }}
+                                    </td>
+                                    @foreach($todasCidades as $ec)
+                                        <td class="text-center text-muted">
+                                            {{ $votosPorCidade["{$pergunta->id}_{$opcao->id}_{$ec->cidade_id}"] ?? 0 }}
+                                        </td>
+                                    @endforeach
+                                    <td class="text-center fw-semibold">{{ $opcao->total_votos }}</td>
+                                    <td>
+                                        <div class="mini-bar">
+                                            <div class="progress"><div class="progress-bar" style="width:{{ $pctOpcao }}%"></div></div>
+                                            <small>{{ $pctOpcao }}%</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Participação nacional por missão --}}
+                @if($todasCidades->count() > 1)
+                    @php
+                        $totalAptos    = $todasCidades->sum('qtd_eleitorado');
+                        $totalComparec = $todasCidades->sum('qtd_membros');
+                        $totalVotaram  = $todasCidades->sum('votos_registrados');
+                        $pctAdGeral    = $totalAptos    > 0 ? round($totalComparec / $totalAptos    * 100, 1) : 0;
+                        $pctApGeral    = $totalComparec > 0 ? round($totalVotaram  / $totalComparec * 100, 1) : 0;
+                    @endphp
+                    <div class="px-3 pt-3 pb-1">
+                        <p class="section-heading">Participação por Missão</p>
+                    </div>
+                    <table class="res-table">
+                        <thead>
+                            <tr>
+                                <th>Missão</th>
+                                <th class="text-center">Aptos</th>
+                                <th class="text-center">Comparec.</th>
+                                <th class="text-center">Votaram</th>
+                                <th style="min-width:130px">Aderência</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($todasCidades as $ec)
+                                @php $adPct = $ec->qtd_eleitorado > 0 ? round($ec->qtd_membros / $ec->qtd_eleitorado * 100, 1) : 0; @endphp
+                                <tr @if($ec->cidade_id === $eleicaoCidade->cidade_id) style="background:rgba(0,188,212,.06)!important;" @endif>
+                                    <td>
+                                        {{ $ec->cidade->nome }}
+                                        @if($ec->cidade_id === $eleicaoCidade->cidade_id)
+                                            <span class="badge-tipo badge-vida ms-1" style="font-size:.65rem;">esta</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">{{ $ec->qtd_eleitorado }}</td>
+                                    <td class="text-center">{{ $ec->qtd_membros }}</td>
+                                    <td class="text-center">{{ $ec->votos_registrados }}</td>
+                                    <td>
+                                        <div class="mini-bar">
+                                            <div class="progress"><div class="progress-bar" style="width:{{ $adPct }}%"></div></div>
+                                            <small>{{ $adPct }}%</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="fw-semibold">Total</td>
+                                <td class="text-center fw-semibold">{{ $totalAptos }}</td>
+                                <td class="text-center fw-semibold">{{ $totalComparec }}</td>
+                                <td class="text-center fw-semibold">{{ $totalVotaram }}</td>
                                 <td>
-                                    @php $pctOpcao = $totalVotosPergunta > 0 ? round($opcao->total_votos / $totalVotosPergunta * 100, 1) : 0; @endphp
-                                    <div class="d-flex align-items-center gap-1">
-                                        <div class="progress flex-grow-1" style="height:8px"><div class="progress-bar" style="width:{{ $pctOpcao }}%"></div></div>
-                                        <small class="text-muted">{{ $pctOpcao }}%</small>
+                                    <div class="mini-bar">
+                                        <div class="progress"><div class="progress-bar" style="width:{{ $pctAdGeral }}%"></div></div>
+                                        <small>{{ $pctAdGeral }}%</small>
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </tfoot>
+                    </table>
+                @endif
+
             @else
-                {{-- Aliança: placar simples --}}
-                @forelse($opcoesCidade as $i => $opcao)
-                    <div class="d-flex align-items-center gap-3 mb-2 p-2 rounded @if($i === 0 && $totalVotosPergunta > 0) bg-success bg-opacity-10 @endif">
-                        <span class="text-muted" style="min-width: 24px;">{{ $i + 1 }}.</span>
-                        <span class="flex-grow-1">{{ $opcao->nome }}</span>
-                        <span class="fw-semibold" style="min-width: 40px; text-align: right;">{{ $opcao->total_votos }}</span>
-                        @php $pctOpcao = $totalVotosPergunta > 0 ? round($opcao->total_votos / $totalVotosPergunta * 100, 1) : 0; @endphp
-                        <div class="d-flex align-items-center gap-1" style="min-width: 140px;">
-                            <div class="progress flex-grow-1" style="height: 8px;">
-                                <div class="progress-bar" style="width: {{ $pctOpcao }}%"></div>
-                            </div>
-                            <small class="text-muted">{{ $pctOpcao }}%</small>
-                        </div>
-                    </div>
-                @empty
-                    <p class="text-muted">Nenhum candidato encontrado.</p>
-                @endforelse
-            @endif
-
-            {{-- Vida: indicadores gerais + participação por missão --}}
-            @if($isVida && $todasCidades->count() > 0)
-                @php
-                    $totalAptos    = $todasCidades->sum('qtd_eleitorado');
-                    $totalComparec = $todasCidades->sum('qtd_membros');
-                    $totalVotaram  = $todasCidades->sum('votos_registrados');
-                    $pctAdGeral    = $totalAptos    > 0 ? round($totalComparec / $totalAptos    * 100, 1) : 0;
-                    $pctApGeral    = $totalComparec > 0 ? round($totalVotaram  / $totalComparec * 100, 1) : 0;
-                @endphp
-                <hr class="my-3">
-                <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">Indicadores Gerais</p>
-                <div class="row g-2 mb-3">
-                    <div class="col-4 text-center">
-                        <div class="fw-bold">{{ $totalAptos }}</div>
-                        <div class="text-muted" style="font-size:.75rem">Aptos</div>
-                    </div>
-                    <div class="col-4 text-center">
-                        <div class="fw-bold text-primary">{{ $totalComparec }}</div>
-                        <div class="text-muted" style="font-size:.75rem">Compareceram</div>
-                    </div>
-                    <div class="col-4 text-center">
-                        <div class="fw-bold text-success">{{ $totalVotaram }}</div>
-                        <div class="text-muted" style="font-size:.75rem">Votaram</div>
-                    </div>
-                </div>
-                <div class="mb-1 d-flex justify-content-between"><small>Aderência geral</small><small><strong>{{ $pctAdGeral }}%</strong></small></div>
-                <div class="progress mb-2" style="height:6px"><div class="progress-bar bg-primary" style="width:{{ $pctAdGeral }}%"></div></div>
-                <div class="mb-1 d-flex justify-content-between"><small>Aproveitamento geral</small><small><strong>{{ $pctApGeral }}%</strong></small></div>
-                <div class="progress mb-3" style="height:6px"><div class="progress-bar bg-success" style="width:{{ $pctApGeral }}%"></div></div>
-
-                <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">Participação por Missão</p>
-                <table class="table table-sm table-bordered mb-0">
-                    <thead class="table-light">
+                {{-- Aliança: placar simples em tabela --}}
+                <table class="res-table">
+                    <thead>
                         <tr>
-                            <th>Missão</th>
-                            <th class="text-center">Aptos</th>
-                            <th class="text-center">Comparec.</th>
-                            <th class="text-center">Votaram</th>
-                            <th class="text-center">Aderência</th>
+                            <th>#</th>
+                            <th>Candidato</th>
+                            <th class="text-center">Votos</th>
+                            <th style="min-width:160px">Resultado</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($todasCidades as $ec)
-                            @php $adPct = $ec->qtd_eleitorado > 0 ? round($ec->qtd_membros / $ec->qtd_eleitorado * 100, 1) : 0; @endphp
-                            <tr @if($ec->cidade_id === $eleicaoCidade->cidade_id) class="table-warning" @endif>
-                                <td>{{ $ec->cidade->nome }} @if($ec->cidade_id === $eleicaoCidade->cidade_id)<small class="text-muted">(esta)</small>@endif</td>
-                                <td class="text-center">{{ $ec->qtd_eleitorado }}</td>
-                                <td class="text-center">{{ $ec->qtd_membros }}</td>
-                                <td class="text-center">{{ $ec->votos_registrados }}</td>
-                                <td class="text-center">{{ $adPct }}%</td>
+                        @forelse($opcoesCidade as $i => $opcao)
+                            @php
+                                $pctOpcao = $totalVotosPergunta > 0 ? round($opcao->total_votos / $totalVotosPergunta * 100, 1) : 0;
+                                $isWinner = $i === 0 && $totalVotosPergunta > 0 && $opcao->total_votos === $maxVotos;
+                            @endphp
+                            <tr class="{{ $isWinner ? 'winner' : '' }}">
+                                <td class="text-muted">{{ $i + 1 }}</td>
+                                <td class="{{ $isWinner ? 'winner-name' : '' }}">
+                                    @if($isWinner)<i class="bi bi-trophy-fill me-1" style="color:#00BCD4;font-size:.75rem;"></i>@endif
+                                    {{ $opcao->nome }}
+                                </td>
+                                <td class="text-center fw-semibold">{{ $opcao->total_votos }}</td>
+                                <td>
+                                    <div class="mini-bar">
+                                        <div class="progress"><div class="progress-bar" style="width:{{ $pctOpcao }}%"></div></div>
+                                        <small>{{ $pctOpcao }}%</small>
+                                    </div>
+                                </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr><td colspan="4" class="text-center text-muted py-3">Nenhum candidato encontrado.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
             @endif
         </div>
     </div>
 @endforeach
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const CIANO  = '#00BCD4';
+const CINZA  = '#CED4DA';
+
+function criarDonut(id, valor, total, label) {
+    const restante = Math.max(total - valor, 0);
+    const ctx = document.getElementById(id);
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [valor, restante],
+                backgroundColor: [CIANO, CINZA],
+                borderWidth: 0,
+                hoverOffset: 6,
+            }]
+        },
+        options: {
+            cutout: '72%',
+            animation: { animateRotate: true, duration: 900, easing: 'easeInOutQuart' },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
+                            return ` ${ctx.parsed} (${pct}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+criarDonut('chartAderencia',      {{ $compareceram }}, {{ $eleitorado }},   'Aderência');
+criarDonut('chartAproveitamento', {{ $votaram }},      {{ $compareceram }}, 'Aproveitamento');
+</script>
+@endpush
+
 @endsection
