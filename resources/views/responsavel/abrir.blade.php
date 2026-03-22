@@ -21,11 +21,11 @@
             @csrf
             <div class="mb-3">
                 <label for="senha" class="form-label">Confirme sua senha para continuar</label>
-                <div class="input-group">
+                <div class="password-field">
                     <input type="password" id="senha" name="senha"
                         class="form-control @error('senha') is-invalid @enderror"
                         autofocus required>
-                    <button type="button" class="btn btn-outline-secondary" tabindex="-1"
+                    <button type="button" class="password-toggle" tabindex="-1"
                             onclick="toggleSenha('senha','ico-senha')">
                         <i class="bi bi-eye" id="ico-senha"></i>
                     </button>

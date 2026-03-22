@@ -45,7 +45,7 @@
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Senha</label>
-                    <div class="input-group">
+                    <div class="password-field">
                         <input
                             type="password"
                             id="password"
@@ -53,7 +53,7 @@
                             class="form-control"
                             required
                         >
-                        <button type="button" class="btn btn-outline-secondary" tabindex="-1"
+                        <button type="button" class="password-toggle" tabindex="-1"
                                 onclick="toggleSenha('password','ico-password')">
                             <i class="bi bi-eye" id="ico-password"></i>
                         </button>

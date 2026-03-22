@@ -34,9 +34,9 @@
 
             <div class="mb-3">
                 <label class="form-label">Nova Senha <span class="text-muted small">(deixe em branco para manter)</span></label>
-                <div class="input-group">
+                <div class="password-field">
                     <input type="password" id="password" name="password" class="form-control">
-                    <button type="button" class="btn btn-outline-secondary" tabindex="-1"
+                    <button type="button" class="password-toggle" tabindex="-1"
                             onclick="toggleSenha('password','ico-password')">
                         <i class="bi bi-eye" id="ico-password"></i>
                     </button>
@@ -45,9 +45,9 @@
 
             <div class="mb-3">
                 <label class="form-label">Confirmar Nova Senha</label>
-                <div class="input-group">
+                <div class="password-field">
                     <input type="password" id="password_confirmation" name="password_confirmation" class="form-control">
-                    <button type="button" class="btn btn-outline-secondary" tabindex="-1"
+                    <button type="button" class="password-toggle" tabindex="-1"
                             onclick="toggleSenha('password_confirmation','ico-password-conf')">
                         <i class="bi bi-eye" id="ico-password-conf"></i>
                     </button>

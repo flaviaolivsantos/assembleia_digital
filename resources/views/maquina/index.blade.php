@@ -8,6 +8,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body { background: #f8f9fa; }
+        .password-field { position: relative; }
+        .password-field .form-control { padding-right: 2.6rem; border-radius: .375rem !important; }
+        .password-toggle {
+            position: absolute; right: 0; top: 0; height: 100%; width: 2.5rem;
+            display: flex; align-items: center; justify-content: center;
+            background: none; border: none; padding: 0; cursor: pointer;
+            color: #CED4DA; font-size: .9rem; transition: color .2s; outline: none; z-index: 5;
+        }
+        .password-toggle:hover { color: #00BCD4; }
+        .password-toggle .bi-eye-slash { color: #00BCD4; }
     </style>
 </head>
 <body>
@@ -47,13 +57,13 @@
                     <form method="POST" action="{{ route('maquina.presencial') }}">
                         @csrf
                         <div class="mb-3">
-                            <div class="input-group">
+                            <div class="password-field">
                                 <input type="password" id="senha-maquina" name="senha"
                                     class="form-control form-control-lg text-center"
                                     placeholder="Sua senha"
                                     autocomplete="current-password"
                                     autofocus required>
-                                <button type="button" class="btn btn-outline-secondary" tabindex="-1"
+                                <button type="button" class="password-toggle" tabindex="-1"
                                         onclick="toggleSenha('senha-maquina','ico-senha-maquina')">
                                     <i class="bi bi-eye" id="ico-senha-maquina"></i>
                                 </button>

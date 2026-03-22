@@ -468,3 +468,56 @@ a.card:hover {
 .text-responsavel { color: var(--ad-responsavel) !important; }
 .text-maquina     { color: var(--ad-maquina) !important; }
 .text-mesario     { color: var(--ad-mesario) !important; }
+
+/* --- Campo de senha com toggle minimalista ------------------ */
+/*
+ * Estrutura esperada:
+ *   <div class="password-field">
+ *     <input type="password" class="form-control">
+ *     <button type="button" class="password-toggle" ...>
+ *       <i class="bi bi-eye" id="..."></i>
+ *     </button>
+ *   </div>
+ */
+.password-field {
+    position: relative;
+}
+
+/* Espaço interno direito para o ícone não sobrepor o texto */
+.password-field .form-control {
+    padding-right: 2.6rem;
+    /* Remove a borda-direita quadrada do input-group */
+    border-radius: .375rem !important;
+}
+
+/* Botão ghost — sem fundo, sem borda, apenas ícone */
+.password-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--ad-cinza-medio);   /* #CED4DA — inativo */
+    font-size: .9rem;
+    line-height: 1;
+    transition: color .2s ease;
+    outline: none;
+    z-index: 5;
+}
+
+/* Hover: ciano elétrico */
+.password-toggle:hover {
+    color: var(--ad-ciano);
+}
+
+/* Estado "ativo" (senha visível): ícone eye-slash fica ciano */
+.password-toggle .bi-eye-slash {
+    color: var(--ad-ciano);
+}
