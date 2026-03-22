@@ -34,12 +34,24 @@
 
             <div class="mb-3">
                 <label class="form-label">Nova Senha <span class="text-muted small">(deixe em branco para manter)</span></label>
-                <input type="password" name="password" class="form-control">
+                <div class="input-group">
+                    <input type="password" id="password" name="password" class="form-control">
+                    <button type="button" class="btn btn-outline-secondary" tabindex="-1"
+                            onclick="toggleSenha('password','ico-password')">
+                        <i class="bi bi-eye" id="ico-password"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Confirmar Nova Senha</label>
-                <input type="password" name="password_confirmation" class="form-control">
+                <div class="input-group">
+                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control">
+                    <button type="button" class="btn btn-outline-secondary" tabindex="-1"
+                            onclick="toggleSenha('password_confirmation','ico-password-conf')">
+                        <i class="bi bi-eye" id="ico-password-conf"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="mb-3">
@@ -81,6 +93,13 @@
 </div>
 
 <script>
+function toggleSenha(inputId, icoId) {
+    const inp = document.getElementById(inputId);
+    const ico = document.getElementById(icoId);
+    if (inp.type === 'password') { inp.type = 'text'; ico.className = 'bi bi-eye-slash'; }
+    else { inp.type = 'password'; ico.className = 'bi bi-eye'; }
+}
+
 const perfil      = document.getElementById('select-perfil');
 const campoCidade = document.getElementById('campo-cidade');
 

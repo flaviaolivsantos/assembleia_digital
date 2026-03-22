@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
 
@@ -44,13 +45,19 @@
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Senha</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        class="form-control"
-                        required
-                    >
+                    <div class="input-group">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            required
+                        >
+                        <button type="button" class="btn btn-outline-secondary" tabindex="-1"
+                                onclick="toggleSenha('password','ico-password')">
+                            <i class="bi bi-eye" id="ico-password"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="mb-4">
@@ -67,5 +74,18 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function toggleSenha(inputId, icoId) {
+    const inp = document.getElementById(inputId);
+    const ico = document.getElementById(icoId);
+    if (inp.type === 'password') {
+        inp.type = 'text';
+        ico.className = 'bi bi-eye-slash';
+    } else {
+        inp.type = 'password';
+        ico.className = 'bi bi-eye';
+    }
+}
+</script>
 </body>
 </html>
