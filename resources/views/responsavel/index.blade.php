@@ -96,6 +96,14 @@
                                 <i class="bi bi-stop-circle me-1"></i>Encerrar Votação Vida
                             </a>
                         @endif
+                        @if(!$eleicao->aberta_vida && $eleicao->data_encerramento_vida)
+                            @php $ecVida = $eleicao->cidades->first(); @endphp
+                            @if($ecVida)
+                            <a href="{{ route('responsavel.resultados', $ecVida) }}" class="btn btn-resp-resultado btn-sm">
+                                <i class="bi bi-bar-chart me-1"></i>Ver Resultados
+                            </a>
+                            @endif
+                        @endif
                         @if(auth()->user()->perfil === 'admin' && !$eleicao->aberta_vida && $eleicao->data_encerramento_vida)
                             <a href="{{ route('responsavel.vida.reabrir', $eleicao) }}" class="btn btn-warning btn-sm">
                                 <i class="bi bi-arrow-counterclockwise me-1"></i>Reabrir Vida
