@@ -21,12 +21,19 @@
     $totalVotaramGeral  = $eleicao->cidades->sum('votos_registrados');
     $pctAdGeral = $totalAptosGeral    > 0 ? round($totalComparecGeral / $totalAptosGeral    * 100, 1) : 0;
     $pctApGeral = $totalComparecGeral > 0 ? round($totalVotaramGeral  / $totalComparecGeral * 100, 1) : 0;
+
+    $totalVidaEleitores = $eleicao->cidades->sum('qtd_vida');
+    $totalVidaVotaram   = array_sum($vidaVotaramPorCidade);
+    $pctVidaAp = $totalVidaEleitores > 0 ? round($totalVidaVotaram / $totalVidaEleitores * 100, 1) : 0;
 @endphp
 
-{{-- Card nacional --}}
+{{-- Card geral --}}
 <div class="card mb-3 border-primary">
     <div class="card-body">
         <h6 class="fw-semibold mb-3">Geral (todas as missões)</h6>
+
+        @if($temAlianca)
+        <p class="text-muted small mb-1 fw-semibold"><span class="badge text-bg-secondary me-1">Aliança</span></p>
         <div class="row text-center g-2 mb-3">
             <div class="col-4"><div class="fw-bold fs-5">{{ $totalAptosGeral }}</div><div class="text-muted small">Aptos</div></div>
             <div class="col-4"><div class="fw-bold fs-5 text-primary">{{ $totalComparecGeral }}</div><div class="text-muted small">Compareceram</div></div>
@@ -35,7 +42,18 @@
         <div class="d-flex justify-content-between mb-1"><small>Aderência</small><small><strong>{{ $pctAdGeral }}%</strong></small></div>
         <div class="progress mb-2" style="height:6px"><div class="progress-bar bg-primary" style="width:{{ $pctAdGeral }}%"></div></div>
         <div class="d-flex justify-content-between mb-1"><small>Aproveitamento</small><small><strong>{{ $pctApGeral }}%</strong></small></div>
-        <div class="progress" style="height:6px"><div class="progress-bar bg-success" style="width:{{ $pctApGeral }}%"></div></div>
+        <div class="progress {{ $temVida ? 'mb-3' : '' }}" style="height:6px"><div class="progress-bar bg-success" style="width:{{ $pctApGeral }}%"></div></div>
+        @endif
+
+        @if($temVida)
+        <p class="text-muted small mb-1 fw-semibold"><span class="badge text-bg-primary me-1">Vida</span></p>
+        <div class="row text-center g-2 mb-3">
+            <div class="col-6"><div class="fw-bold fs-5">{{ $totalVidaEleitores }}</div><div class="text-muted small">Remotos (aptos)</div></div>
+            <div class="col-6"><div class="fw-bold fs-5 text-success">{{ $totalVidaVotaram }}</div><div class="text-muted small">Votaram</div></div>
+        </div>
+        <div class="d-flex justify-content-between mb-1"><small>Aproveitamento</small><small><strong>{{ $pctVidaAp }}%</strong></small></div>
+        <div class="progress" style="height:6px"><div class="progress-bar bg-success" style="width:{{ $pctVidaAp }}%"></div></div>
+        @endif
     </div>
 </div>
 
@@ -48,8 +66,13 @@
                     @php
                         $pctAd = $ec->qtd_eleitorado > 0 ? round($ec->qtd_membros / $ec->qtd_eleitorado * 100, 1) : 0;
                         $pctAp = $ec->qtd_membros    > 0 ? round($ec->votos_registrados / $ec->qtd_membros * 100, 1) : 0;
+                        $cidVidaVotaram = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
+                        $pctVidaApCid   = $ec->qtd_vida > 0 ? round($cidVidaVotaram / $ec->qtd_vida * 100, 1) : 0;
                     @endphp
                     <h6 class="card-title mb-2">{{ $ec->cidade->nome }}</h6>
+
+                    @if($temAlianca)
+                    <p class="text-muted" style="font-size:.68rem;margin-bottom:.25rem;"><span class="badge text-bg-secondary" style="font-size:.65rem;">Aliança</span></p>
                     <div class="d-flex justify-content-around text-center mb-2">
                         <div><div class="fw-bold">{{ $ec->qtd_eleitorado }}</div><div class="text-muted" style="font-size:.7rem">Aptos</div></div>
                         <div><div class="fw-bold text-primary">{{ $ec->qtd_membros }}</div><div class="text-muted" style="font-size:.7rem">Comparec.</div></div>
@@ -58,10 +81,23 @@
                     <div class="progress mb-1" style="height: 5px;" title="Aderência {{ $pctAd }}%">
                         <div class="progress-bar bg-primary" style="width: {{ $pctAd }}%"></div>
                     </div>
-                    <div class="progress" style="height: 5px;" title="Aproveitamento {{ $pctAp }}%">
+                    <div class="progress {{ $temVida ? 'mb-2' : '' }}" style="height: 5px;" title="Aproveitamento {{ $pctAp }}%">
                         <div class="progress-bar bg-success" style="width: {{ $pctAp }}%"></div>
                     </div>
-                    <small class="text-muted d-block mt-1">Ader. {{ $pctAd }}% · Aprov. {{ $pctAp }}%</small>
+                    <small class="text-muted d-block {{ $temVida ? 'mb-2' : 'mt-1' }}">Ader. {{ $pctAd }}% · Aprov. {{ $pctAp }}%</small>
+                    @endif
+
+                    @if($temVida)
+                    <p class="text-muted" style="font-size:.68rem;margin-bottom:.25rem;"><span class="badge text-bg-primary" style="font-size:.65rem;">Vida</span></p>
+                    <div class="d-flex justify-content-around text-center mb-2">
+                        <div><div class="fw-bold">{{ $ec->qtd_vida }}</div><div class="text-muted" style="font-size:.7rem">Remotos</div></div>
+                        <div><div class="fw-bold text-success">{{ $cidVidaVotaram }}</div><div class="text-muted" style="font-size:.7rem">Votaram</div></div>
+                    </div>
+                    <div class="progress" style="height: 5px;" title="Aproveitamento Vida {{ $pctVidaApCid }}%">
+                        <div class="progress-bar bg-success" style="width: {{ $pctVidaApCid }}%"></div>
+                    </div>
+                    <small class="text-muted d-block mt-1">Aprov. {{ $pctVidaApCid }}%</small>
+                    @endif
                 </div>
             </div>
         </div>
