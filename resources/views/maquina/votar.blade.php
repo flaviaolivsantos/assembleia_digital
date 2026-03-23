@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votação — Assembleia Digital</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_recado.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .candidato-card { cursor: pointer; transition: border 0.15s, background 0.15s; }
