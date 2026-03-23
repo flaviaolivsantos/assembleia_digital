@@ -72,6 +72,12 @@ Route::middleware(['auth', 'acesso.ate', 'perfil:responsavel'])->prefix('respons
     Route::post('/vida/{eleicao}/abrir',   [ResponsavelController::class, 'confirmarAbrirVida'])->name('vida.confirmarAbrir');
     Route::get('/vida/{eleicao}/encerrar', [ResponsavelController::class, 'encerrarVida'])->name('vida.encerrar');
     Route::post('/vida/{eleicao}/encerrar',[ResponsavelController::class, 'confirmarEncerrarVida'])->name('vida.confirmarEncerrar');
+
+    // Reabrir (admin only)
+    Route::get('/{eleicaoCidade}/reabrir',      [ResponsavelController::class, 'reabrirAlianca'])->name('alianca.reabrir');
+    Route::post('/{eleicaoCidade}/reabrir',     [ResponsavelController::class, 'confirmarReobrirAlianca'])->name('alianca.confirmarReabrir');
+    Route::get('/vida/{eleicao}/reabrir',       [ResponsavelController::class, 'reabrirVida'])->name('vida.reabrir');
+    Route::post('/vida/{eleicao}/reabrir',      [ResponsavelController::class, 'confirmarReobrirVida'])->name('vida.confirmarReabrir');
 });
 
 // Mesario

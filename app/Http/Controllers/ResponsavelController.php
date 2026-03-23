@@ -188,12 +188,91 @@ class ResponsavelController extends Controller
         return redirect()->route('responsavel.index')->with('sucesso', 'Votação Realidade de Vida encerrada.');
     }
 
+    // ─── Reabrir (admin only) ─────────────────────────────────────────
+
+    public function reabrirAlianca(EleicaoCidade $eleicaoCidade)
+    {
+        abort_if(auth()->user()->perfil !== 'admin', 403);
+        abort_if($eleicaoCidade->aberta, 403, 'Votação aliança já está aberta.');
+
+        return view('responsavel.reabrir_alianca', compact('eleicaoCidade'));
+    }
+
+    public function confirmarReobrirAlianca(Request $request, EleicaoCidade $eleicaoCidade)
+    {
+        abort_if(auth()->user()->perfil !== 'admin', 403);
+        abort_if($eleicaoCidade->aberta, 403, 'Votação aliança já está aberta.');
+
+        $request->validate([
+            'senha'         => ['required'],
+            'justificativa' => ['required', 'string', 'min:10'],
+        ]);
+
+        if (!Hash::check($request->senha, auth()->user()->password)) {
+            return back()->withErrors(['senha' => 'Senha incorreta.']);
+        }
+
+        $eleicaoCidade->update([
+            'aberta'            => true,
+            'data_encerramento' => null,
+            'encerrada_por'     => null,
+        ]);
+
+        $eleicaoCidade->eleicao->update(['status' => 'aberta']);
+
+        LogEleicao::registrar(
+            $eleicaoCidade->eleicao_id,
+            'votacao_reaberta',
+            "Votação aliança REABERTA em {$eleicaoCidade->cidade->nome} pelo administrador. Motivo: {$request->justificativa}"
+        );
+
+        return redirect()->route('responsavel.index')->with('sucesso', 'Votação aliança reaberta.');
+    }
+
+    public function reabrirVida(Eleicao $eleicao)
+    {
+        abort_if(auth()->user()->perfil !== 'admin', 403);
+        abort_if($eleicao->aberta_vida, 403, 'Votação vida já está aberta.');
+
+        return view('responsavel.reabrir_vida', compact('eleicao'));
+    }
+
+    public function confirmarReobrirVida(Request $request, Eleicao $eleicao)
+    {
+        abort_if(auth()->user()->perfil !== 'admin', 403);
+        abort_if($eleicao->aberta_vida, 403, 'Votação vida já está aberta.');
+
+        $request->validate([
+            'senha'         => ['required'],
+            'justificativa' => ['required', 'string', 'min:10'],
+        ]);
+
+        if (!Hash::check($request->senha, auth()->user()->password)) {
+            return back()->withErrors(['senha' => 'Senha incorreta.']);
+        }
+
+        $eleicao->update([
+            'aberta_vida'            => true,
+            'data_encerramento_vida' => null,
+            'encerrada_por_vida'     => null,
+            'status'                 => 'aberta',
+        ]);
+
+        LogEleicao::registrar(
+            $eleicao->id,
+            'vida_reaberta',
+            "Votação Realidade de Vida REABERTA pelo administrador. Motivo: {$request->justificativa}"
+        );
+
+        return redirect()->route('responsavel.index')->with('sucesso', 'Votação Realidade de Vida reaberta.');
+    }
+
     // ─── Membros ──────────────────────────────────────────────────────
 
     public function editarMembros(EleicaoCidade $eleicaoCidade)
     {
         abort_if(auth()->user()->perfil !== 'admin' && $eleicaoCidade->cidade_id !== auth()->user()->cidade_id, 403);
-        abort_if($eleicaoCidade->data_encerramento, 403, 'Votação aliança já encerrada.');
+        abort_if(auth()->user()->perfil !== 'admin' && $eleicaoCidade->data_encerramento, 403, 'Votação aliança já encerrada.');
 
         return view('responsavel.membros', compact('eleicaoCidade'));
     }
@@ -201,7 +280,7 @@ class ResponsavelController extends Controller
     public function atualizarMembros(Request $request, EleicaoCidade $eleicaoCidade)
     {
         abort_if(auth()->user()->perfil !== 'admin' && $eleicaoCidade->cidade_id !== auth()->user()->cidade_id, 403);
-        abort_if($eleicaoCidade->data_encerramento, 403, 'Votação aliança já encerrada.');
+        abort_if(auth()->user()->perfil !== 'admin' && $eleicaoCidade->data_encerramento, 403, 'Votação aliança já encerrada.');
 
         $totalTokensAlianca = \App\Models\TokenVotacao::where('eleicao_id', $eleicaoCidade->eleicao_id)
             ->where('cidade_id', $eleicaoCidade->cidade_id)
