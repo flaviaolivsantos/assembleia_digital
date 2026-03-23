@@ -15,7 +15,7 @@ class ResponsavelController extends Controller
         $user = auth()->user();
 
         if ($user->perfil === 'admin') {
-            $eleicoes = Eleicao::with(['cidades.cidade', 'cidades.abertaPor', 'cidades.encerradaPor'])
+            $eleicoes = Eleicao::with(['cidades.cidade', 'cidades.abertaPor', 'cidades.encerradaPor', 'perguntas'])
                 ->whereIn('status', ['rascunho', 'aberta', 'encerrada'])
                 ->orderByDesc('data_eleicao')
                 ->get();
@@ -23,7 +23,7 @@ class ResponsavelController extends Controller
             $eleicoes = Eleicao::with(['cidades' => function ($q) use ($user) {
                 $q->where('cidade_id', $user->cidade_id)
                   ->with(['cidade', 'abertaPor', 'encerradaPor']);
-            }])
+            }, 'perguntas'])
                 ->whereIn('status', ['rascunho', 'aberta', 'encerrada'])
                 ->whereHas('cidades', fn($q) => $q->where('cidade_id', $user->cidade_id))
                 ->orderByDesc('data_eleicao')
