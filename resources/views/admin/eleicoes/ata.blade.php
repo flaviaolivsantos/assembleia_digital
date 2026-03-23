@@ -170,7 +170,7 @@
         </div>
         <div class="doc-meta">
             Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
-            Relatório Nacional
+            Relatório Total Geral
         </div>
     </div>
 
@@ -224,7 +224,7 @@
                 $apTotalPct = $totComparec > 0 ? round($totVotos    / $totComparec * 100, 1) : 0;
             @endphp
             <tr>
-                <td>Total Nacional</td>
+                <td>Total Geral</td>
                 <td class="c">{{ $totAptos }}</td>
                 <td class="c">{{ $totComparec }}</td>
                 <td class="c">{{ $totVotos }}</td>

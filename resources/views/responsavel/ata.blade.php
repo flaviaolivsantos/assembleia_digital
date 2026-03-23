@@ -360,7 +360,7 @@
                     })->sortByDesc('total_votos');
                 $totalVida = $opcoesVida->sum('total_votos');
             @endphp
-            <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Placar Nacional</p>
+            <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Placar Total Geral</p>
             <table class="ata-table">
                 <thead>
                     <tr>
