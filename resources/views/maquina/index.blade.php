@@ -18,44 +18,79 @@
         }
         .password-toggle:hover { color: #00BCD4; }
         .password-toggle .bi-eye-slash { color: #00BCD4; }
+        .escopo-card {
+            border: 2px solid #dee2e6; border-radius: .5rem; padding: .75rem 1rem;
+            cursor: pointer; transition: border-color .15s, background .15s;
+        }
+        .escopo-card:has(input:checked) { border-color: #0d6efd; background: #f0f6ff; }
     </style>
 </head>
 <body>
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-    <div class="text-center" style="width: 100%; max-width: 440px; padding: 1rem;">
+    <div class="text-center" style="width: 100%; max-width: 480px; padding: 1rem;">
 
         <h2 class="mb-1">Assembleia Digital</h2>
         <p class="text-muted mb-4">Máquina de Votação</p>
 
-        @if(!$eleicaoCidade)
-            <div class="alert alert-warning">Nenhuma votação aberta para esta missão no momento.</div>
+        @if(!$eleicaoCidade || (!$aliancaAberta && !$vidaAberta))
+            <div class="alert alert-warning">Nenhuma votação aberta para esta cidade no momento.</div>
         @else
             <div class="card shadow-sm">
                 <div class="card-body p-4">
-                    <p class="mb-2 text-muted small">
+                    <p class="mb-3 text-muted small">
                         <strong>{{ $eleicaoCidade->eleicao->titulo }}</strong>
                     </p>
-
-                    @if($eleicaoCidade->qtd_presencial > 0)
-                    <div class="d-flex justify-content-center gap-3 mb-4">
-                        <span class="badge text-bg-secondary fs-6">
-                            {{ $eleicaoCidade->votos_presenciais }} / {{ $eleicaoCidade->qtd_presencial }} presenciais
-                        </span>
-                        <span class="badge text-bg-primary fs-6">
-                            {{ $eleicaoCidade->votos_registrados - $eleicaoCidade->votos_presenciais }} / {{ $eleicaoCidade->qtd_remoto }} remotos
-                        </span>
-                    </div>
-                    @endif
 
                     @if($errors->any())
                         <div class="alert alert-danger text-start">{{ $errors->first() }}</div>
                     @endif
 
-                    <p class="text-muted small text-start mb-3">
-                        Digite sua senha para liberar a votação para um eleitor presencial.
-                    </p>
                     <form method="POST" action="{{ route('maquina.presencial') }}">
                         @csrf
+
+                        {{-- Escopo selector --}}
+                        @if($aliancaAberta && $vidaAberta)
+                            <div class="mb-4 text-start">
+                                <p class="fw-semibold small mb-2">Tipo de votante:</p>
+                                <div class="d-flex gap-2">
+                                    <label class="escopo-card flex-fill text-start">
+                                        <input type="radio" name="escopo" value="alianca" class="form-check-input me-2"
+                                               {{ old('escopo', 'alianca') === 'alianca' ? 'checked' : '' }} required>
+                                        <span class="badge bg-secondary me-1">Aliança</span>
+                                        Realidade de Aliança
+                                    </label>
+                                    <label class="escopo-card flex-fill text-start">
+                                        <input type="radio" name="escopo" value="vida" class="form-check-input me-2"
+                                               {{ old('escopo') === 'vida' ? 'checked' : '' }}>
+                                        <span class="badge bg-primary me-1">Vida</span>
+                                        Realidade de Vida
+                                    </label>
+                                </div>
+                            </div>
+                        @elseif($aliancaAberta)
+                            <input type="hidden" name="escopo" value="alianca">
+                            <p class="text-muted small text-start mb-3">
+                                <span class="badge bg-secondary me-1">Aliança</span>Realidade de Aliança
+                            </p>
+                        @else
+                            <input type="hidden" name="escopo" value="vida">
+                            <p class="text-muted small text-start mb-3">
+                                <span class="badge bg-primary me-1">Vida</span>Realidade de Vida
+                            </p>
+                        @endif
+
+                        @if($aliancaAberta && $eleicaoCidade->qtd_presencial > 0)
+                        <div class="d-flex justify-content-center gap-3 mb-3">
+                            <span class="badge text-bg-secondary">
+                                {{ $eleicaoCidade->votos_presenciais }} / {{ $eleicaoCidade->qtd_presencial }} presenciais aliança
+                            </span>
+                        </div>
+                        @endif
+
+                        <p class="text-muted small text-start mb-3">
+                            Digite sua senha para liberar a votação para um eleitor presencial.
+                        </p>
+
                         <div class="mb-3">
                             <div class="password-field">
                                 <input type="password" id="senha-maquina" name="senha"

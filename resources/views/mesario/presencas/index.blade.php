@@ -5,7 +5,7 @@
     <div>
         <h2>Controle de Presença</h2>
         <p class="text-muted mb-0">
-            {{ $eleicaoCidade->eleicao->titulo }} &mdash; {{ $eleicaoCidade->cidade->nome }}
+            {{ $eleicaoCidade->eleicao->titulo }} — {{ $eleicaoCidade->cidade->nome }}
         </p>
     </div>
     <div class="text-end">
@@ -18,14 +18,52 @@
     <div class="alert alert-success">{{ session('sucesso') }}</div>
 @endif
 
-@if(!$eleicaoCidade->aberta)
-    <div class="alert alert-warning">A votação não está aberta. Aguarde o responsável local abrir a votação.</div>
+@php
+    $aliancaAberta = $eleicaoCidade->aberta;
+    $vidaAberta    = $eleicaoCidade->eleicao->aberta_vida;
+    $algumAberto   = $aliancaAberta || $vidaAberta;
+@endphp
+
+@if(!$algumAberto)
+    <div class="alert alert-warning">Nenhuma votação aberta. Aguarde o responsável abrir a votação aliança ou vida.</div>
 @else
-    <div class="card mb-4" style="max-width: 480px;">
+    <div class="card mb-4" style="max-width: 520px;">
         <div class="card-header"><strong>Registrar Presença</strong></div>
         <div class="card-body">
             <form method="POST" action="{{ route('mesario.presencas.store', $eleicaoCidade) }}">
                 @csrf
+
+                {{-- Escopo selector --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tipo de votante</label>
+                    <div class="d-flex gap-3">
+                        @if($aliancaAberta)
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="escopo" id="escopo_alianca"
+                                   value="alianca" {{ old('escopo', 'alianca') === 'alianca' ? 'checked' : '' }} required>
+                            <label class="form-check-label" for="escopo_alianca">
+                                <span class="badge bg-secondary me-1">Aliança</span>
+                                Realidade de Aliança
+                            </label>
+                        </div>
+                        @endif
+                        @if($vidaAberta)
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="escopo" id="escopo_vida"
+                                   value="vida" {{ old('escopo') === 'vida' ? 'checked' : '' }} required>
+                            <label class="form-check-label" for="escopo_vida">
+                                <span class="badge bg-primary me-1">Vida</span>
+                                Realidade de Vida
+                            </label>
+                        </div>
+                        @endif
+                    </div>
+                    @if(!$aliancaAberta && $vidaAberta)
+                        {{-- Only vida open: pre-select vida --}}
+                        <input type="hidden" name="escopo" value="vida">
+                    @endif
+                </div>
+
                 <div class="d-flex gap-2">
                     <input type="text" name="nome"
                         class="form-control @error('nome') is-invalid @enderror"
@@ -48,6 +86,19 @@
                 <form method="POST" action="{{ route('mesario.presencas.importar', $eleicaoCidade) }}"
                       enctype="multipart/form-data">
                     @csrf
+
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">Tipo de votante</label>
+                        <select name="escopo" class="form-select form-select-sm" required>
+                            @if($aliancaAberta)
+                            <option value="alianca">Realidade de Aliança</option>
+                            @endif
+                            @if($vidaAberta)
+                            <option value="vida">Realidade de Vida</option>
+                            @endif
+                        </select>
+                    </div>
+
                     <div class="mb-2">
                         <input type="file" name="csv" class="form-control form-control-sm" accept=".csv,.txt" required>
                         <div class="form-text">Arquivo .csv com um nome por linha. Cabeçalho "nome" é opcional.</div>
@@ -59,51 +110,45 @@
     </div>
 @endif
 
-{{-- Contadores de membros configurados --}}
-@if($eleicaoCidade->qtd_membros > 0)
+{{-- Contadores --}}
 <div class="row mb-3 g-2 text-center">
-    <div class="col-6">
-        <div class="card border-secondary">
-            <div class="card-body py-2">
-                <div class="fs-5 fw-bold">{{ $eleicaoCidade->qtd_presencial }}</div>
-                <div class="text-muted small">presencial (limite)</div>
-            </div>
-        </div>
-    </div>
-    <div class="col-6">
+    @if($eleicaoCidade->qtd_vida > 0 || $totalTokensVida > 0)
+    <div class="col-3">
         <div class="card border-primary">
             <div class="card-body py-2">
-                <div class="fs-5 fw-bold text-primary">{{ $eleicaoCidade->qtd_remoto }}</div>
-                <div class="text-muted small">remoto (limite) &bull; {{ $totalTokens }} tokens gerados</div>
+                <div class="fs-5 fw-bold text-primary">{{ $totalTokensVida }}</div>
+                <div class="text-muted small">tokens vida
+                    @if($eleicaoCidade->qtd_vida > 0)(limite {{ $eleicaoCidade->qtd_vida }})@endif
+                </div>
             </div>
         </div>
     </div>
-</div>
-@endif
-
-{{-- Contadores de votação --}}
-<div class="row mb-3 g-2 text-center">
-    <div class="col-4">
-        <div class="card">
+    @endif
+    @if($eleicaoCidade->qtd_membros > 0 || $totalTokensAlianca > 0)
+    <div class="col-3">
+        <div class="card border-secondary">
             <div class="card-body py-2">
-                <div class="fs-5 fw-bold">{{ $presencas->count() }}</div>
-                <div class="text-muted small">tokens gerados</div>
+                <div class="fs-5 fw-bold">{{ $totalTokensAlianca }}</div>
+                <div class="text-muted small">tokens aliança
+                    @if($eleicaoCidade->qtd_remoto > 0)(limite {{ $eleicaoCidade->qtd_remoto }})@endif
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-4">
+    @endif
+    <div class="col-3">
         <div class="card">
             <div class="card-body py-2">
                 <div class="fs-5 fw-bold text-success">{{ $presencas->where('votou', true)->count() }}</div>
-                <div class="text-muted small">remotos votaram</div>
+                <div class="text-muted small">votaram</div>
             </div>
         </div>
     </div>
-    <div class="col-4">
+    <div class="col-3">
         <div class="card">
             <div class="card-body py-2">
                 <div class="fs-5 fw-bold text-warning">{{ $presencas->where('votou', false)->count() }}</div>
-                <div class="text-muted small">tokens pendentes</div>
+                <div class="text-muted small">pendentes</div>
             </div>
         </div>
     </div>
@@ -115,6 +160,7 @@
             <thead class="table-light">
                 <tr>
                     <th>Nome</th>
+                    <th class="text-center">Tipo</th>
                     <th class="text-center">Token</th>
                     <th class="text-center">Status</th>
                 </tr>
@@ -123,6 +169,13 @@
                 @forelse($presencas as $presenca)
                     <tr>
                         <td>{{ $presenca->nome }}</td>
+                        <td class="text-center">
+                            @if($presenca->escopo === 'vida')
+                                <span class="badge bg-primary">Vida</span>
+                            @else
+                                <span class="badge bg-secondary">Aliança</span>
+                            @endif
+                        </td>
                         <td class="text-center">
                             @if(!$presenca->votou && $presenca->token)
                                 <span class="font-monospace token-oculto" id="token-{{ $presenca->id }}">••••••</span>
@@ -145,13 +198,14 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="2" class="text-center text-muted py-4">Nenhum membro registrado ainda.</td>
+                        <td colspan="4" class="text-center text-muted py-4">Nenhum membro registrado ainda.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 </div>
+
 @push('scripts')
 <script>
 function toggleToken(id, token) {

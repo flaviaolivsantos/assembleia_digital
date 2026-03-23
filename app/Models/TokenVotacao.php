@@ -10,7 +10,7 @@ class TokenVotacao extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['token_hash', 'eleicao_id', 'cidade_id', 'usado'];
+    protected $fillable = ['token_hash', 'eleicao_id', 'cidade_id', 'usado', 'escopo'];
 
     protected $casts = ['usado' => 'boolean'];
 
@@ -24,7 +24,7 @@ class TokenVotacao extends Model
         return $this->belongsTo(Cidade::class);
     }
 
-    public static function gerar(int $eleicaoId, int $cidadeId): array
+    public static function gerar(int $eleicaoId, int $cidadeId, string $escopo = 'alianca'): array
     {
         do {
             $token = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
@@ -36,6 +36,7 @@ class TokenVotacao extends Model
             'eleicao_id' => $eleicaoId,
             'cidade_id'  => $cidadeId,
             'usado'      => false,
+            'escopo'     => $escopo,
         ]);
 
         return ['token' => $token, 'hash' => $hash];

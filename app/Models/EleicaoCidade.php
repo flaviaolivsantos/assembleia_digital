@@ -14,6 +14,7 @@ class EleicaoCidade extends Model
         'cidade_id',
         'qtd_membros',
         'qtd_eleitorado',
+        'qtd_vida',
         'qtd_presencial',
         'qtd_remoto',
         'votos_registrados',

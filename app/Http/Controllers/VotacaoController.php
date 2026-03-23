@@ -17,12 +17,16 @@ class VotacaoController extends Controller
     {
         $cidadeId = auth()->user()->cidade_id;
 
+        // Find an election that is open (aliança or vida) for this city
         $eleicaoCidade = EleicaoCidade::with('eleicao')
             ->where('cidade_id', $cidadeId)
-            ->where('aberta', true)
+            ->whereHas('eleicao', fn($q) => $q->where('status', 'aberta'))
             ->first();
 
-        return view('maquina.index', compact('eleicaoCidade'));
+        $aliancaAberta = $eleicaoCidade && $eleicaoCidade->aberta;
+        $vidaAberta    = $eleicaoCidade && $eleicaoCidade->eleicao->aberta_vida;
+
+        return view('maquina.index', compact('eleicaoCidade', 'aliancaAberta', 'vidaAberta'));
     }
 
     public function validarToken(Request $request)
@@ -40,22 +44,30 @@ class VotacaoController extends Controller
             ->first();
 
         if (!$tokenVotacao) {
-            return back()->withErrors(['token' => 'Token invalido, ja utilizado ou nao pertence a esta cidade.']);
+            return back()->withErrors(['token' => 'Token inválido, já utilizado ou não pertence a esta cidade.']);
         }
 
-        $eleicaoCidade = EleicaoCidade::where('eleicao_id', $tokenVotacao->eleicao_id)
-            ->where('cidade_id', $cidadeId)
-            ->where('aberta', true)
-            ->first();
+        // Check if voting of this escopo is open
+        if ($tokenVotacao->escopo === 'vida') {
+            if (!$tokenVotacao->eleicao->aberta_vida) {
+                return back()->withErrors(['token' => 'A votação Realidade de Vida não está aberta no momento.']);
+            }
+        } else {
+            $eleicaoCidade = EleicaoCidade::where('eleicao_id', $tokenVotacao->eleicao_id)
+                ->where('cidade_id', $cidadeId)
+                ->where('aberta', true)
+                ->first();
 
-        if (!$eleicaoCidade) {
-            return back()->withErrors(['token' => 'A votacao desta cidade nao esta aberta.']);
+            if (!$eleicaoCidade) {
+                return back()->withErrors(['token' => 'A votação aliança desta cidade não está aberta.']);
+            }
         }
 
         session([
             'votacao_hash'       => $hash,
             'votacao_cidade_id'  => $cidadeId,
             'votacao_eleicao_id' => $tokenVotacao->eleicao_id,
+            'votacao_escopo'     => $tokenVotacao->escopo,
             'votacao_origem'     => 'remoto',
             'votacao_maquina_id' => null,
         ]);
@@ -63,30 +75,40 @@ class VotacaoController extends Controller
         return redirect()->route('maquina.votar');
     }
 
-    // Libera votação presencial via senha do usuário maquina
     public function liberarPresencial(Request $request)
     {
         $request->validate([
-            'senha' => ['required', 'string'],
+            'senha'  => ['required', 'string'],
+            'escopo' => ['required', 'in:vida,alianca'],
         ]);
 
-        $user = auth()->user();
+        $user     = auth()->user();
+        $cidadeId = $user->cidade_id;
 
         if (!Hash::check($request->senha, $user->password)) {
-            return back()->withErrors(['senha' => 'Senha incorreta. Autorizacao negada.']);
+            return back()->withErrors(['senha' => 'Senha incorreta. Autorização negada.']);
         }
 
-        $cidadeId = $user->cidade_id;
-        $eleicaoCidade = EleicaoCidade::where('cidade_id', $cidadeId)
-            ->where('aberta', true)
+        $eleicaoCidade = EleicaoCidade::with('eleicao')
+            ->where('cidade_id', $cidadeId)
+            ->whereHas('eleicao', fn($q) => $q->where('status', 'aberta'))
             ->first();
 
         if (!$eleicaoCidade) {
-            return back()->withErrors(['senha' => 'Nenhuma votacao aberta para esta cidade.']);
+            return back()->withErrors(['senha' => 'Nenhuma eleição aberta para esta cidade.']);
         }
 
-        if ($eleicaoCidade->qtd_presencial > 0 && $eleicaoCidade->votos_presenciais >= $eleicaoCidade->qtd_presencial) {
-            return back()->withErrors(['senha' => "Limite de votos presenciais atingido ({$eleicaoCidade->qtd_presencial})."]);
+        if ($request->escopo === 'alianca') {
+            if (!$eleicaoCidade->aberta) {
+                return back()->withErrors(['senha' => 'A votação aliança desta cidade não está aberta.']);
+            }
+            if ($eleicaoCidade->qtd_presencial > 0 && $eleicaoCidade->votos_presenciais >= $eleicaoCidade->qtd_presencial) {
+                return back()->withErrors(['senha' => "Limite de votos presenciais aliança atingido ({$eleicaoCidade->qtd_presencial})."]);
+            }
+        } else {
+            if (!$eleicaoCidade->eleicao->aberta_vida) {
+                return back()->withErrors(['senha' => 'A votação Realidade de Vida não está aberta.']);
+            }
         }
 
         $sessaoHash = hash('sha256', Str::uuid()->toString());
@@ -95,6 +117,7 @@ class VotacaoController extends Controller
             'votacao_hash'       => $sessaoHash,
             'votacao_cidade_id'  => $cidadeId,
             'votacao_eleicao_id' => $eleicaoCidade->eleicao_id,
+            'votacao_escopo'     => $request->escopo,
             'votacao_origem'     => 'presencial',
             'votacao_maquina_id' => $user->id,
         ]);
@@ -108,17 +131,17 @@ class VotacaoController extends Controller
         $cidadeId  = session('votacao_cidade_id');
         $eleicaoId = session('votacao_eleicao_id');
         $origem    = session('votacao_origem', 'remoto');
+        $escopo    = session('votacao_escopo', 'alianca');
 
         if (!$hash || !$cidadeId || !$eleicaoId) {
-            return redirect()->route('maquina.index')->withErrors(['token' => 'Sessao expirada. Insira o token novamente.']);
+            return redirect()->route('maquina.index')->withErrors(['token' => 'Sessão expirada. Insira o token novamente.']);
         }
 
-        // Valida token apenas para votação remota
         if ($origem === 'remoto') {
             $tokenValido = TokenVotacao::where('token_hash', $hash)->where('usado', false)->exists();
             if (!$tokenValido) {
-                session()->forget(['votacao_hash', 'votacao_cidade_id', 'votacao_eleicao_id', 'votacao_origem', 'votacao_maquina_id']);
-                return redirect()->route('maquina.index')->withErrors(['token' => 'Este token ja foi utilizado.']);
+                session()->forget(['votacao_hash', 'votacao_cidade_id', 'votacao_eleicao_id', 'votacao_escopo', 'votacao_origem', 'votacao_maquina_id']);
+                return redirect()->route('maquina.index')->withErrors(['token' => 'Este token já foi utilizado.']);
             }
         }
 
@@ -127,10 +150,12 @@ class VotacaoController extends Controller
             ->where('cidade_id', $cidadeId)
             ->firstOrFail();
 
-        $perguntas = $eleicaoCidade->eleicao->perguntas->map(function ($pergunta) use ($cidadeId) {
-            $pergunta->opcoesDaCidade = $pergunta->opcoesPorCidade($cidadeId)->get();
-            return $pergunta;
-        });
+        $perguntas = $eleicaoCidade->eleicao->perguntas
+            ->filter(fn($p) => $p->escopo === $escopo)
+            ->map(function ($pergunta) use ($cidadeId) {
+                $pergunta->opcoesDaCidade = $pergunta->opcoesPorCidade($cidadeId)->get();
+                return $pergunta;
+            });
 
         return view('maquina.votar', compact('eleicaoCidade', 'perguntas'));
     }
@@ -142,6 +167,7 @@ class VotacaoController extends Controller
         $eleicaoId = session('votacao_eleicao_id');
         $origem    = session('votacao_origem', 'remoto');
         $maquinaId = session('votacao_maquina_id');
+        $escopo    = session('votacao_escopo', 'alianca');
 
         if (!$hash || !$cidadeId || !$eleicaoId) {
             return redirect()->route('maquina.index');
@@ -150,37 +176,43 @@ class VotacaoController extends Controller
         $eleicaoCidade = EleicaoCidade::with('eleicao.perguntas')
             ->where('eleicao_id', $eleicaoId)
             ->where('cidade_id', $cidadeId)
-            ->where('aberta', true)
             ->firstOrFail();
 
-        $perguntas = $eleicaoCidade->eleicao->perguntas;
+        $eleicao = $eleicaoCidade->eleicao;
 
-        // Valida quantidade de respostas por pergunta
+        // Validate that voting is still open for this escopo
+        if ($escopo === 'alianca') {
+            abort_unless($eleicaoCidade->aberta, 403, 'A votação aliança foi encerrada.');
+        } else {
+            abort_unless($eleicao->aberta_vida, 403, 'A votação Realidade de Vida foi encerrada.');
+        }
+
+        $perguntas = $eleicao->perguntas->filter(fn($p) => $p->escopo === $escopo);
+
         foreach ($perguntas as $pergunta) {
             $respostas = $request->input('respostas.' . $pergunta->id, []);
 
             if (count($respostas) !== (int) $pergunta->qtd_respostas) {
                 return back()->withErrors([
-                    'respostas.' . $pergunta->id => "Selecione exatamente {$pergunta->qtd_respostas} opcao(oes) para: \"{$pergunta->pergunta}\"",
+                    'respostas.' . $pergunta->id => "Selecione exatamente {$pergunta->qtd_respostas} opção(ões) para: \"{$pergunta->pergunta}\"",
                 ])->withInput();
             }
 
-            // Verifica se as opções pertencem à cidade correta
             $opcaoIdsValidos = $pergunta->opcoesPorCidade($cidadeId)->pluck('id')->toArray();
             foreach ($respostas as $opcaoId) {
                 if (!in_array((int) $opcaoId, $opcaoIdsValidos)) {
-                    abort(403, 'Opcao invalida para esta cidade.');
+                    abort(403, 'Opção inválida para esta cidade.');
                 }
             }
         }
 
-        DB::transaction(function () use ($hash, $origem, $maquinaId, $perguntas, $request, $eleicaoCidade) {
-            // Apenas votação remota consome token e marca presença
+        DB::transaction(function () use ($hash, $escopo, $origem, $maquinaId, $perguntas, $request, $eleicaoCidade) {
             if ($origem === 'remoto') {
                 TokenVotacao::where('token_hash', $hash)->update(['usado' => true]);
 
                 Presenca::where('eleicao_id', $eleicaoCidade->eleicao_id)
                     ->where('cidade_id', $eleicaoCidade->cidade_id)
+                    ->where('escopo', $escopo)
                     ->where('votou', false)
                     ->orderBy('id')
                     ->limit(1)
@@ -201,23 +233,24 @@ class VotacaoController extends Controller
                 }
             }
 
-            // Atualiza contadores de votos
-            $eleicaoCidade->increment('votos_registrados');
-            if ($origem === 'presencial') {
-                $eleicaoCidade->increment('votos_presenciais');
-            }
+            // Only aliança voting counts toward city-level quotas and auto-close
+            if ($escopo === 'alianca') {
+                $eleicaoCidade->increment('votos_registrados');
+                if ($origem === 'presencial') {
+                    $eleicaoCidade->increment('votos_presenciais');
+                }
 
-            // Verifica encerramento automático
-            $eleicaoCidade->refresh();
-            if ($eleicaoCidade->votos_registrados >= $eleicaoCidade->qtd_membros && $eleicaoCidade->qtd_membros > 0) {
-                $eleicaoCidade->update([
-                    'aberta'            => false,
-                    'data_encerramento' => now(),
-                ]);
+                $eleicaoCidade->refresh();
+                if ($eleicaoCidade->votos_registrados >= $eleicaoCidade->qtd_membros && $eleicaoCidade->qtd_membros > 0) {
+                    $eleicaoCidade->update([
+                        'aberta'            => false,
+                        'data_encerramento' => now(),
+                    ]);
+                }
             }
         });
 
-        session()->forget(['votacao_hash', 'votacao_cidade_id', 'votacao_eleicao_id', 'votacao_origem', 'votacao_maquina_id']);
+        session()->forget(['votacao_hash', 'votacao_cidade_id', 'votacao_eleicao_id', 'votacao_escopo', 'votacao_origem', 'votacao_maquina_id']);
 
         return redirect()->route('maquina.confirmado');
     }

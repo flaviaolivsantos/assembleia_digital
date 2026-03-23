@@ -66,6 +66,12 @@ Route::middleware(['auth', 'acesso.ate', 'perfil:responsavel'])->prefix('respons
     Route::get('/{eleicaoCidade}/ata',        [ResultadoController::class, 'ataResponsavel'])->name('ata');
     Route::get('/{eleicaoCidade}/membros',    [ResponsavelController::class, 'editarMembros'])->name('membros');
     Route::post('/{eleicaoCidade}/membros',   [ResponsavelController::class, 'atualizarMembros'])->name('membros.update');
+
+    // Vida (election-wide)
+    Route::get('/vida/{eleicao}/abrir',    [ResponsavelController::class, 'abrirVida'])->name('vida.abrir');
+    Route::post('/vida/{eleicao}/abrir',   [ResponsavelController::class, 'confirmarAbrirVida'])->name('vida.confirmarAbrir');
+    Route::get('/vida/{eleicao}/encerrar', [ResponsavelController::class, 'encerrarVida'])->name('vida.encerrar');
+    Route::post('/vida/{eleicao}/encerrar',[ResponsavelController::class, 'confirmarEncerrarVida'])->name('vida.confirmarEncerrar');
 });
 
 // Mesario

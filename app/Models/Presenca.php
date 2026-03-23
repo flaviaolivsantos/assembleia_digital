@@ -9,7 +9,7 @@ class Presenca extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['eleicao_id', 'cidade_id', 'nome', 'token', 'votou'];
+    protected $fillable = ['eleicao_id', 'cidade_id', 'nome', 'token', 'votou', 'escopo'];
 
     protected $casts = ['votou' => 'boolean'];
 
