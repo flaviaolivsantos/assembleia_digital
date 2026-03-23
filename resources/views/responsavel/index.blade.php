@@ -80,7 +80,7 @@
                                 @if(!$ec->data_encerramento_vida ?? true)
                                 <a href="{{ route('responsavel.membros', $ec) }}" class="btn btn-resp-secundario btn-sm">
                                     <i class="bi bi-people me-1"></i>
-                                    Configurar Membros Vida@if(auth()->user()->perfil === 'admin') — {{ $ec->cidade->nome }}@endif
+                                    Configurar Membros Vida @if(auth()->user()->perfil === 'admin') — {{ $ec->cidade->nome }}@endif
                                 </a>
                                 @endif
                             @endforeach
