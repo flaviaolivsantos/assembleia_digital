@@ -87,6 +87,13 @@
                             </span>
                         </div>
                         @endif
+                        @if($vidaAberta && $eleicaoCidade->qtd_presencial_vida > 0)
+                        <div class="d-flex justify-content-center gap-3 mb-3">
+                            <span class="badge text-bg-primary">
+                                {{ $eleicaoCidade->votos_presenciais_vida }} / {{ $eleicaoCidade->qtd_presencial_vida }} presenciais vida
+                            </span>
+                        </div>
+                        @endif
 
                         <p class="text-muted small text-start mb-3">
                             Digite sua senha para liberar a votação para um eleitor presencial.

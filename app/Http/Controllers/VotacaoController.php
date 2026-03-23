@@ -109,6 +109,9 @@ class VotacaoController extends Controller
             if (!$eleicaoCidade->eleicao->aberta_vida) {
                 return back()->withErrors(['senha' => 'A votação Realidade de Vida não está aberta.']);
             }
+            if ($eleicaoCidade->qtd_presencial_vida > 0 && $eleicaoCidade->votos_presenciais_vida >= $eleicaoCidade->qtd_presencial_vida) {
+                return back()->withErrors(['senha' => "Limite de votos presenciais vida atingido ({$eleicaoCidade->qtd_presencial_vida})."]);
+            }
         }
 
         $sessaoHash = hash('sha256', Str::uuid()->toString());
@@ -231,6 +234,11 @@ class VotacaoController extends Controller
                         'created_at'  => now(),
                     ]);
                 }
+            }
+
+            // Track presencial vida votes
+            if ($escopo === 'vida' && $origem === 'presencial') {
+                $eleicaoCidade->increment('votos_presenciais_vida');
             }
 
             // Only aliança voting counts toward city-level quotas and auto-close

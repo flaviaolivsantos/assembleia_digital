@@ -36,9 +36,17 @@
             {{-- Realidade de Vida --}}
             <h6 class="text-primary mb-3"><i class="bi bi-globe me-1"></i>Realidade de Vida</h6>
 
-            <div class="mb-4">
-                <label class="form-label">Membros Vida (remoto) nesta cidade</label>
-                <input type="number" name="qtd_vida" class="form-control"
+            <div class="mb-3">
+                <label class="form-label">Votarão presencialmente (vida)</label>
+                <input type="number" name="qtd_presencial_vida" id="qtd_presencial_vida" class="form-control"
+                       value="{{ old('qtd_presencial_vida', $eleicaoCidade->qtd_presencial_vida) }}"
+                       min="0" required>
+                <div class="form-text">Votos vida liberados pela senha na máquina de votação.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Votarão remotamente (vida)</label>
+                <input type="number" name="qtd_vida" id="qtd_vida" class="form-control"
                        value="{{ old('qtd_vida', $eleicaoCidade->qtd_vida) }}"
                        min="0" required>
                 <div class="form-text">
@@ -53,6 +61,10 @@
                         Tokens vida já gerados: <strong>{{ $tokensVida }}</strong>.
                     @endif
                 </div>
+            </div>
+
+            <div class="alert alert-primary py-2 small mb-4">
+                Total vida: <strong id="total_vida">{{ ($eleicaoCidade->qtd_presencial_vida ?? 0) + ($eleicaoCidade->qtd_vida ?? 0) }}</strong> membros
             </div>
 
             <hr class="my-3">
@@ -110,15 +122,24 @@
 </div>
 
 <script>
-const presencial = document.querySelector('[name="qtd_presencial"]');
-const remoto     = document.querySelector('[name="qtd_remoto"]');
-const total      = document.getElementById('total');
+const presencial     = document.querySelector('[name="qtd_presencial"]');
+const remoto         = document.querySelector('[name="qtd_remoto"]');
+const total          = document.getElementById('total');
+const presencialVida = document.getElementById('qtd_presencial_vida');
+const remotoVida     = document.getElementById('qtd_vida');
+const totalVida      = document.getElementById('total_vida');
 
 function atualizarTotal() {
     total.textContent = (parseInt(presencial.value) || 0) + (parseInt(remoto.value) || 0);
 }
 
+function atualizarTotalVida() {
+    totalVida.textContent = (parseInt(presencialVida.value) || 0) + (parseInt(remotoVida.value) || 0);
+}
+
 presencial.addEventListener('input', atualizarTotal);
 remoto.addEventListener('input', atualizarTotal);
+presencialVida.addEventListener('input', atualizarTotalVida);
+remotoVida.addEventListener('input', atualizarTotalVida);
 </script>
 @endsection
