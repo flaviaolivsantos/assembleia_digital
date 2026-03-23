@@ -164,6 +164,25 @@ class VotacaoPublicaController extends Controller
                 }
             }
 
+            // Track vida votes and auto-close when all members voted
+            if ($escopo === 'vida') {
+                $eleicaoCidade->increment('votos_registrados_vida');
+                $eleicaoCidade->refresh();
+
+                $eleicao = $eleicaoCidade->eleicao;
+                $totalVidaMembros = $eleicao->cidades()->sum(DB::raw('qtd_presencial_vida + qtd_vida'));
+                $totalVidaVotos   = $eleicao->cidades()->sum('votos_registrados_vida');
+                if ($totalVidaMembros > 0 && $totalVidaVotos >= $totalVidaMembros) {
+                    $eleicao->update([
+                        'aberta_vida'            => false,
+                        'data_encerramento_vida' => now(),
+                    ]);
+                    if ($eleicao->cidades()->where('aberta', true)->doesntExist()) {
+                        $eleicao->update(['status' => 'encerrada']);
+                    }
+                }
+            }
+
             // Only aliança voting increments city counters and auto-closes
             if ($escopo === 'alianca') {
                 $eleicaoCidade->increment('votos_registrados');

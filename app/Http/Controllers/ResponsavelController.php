@@ -287,10 +287,15 @@ class ResponsavelController extends Controller
             ->where('escopo', 'alianca')
             ->count();
 
+        $totalTokensVida = \App\Models\TokenVotacao::where('eleicao_id', $eleicaoCidade->eleicao_id)
+            ->where('cidade_id', $eleicaoCidade->cidade_id)
+            ->where('escopo', 'vida')
+            ->count();
+
         $request->validate([
             'qtd_eleitorado'      => ['required', 'integer', 'min:0'],
             'qtd_presencial_vida' => ['required', 'integer', 'min:' . $eleicaoCidade->votos_presenciais_vida],
-            'qtd_vida'            => ['required', 'integer', 'min:0'],
+            'qtd_vida'            => ['required', 'integer', 'min:' . $totalTokensVida],
             'qtd_presencial'      => ['required', 'integer', 'min:0'],
             'qtd_remoto'          => ['required', 'integer', 'min:' . $totalTokensAlianca],
             'justificativa'       => $eleicaoCidade->aberta || $eleicaoCidade->data_encerramento
@@ -298,15 +303,24 @@ class ResponsavelController extends Controller
                 : ['nullable', 'string'],
         ], [
             'qtd_presencial_vida.min' => "Quantidade presencial vida não pode ser menor que os votos presenciais já registrados ({$eleicaoCidade->votos_presenciais_vida}).",
+            'qtd_vida.min'            => "Quantidade remoto vida não pode ser menor que os tokens já gerados ({$totalTokensVida}).",
             'qtd_remoto.min'          => "Quantidade remoto aliança não pode ser menor que os tokens já gerados ({$totalTokensAlianca}).",
             'justificativa.min'       => 'A justificativa deve ter pelo menos 10 caracteres.',
             'justificativa.required'  => 'A justificativa é obrigatória.',
         ]);
 
         $qtdPresencialVida = (int) $request->qtd_presencial_vida;
+        $qtdVida           = (int) $request->qtd_vida;
+        $qtdTotalVida      = $qtdPresencialVida + $qtdVida;
         $qtdPresencial     = (int) $request->qtd_presencial;
         $qtdRemoto         = (int) $request->qtd_remoto;
         $qtdTotal          = $qtdPresencial + $qtdRemoto;
+
+        if ($qtdTotalVida < $eleicaoCidade->votos_registrados_vida) {
+            return back()->withErrors([
+                'qtd_presencial_vida' => "O total vida ({$qtdTotalVida}) não pode ser menor que os votos vida já registrados ({$eleicaoCidade->votos_registrados_vida}).",
+            ])->withInput();
+        }
 
         if ($qtdTotal < $eleicaoCidade->votos_registrados) {
             return back()->withErrors([
@@ -318,7 +332,7 @@ class ResponsavelController extends Controller
         $eleicaoCidade->update([
             'qtd_eleitorado'      => (int) $request->qtd_eleitorado,
             'qtd_presencial_vida' => $qtdPresencialVida,
-            'qtd_vida'            => (int) $request->qtd_vida,
+            'qtd_vida'            => $qtdVida,
             'qtd_presencial'      => $qtdPresencial,
             'qtd_remoto'          => $qtdRemoto,
             'qtd_membros'         => $qtdTotal,
@@ -327,7 +341,7 @@ class ResponsavelController extends Controller
         LogEleicao::registrar(
             $eleicaoCidade->eleicao_id,
             'membros_alterados',
-            "Membros em {$eleicaoCidade->cidade->nome}: vida presencial={$qtdPresencialVida}, vida remoto={$request->qtd_vida}; aliança={$qtdTotal} ({$qtdPresencial} presencial + {$qtdRemoto} remoto). Anterior aliança={$anterior}."
+            "Membros em {$eleicaoCidade->cidade->nome}: vida presencial={$qtdPresencialVida}, vida remoto={$qtdVida}; aliança={$qtdTotal} ({$qtdPresencial} presencial + {$qtdRemoto} remoto). Anterior aliança={$anterior}."
             . ($request->justificativa ? " Justificativa: {$request->justificativa}" : '')
         );
 

@@ -16,6 +16,8 @@
         @endif
 
         <p class="text-muted small mb-4">
+            Votos vida já registrados: <strong>{{ $eleicaoCidade->votos_registrados_vida }}</strong>.
+            O total vida (presencial + remoto) não pode ser menor que este valor.<br>
             Votos aliança já registrados: <strong>{{ $eleicaoCidade->votos_registrados }}</strong>.
             O total aliança (presencial + remoto) não pode ser menor que este valor.
         </p>

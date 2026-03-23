@@ -236,9 +236,26 @@ class VotacaoController extends Controller
                 }
             }
 
-            // Track presencial vida votes
-            if ($escopo === 'vida' && $origem === 'presencial') {
-                $eleicaoCidade->increment('votos_presenciais_vida');
+            // Track vida votes and auto-close when all members voted
+            if ($escopo === 'vida') {
+                if ($origem === 'presencial') {
+                    $eleicaoCidade->increment('votos_presenciais_vida');
+                }
+                $eleicaoCidade->increment('votos_registrados_vida');
+                $eleicaoCidade->refresh();
+
+                $eleicao = $eleicaoCidade->eleicao;
+                $totalVidaMembros = $eleicao->cidades()->sum(DB::raw('qtd_presencial_vida + qtd_vida'));
+                $totalVidaVotos   = $eleicao->cidades()->sum('votos_registrados_vida');
+                if ($totalVidaMembros > 0 && $totalVidaVotos >= $totalVidaMembros) {
+                    $eleicao->update([
+                        'aberta_vida'            => false,
+                        'data_encerramento_vida' => now(),
+                    ]);
+                    if ($eleicao->cidades()->where('aberta', true)->doesntExist()) {
+                        $eleicao->update(['status' => 'encerrada']);
+                    }
+                }
             }
 
             // Only aliança voting counts toward city-level quotas and auto-close
