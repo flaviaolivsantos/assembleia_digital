@@ -12,7 +12,13 @@ class MesarioController extends Controller
         $cidadeId = auth()->user()->cidade_id;
 
         // Admin vê todas as missões; demais veem só a sua
-        $query = EleicaoCidade::with('eleicao', 'cidade')->where('aberta', true);
+        // Mostra cidades onde aliança OU vida estão abertas
+        $query = EleicaoCidade::with('eleicao', 'cidade')
+            ->where(function ($q) {
+                $q->where('aberta', true)
+                  ->orWhereHas('eleicao', fn($e) => $e->where('aberta_vida', true));
+            })
+            ->whereHas('eleicao', fn($e) => $e->where('status', 'aberta'));
 
         if ($perfil !== 'admin') {
             $query->where('cidade_id', $cidadeId);
