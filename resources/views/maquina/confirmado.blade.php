@@ -13,7 +13,7 @@
 
         <div class="display-1 text-success mb-3">&#10003;</div>
         <h2 class="mb-2">Voto Registrado!</h2>
-        <p class="text-muted mb-5">Seu voto foi computado com sucesso de forma anônima.<br>Obrigado pela sua participação.</p>
+        <p class="text-muted mb-5">Seu voto foi computado com sucesso.<br>Obrigado pela sua participação.</p>
 
         <a href="{{ route('maquina.index') }}" class="btn btn-primary btn-lg">
             Próxima Votação
