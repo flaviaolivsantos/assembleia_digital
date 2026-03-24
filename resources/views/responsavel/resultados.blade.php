@@ -6,9 +6,10 @@
     $mostrarAlianca  = $temAlianca && ($filtro === 'geral' || $filtro === 'alianca');
     $mostrarVida     = $temVida    && ($filtro === 'geral' || $filtro === 'vida');
 
-    $eleitorado   = $eleicaoCidade->qtd_eleitorado;
-    $compareceram = $eleicaoCidade->qtd_membros;
-    $votaram      = $eleicaoCidade->votos_registrados;
+    // Métricas de aliança: sempre da cidade aliança selecionada
+    $eleitorado   = $aliancaCidade->qtd_eleitorado;
+    $compareceram = $aliancaCidade->qtd_membros;
+    $votaram      = $aliancaCidade->votos_registrados;
     $pctAderencia = $eleitorado   > 0 ? round($compareceram / $eleitorado   * 100, 1) : 0;
     $pctAproveit  = $compareceram > 0 ? round($votaram      / $compareceram * 100, 1) : 0;
 
@@ -17,13 +18,13 @@
     $vidaVotaram     = array_sum($vidaVotaramPorCidade);
     $pctVidaAproveit = $vidaEleitores > 0 ? round($vidaVotaram / $vidaEleitores * 100, 1) : 0;
 
-    // Auditoria por máquina: vida → todas; aliança → filtra pela cidade
+    // Auditoria por máquina: vida → todas; aliança → filtra pela cidade aliança selecionada
     $maquinasDaMissao = match($filtro) {
-        'alianca' => $votosPorMaquina->filter(fn($r) => $r->maquina?->cidade_id === $eleicaoCidade->cidade_id),
+        'alianca' => $votosPorMaquina->filter(fn($r) => $r->maquina?->cidade_id === $aliancaCidade->cidade_id),
         'vida'    => $votosPorMaquina,
         default   => $temVida
             ? $votosPorMaquina
-            : $votosPorMaquina->filter(fn($r) => $r->maquina?->cidade_id === $eleicaoCidade->cidade_id),
+            : $votosPorMaquina->filter(fn($r) => $r->maquina?->cidade_id === $aliancaCidade->cidade_id),
     };
 
     // Total de votos remotos a exibir no grid
@@ -31,7 +32,7 @@
                   + ($mostrarVida    ? $votosRemotosVida    : 0);
 
     // Indica resultado parcial (seção visível ainda não encerrada)
-    $parcialAlianca   = $mostrarAlianca && !$eleicaoCidade->data_encerramento;
+    $parcialAlianca   = $mostrarAlianca && !$aliancaCidade->data_encerramento;
     $parcialVida      = $mostrarVida    && !$eleicao->data_encerramento_vida;
     $resultadoParcial = $parcialAlianca || $parcialVida;
 @endphp
@@ -150,13 +151,13 @@
             @endif
         </h2>
         <span class="dash-header-sub">
-            <i class="bi bi-geo-alt me-1"></i>{{ $eleicaoCidade->cidade->nome }}
+            <i class="bi bi-geo-alt me-1"></i>{{ $filtro === 'alianca' ? $aliancaCidade->cidade->nome : $eleicaoCidade->cidade->nome }}
             &nbsp;&middot;&nbsp;
             <i class="bi bi-calendar3 me-1"></i>{{ $eleicao->data_eleicao->format('d/m/Y') }}
         </span>
     </div>
     <div class="d-flex gap-2 flex-shrink-0">
-        <a href="{{ route('responsavel.ata', $eleicaoCidade) }}?filtro={{ $filtro }}"
+        <a href="{{ route('responsavel.ata', $eleicaoCidade) }}?filtro={{ $filtro }}{{ $filtro === 'alianca' ? '&alianca_cidade_id='.$aliancaCidade->cidade_id : '' }}"
            class="btn btn-outline-dark btn-sm" target="_blank">
             <i class="bi bi-printer me-1"></i>Imprimir Ata
         </a>
@@ -175,10 +176,12 @@
     </a>
     @endif
     @if($temAlianca)
-    <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}?filtro=alianca"
-       class="res-filter-btn {{ $filtro === 'alianca' ? 'active' : '' }}">
-        <i class="bi bi-building"></i>Aliança — {{ $eleicaoCidade->cidade->nome }}
-    </a>
+        @foreach($todasCidades as $ec)
+        <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}?filtro=alianca&alianca_cidade_id={{ $ec->cidade_id }}"
+           class="res-filter-btn {{ $filtro === 'alianca' && $aliancaCidade->cidade_id === $ec->cidade_id ? 'active' : '' }}">
+            <i class="bi bi-building"></i>Aliança — {{ $ec->cidade->nome }}
+        </a>
+        @endforeach
     @endif
     @if($temVida)
     <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}?filtro=vida"
@@ -191,7 +194,7 @@
 {{-- ── Cards de Métricas ──────────────────────────────────────── --}}
 @if($mostrarAlianca)
 <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">
-    <span class="badge text-bg-secondary me-1">Aliança</span>{{ $eleicaoCidade->cidade->nome }}
+    <span class="badge text-bg-secondary me-1">Aliança</span>{{ $aliancaCidade->cidade->nome }}
 </p>
 <div class="row g-3 mb-3">
     <div class="col-md-3">

@@ -53,13 +53,21 @@ class ResultadoController extends Controller
             abort(403, 'Resultados disponíveis apenas durante ou após a eleição.');
         }
 
+        // Load relations early so we can resolve aliancaCidade before guards
+        $eleicao->load('perguntas.opcoes', 'cidades.cidade');
+        $eleicaoCidade->load('cidade');
+
         $filtro = request()->query('filtro', 'geral');
         if (!in_array($filtro, ['geral', 'alianca', 'vida'])) {
             $filtro = 'geral';
         }
 
+        // Resolve which city's aliança to display (default: current city)
+        $aliancaCidadeId = (int) request()->query('alianca_cidade_id', $eleicaoCidade->cidade_id);
+        $aliancaCidade   = $eleicao->cidades->firstWhere('cidade_id', $aliancaCidadeId) ?? $eleicaoCidade;
+
         // Per-scope access guards
-        if ($filtro === 'alianca' && !$eleicaoCidade->data_encerramento) {
+        if ($filtro === 'alianca' && !$aliancaCidade->data_encerramento) {
             abort(403, 'Resultados de Aliança disponíveis apenas após o encerramento da votação de Aliança.');
         }
         if ($filtro === 'vida' && !$eleicao->data_encerramento_vida) {
@@ -76,9 +84,6 @@ class ResultadoController extends Controller
             }
         }
 
-        $eleicao->load('perguntas.opcoes', 'cidades.cidade');
-        $eleicaoCidade->load('cidade');
-
         $temVida    = $eleicao->perguntas->where('escopo', 'vida')->count() > 0;
         $temAlianca = $eleicao->perguntas->where('escopo', 'alianca')->count() > 0;
 
@@ -93,11 +98,11 @@ class ResultadoController extends Controller
         $votosPorMaquina      = $this->carregarVotosPorMaquina($eleicao, $escopoMaquina);
         $votosPorCidade       = $this->carregarVotosPorCidade($eleicao);
         $vidaVotaramPorCidade = $this->carregarVidaVotaramPorCidade($eleicao);
-        $votosRemotosAlianca  = $this->carregarVotosRemotosAlianca($eleicao, $eleicaoCidade->cidade_id);
+        $votosRemotosAlianca  = $this->carregarVotosRemotosAlianca($eleicao, $aliancaCidade->cidade_id);
         $votosRemotosVida     = $this->carregarVotosRemotosVida($eleicao);
 
         return view('responsavel.resultados', compact(
-            'eleicao', 'eleicaoCidade', 'votosRaw', 'todasCidades',
+            'eleicao', 'eleicaoCidade', 'aliancaCidade', 'votosRaw', 'todasCidades',
             'votosPorMaquina', 'votosPorCidade', 'vidaVotaramPorCidade',
             'temVida', 'temAlianca', 'filtro', 'votosRemotosAlianca', 'votosRemotosVida'
         ));
@@ -107,12 +112,20 @@ class ResultadoController extends Controller
     {
         $eleicao = $eleicaoCidade->eleicao;
 
+        // Load relations early so we can resolve aliancaCidade before guards
+        $eleicao->load('perguntas.opcoes', 'cidades.cidade', 'cidades.abertaPor', 'cidades.encerradaPor');
+        $eleicaoCidade->load('cidade', 'abertaPor', 'encerradaPor');
+
         $filtro = request()->query('filtro', 'geral');
         if (!in_array($filtro, ['geral', 'alianca', 'vida'])) {
             $filtro = 'geral';
         }
 
-        if ($filtro === 'alianca' && !$eleicaoCidade->data_encerramento) {
+        // Resolve which city's aliança to display
+        $aliancaCidadeId = (int) request()->query('alianca_cidade_id', $eleicaoCidade->cidade_id);
+        $aliancaCidade   = $eleicao->cidades->firstWhere('cidade_id', $aliancaCidadeId) ?? $eleicaoCidade;
+
+        if ($filtro === 'alianca' && !$aliancaCidade->data_encerramento) {
             abort(403, 'Ata de Aliança disponível apenas após o encerramento da votação de Aliança.');
         }
         if ($filtro === 'vida' && !$eleicao->data_encerramento_vida) {
@@ -123,9 +136,6 @@ class ResultadoController extends Controller
             abort(403, 'Ata geral disponível apenas após o encerramento completo da eleição.');
         }
 
-        $eleicao->load('perguntas.opcoes', 'cidades.cidade', 'cidades.abertaPor', 'cidades.encerradaPor');
-        $eleicaoCidade->load('cidade', 'abertaPor', 'encerradaPor');
-
         $temVida    = $eleicao->perguntas->where('escopo', 'vida')->count() > 0;
         $temAlianca = $eleicao->perguntas->where('escopo', 'alianca')->count() > 0;
 
@@ -135,7 +145,7 @@ class ResultadoController extends Controller
         $vidaVotaramPorCidade = $this->carregarVidaVotaramPorCidade($eleicao);
 
         return view('responsavel.ata', compact(
-            'eleicao', 'eleicaoCidade', 'votosRaw', 'votosPorCidade', 'todasCidades',
+            'eleicao', 'eleicaoCidade', 'aliancaCidade', 'votosRaw', 'votosPorCidade', 'todasCidades',
             'temVida', 'temAlianca', 'vidaVotaramPorCidade', 'filtro'
         ));
     }

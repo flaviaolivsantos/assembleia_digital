@@ -277,7 +277,7 @@
     <button onclick="window.print()" class="btn-imprimir">
         &#128438; Imprimir / Salvar PDF
     </button>
-    <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}?filtro={{ $filtro }}" class="btn-voltar">
+    <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}?filtro={{ $filtro }}{{ $filtro === 'alianca' ? '&alianca_cidade_id='.$aliancaCidade->cidade_id : '' }}" class="btn-voltar">
         &#8592; Voltar
     </a>
 </div>
@@ -296,7 +296,7 @@
             @if($mostrarVida && !$mostrarAlianca)
                 Todas as Missões
             @else
-                Missão: {{ $eleicaoCidade->cidade->nome }}
+                Missão: {{ $aliancaCidade->cidade->nome }}
             @endif
         </div>
     </div>
@@ -311,7 +311,7 @@
             @if($mostrarVida && !$mostrarAlianca)
                 Todas as Missões
             @else
-                {{ $eleicaoCidade->cidade->nome }}
+                {{ $aliancaCidade->cidade->nome }}
             @endif
             &nbsp;&middot;&nbsp;
             {{ $eleicao->data_eleicao->format('d/m/Y') }}
@@ -325,12 +325,12 @@
 
     @if($mostrarAlianca)
     @php
-        $adPct = $eleicaoCidade->qtd_eleitorado > 0
-            ? round($eleicaoCidade->qtd_membros       / $eleicaoCidade->qtd_eleitorado * 100, 1) : 0;
-        $apPct = $eleicaoCidade->qtd_membros    > 0
-            ? round($eleicaoCidade->votos_registrados / $eleicaoCidade->qtd_membros    * 100, 1) : 0;
+        $adPct = $aliancaCidade->qtd_eleitorado > 0
+            ? round($aliancaCidade->qtd_membros       / $aliancaCidade->qtd_eleitorado * 100, 1) : 0;
+        $apPct = $aliancaCidade->qtd_membros    > 0
+            ? round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_membros    * 100, 1) : 0;
     @endphp
-    <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Realidade de Aliança — {{ $eleicaoCidade->cidade->nome }}</p>
+    <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Realidade de Aliança — {{ $aliancaCidade->cidade->nome }}</p>
     <table class="ata-table">
         <thead>
             <tr>
@@ -343,9 +343,9 @@
         </thead>
         <tbody>
             <tr>
-                <td class="center val-azul">{{ $eleicaoCidade->qtd_eleitorado }}</td>
-                <td class="center val-azul">{{ $eleicaoCidade->qtd_membros }}</td>
-                <td class="center val-azul">{{ $eleicaoCidade->votos_registrados }}</td>
+                <td class="center val-azul">{{ $aliancaCidade->qtd_membros }}</td>
+                <td class="center val-azul">{{ $aliancaCidade->qtd_membros }}</td>
+                <td class="center val-azul">{{ $aliancaCidade->votos_registrados }}</td>
                 <td class="center val-ciano">{{ $adPct }}%</td>
                 <td class="center val-ciano">{{ $apPct }}%</td>
             </tr>
@@ -496,7 +496,7 @@
             @endif
         @else
             @php
-                $opcoesCidade = $pergunta->opcoes->where('cidade_id', $eleicaoCidade->cidade_id)
+                $opcoesCidade = $pergunta->opcoes->where('cidade_id', $aliancaCidade->cidade_id)
                     ->map(function($opcao) use ($votosRaw, $pergunta) {
                         $opcao->total_votos = $votosRaw->get($pergunta->id . '_' . $opcao->id)?->total ?? 0;
                         return $opcao;
@@ -535,35 +535,35 @@
     </div>
 
     @if($mostrarAlianca)
-    <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Realidade de Aliança — {{ $eleicaoCidade->cidade->nome }}</p>
+    <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Realidade de Aliança — {{ $aliancaCidade->cidade->nome }}</p>
     <table class="audit-table">
         <tbody>
             <tr>
                 <td>Horário de abertura</td>
-                <td>{{ $eleicaoCidade->data_abertura?->format('d/m/Y H:i') ?? '—' }}</td>
+                <td>{{ $aliancaCidade->data_abertura?->format('d/m/Y H:i') ?? '—' }}</td>
             </tr>
             <tr>
                 <td>Horário de encerramento</td>
-                <td>{{ $eleicaoCidade->data_encerramento?->format('d/m/Y H:i') ?? '—' }}</td>
+                <td>{{ $aliancaCidade->data_encerramento?->format('d/m/Y H:i') ?? '—' }}</td>
             </tr>
             <tr>
                 <td>Aberta por</td>
-                <td>{{ $eleicaoCidade->abertaPor?->nome ?? '—' }}</td>
+                <td>{{ $aliancaCidade->abertaPor?->nome ?? '—' }}</td>
             </tr>
             <tr>
                 <td>Encerrada por</td>
-                <td>{{ $eleicaoCidade->encerradaPor?->nome ?? '—' }}</td>
+                <td>{{ $aliancaCidade->encerradaPor?->nome ?? '—' }}</td>
             </tr>
             <tr>
                 <td>Total esperado de votos</td>
-                <td class="val-azul">{{ $eleicaoCidade->qtd_membros }}</td>
+                <td class="val-azul">{{ $aliancaCidade->qtd_membros }}</td>
             </tr>
             <tr>
                 <td>Total realizado</td>
                 <td>
-                    <span class="val-azul">{{ $eleicaoCidade->votos_registrados }}</span>
-                    @if($eleicaoCidade->qtd_membros > 0)
-                        &nbsp;<span class="val-ciano">({{ round($eleicaoCidade->votos_registrados / $eleicaoCidade->qtd_membros * 100, 1) }}%)</span>
+                    <span class="val-azul">{{ $aliancaCidade->votos_registrados }}</span>
+                    @if($aliancaCidade->qtd_membros > 0)
+                        &nbsp;<span class="val-ciano">({{ round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_membros * 100, 1) }}%)</span>
                     @endif
                 </td>
             </tr>
@@ -607,7 +607,7 @@
     </div>
     <div class="assinatura-block">
         <div class="assinatura-linha"></div>
-        <div class="assinatura-label">Responsável — {{ $eleicaoCidade->cidade->nome }}</div>
+        <div class="assinatura-label">Responsável — {{ $aliancaCidade->cidade->nome }}</div>
     </div>
 
     {{-- Rodapé fixo --}}
