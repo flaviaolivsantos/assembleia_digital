@@ -425,6 +425,14 @@
         @if($filtro === 'alianca' && $isVida) @continue @endif
         @if($filtro === 'vida'    && !$isVida) @continue @endif
 
+        {{-- Para aliança: verifica se há candidatos para esta cidade antes de exibir --}}
+        @if(!$isVida)
+            @php
+                $preCheck = $pergunta->opcoes->where('cidade_id', $aliancaCidade->cidade_id);
+            @endphp
+            @if($preCheck->isEmpty()) @continue @endif
+        @endif
+
         <div class="sub-title">
             {{ $loop->iteration }}. {{ $pergunta->pergunta }}
             <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6c757d;font-size:.75rem;">
