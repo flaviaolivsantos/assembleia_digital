@@ -7,11 +7,10 @@
     $mostrarVida     = $temVida    && ($filtro === 'geral' || $filtro === 'vida');
 
     // Métricas de aliança: sempre da cidade aliança selecionada
-    $eleitorado   = $aliancaCidade->qtd_eleitorado;
-    $compareceram = $aliancaCidade->qtd_membros;
-    $votaram      = $aliancaCidade->votos_registrados;
-    $pctAderencia = $eleitorado   > 0 ? round($compareceram / $eleitorado   * 100, 1) : 0;
-    $pctAproveit  = $compareceram > 0 ? round($votaram      / $compareceram * 100, 1) : 0;
+    $compareceram = $aliancaCidade->qtd_membros;       // eleitores aptos aliança
+    $votaram      = $aliancaCidade->votos_registrados; // votaram
+    $pctAderencia = $compareceram > 0 ? round($votaram / $compareceram * 100, 1) : 0;
+    $pctAproveit  = $compareceram > 0 ? round($votaram / $compareceram * 100, 1) : 0;
 
     // Vida é nacional — soma todas as cidades
     $vidaEleitores   = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
@@ -311,11 +310,11 @@
                     </div>
                 </div>
                 <div class="chart-legend mt-3">
-                    <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Compareceram ({{ $compareceram }})</span>
+                    <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $votaram }})</span>
                     &nbsp;&nbsp;
-                    <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Ausentes ({{ $eleitorado - $compareceram }})</span>
+                    <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Não votaram ({{ $compareceram - $votaram }})</span>
                 </div>
-                <p class="text-muted small mt-2 mb-0 text-center">Dos eleitores aptos, quantos compareceram.</p>
+                <p class="text-muted small mt-2 mb-0 text-center">Dos membros de aliança, quantos votaram.</p>
             </div>
         </div>
     </div>
@@ -513,7 +512,7 @@ function criarDonut(id, valor, total, label) {
 }
 
 @if($mostrarAlianca)
-criarDonut('chartAderencia',      {{ $compareceram }}, {{ $eleitorado }},   'Aderência');
+criarDonut('chartAderencia',      {{ $votaram }}, {{ $compareceram }}, 'Aderência');
 criarDonut('chartAproveitamento', {{ $votaram }},      {{ $compareceram }}, 'Aproveitamento');
 @endif
 @if($mostrarVida && $vidaEleitores > 0)
