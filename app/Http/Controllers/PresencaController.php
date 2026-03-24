@@ -64,12 +64,18 @@ class PresencaController extends Controller
         } else {
             abort_if(!$eleicao->aberta_vida, 403, 'A votação Realidade de Vida não está aberta.');
 
+            if ($eleicaoCidade->qtd_vida == 0) {
+                return back()->withErrors([
+                    'nome' => 'Esta missão não possui votantes remotos de Realidade de Vida configurados.',
+                ])->withInput();
+            }
+
             $totalTokensVida = TokenVotacao::where('eleicao_id', $eleicaoCidade->eleicao_id)
                 ->where('cidade_id', $eleicaoCidade->cidade_id)
                 ->where('escopo', 'vida')
                 ->count();
 
-            if ($eleicaoCidade->qtd_vida > 0 && $totalTokensVida >= $eleicaoCidade->qtd_vida) {
+            if ($totalTokensVida >= $eleicaoCidade->qtd_vida) {
                 return back()->withErrors([
                     'nome' => "Limite de votantes remotos vida atingido ({$eleicaoCidade->qtd_vida}). Ajuste a configuração de membros se necessário.",
                 ])->withInput();
@@ -144,7 +150,12 @@ class PresencaController extends Controller
             ->where('escopo', $escopo)
             ->count();
 
-        $limite      = $escopo === 'alianca' ? $eleicaoCidade->qtd_remoto : $eleicaoCidade->qtd_vida;
+        $limite = $escopo === 'alianca' ? $eleicaoCidade->qtd_remoto : $eleicaoCidade->qtd_vida;
+
+        if ($escopo === 'vida' && $limite == 0) {
+            return back()->withErrors(['csv' => 'Esta missão não possui votantes remotos de Realidade de Vida configurados.']);
+        }
+
         $disponiveis = $limite > 0 ? $limite - $totalTokens : count($linhas);
 
         if ($disponiveis <= 0) {
