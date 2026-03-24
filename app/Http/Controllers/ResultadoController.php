@@ -82,16 +82,24 @@ class ResultadoController extends Controller
         $temVida    = $eleicao->perguntas->where('escopo', 'vida')->count() > 0;
         $temAlianca = $eleicao->perguntas->where('escopo', 'alianca')->count() > 0;
 
-        $votosRaw               = $this->carregarVotos($eleicao);
-        $todasCidades           = $eleicao->cidades;
-        $votosPorMaquina        = $this->carregarVotosPorMaquina($eleicao);
-        $votosPorCidade         = $this->carregarVotosPorCidade($eleicao);
-        $vidaVotaramPorCidade   = $this->carregarVidaVotaramPorCidade($eleicao);
+        $escopoMaquina = match($filtro) {
+            'alianca' => 'alianca',
+            'vida'    => 'vida',
+            default   => null,
+        };
+
+        $votosRaw             = $this->carregarVotos($eleicao);
+        $todasCidades         = $eleicao->cidades;
+        $votosPorMaquina      = $this->carregarVotosPorMaquina($eleicao, $escopoMaquina);
+        $votosPorCidade       = $this->carregarVotosPorCidade($eleicao);
+        $vidaVotaramPorCidade = $this->carregarVidaVotaramPorCidade($eleicao);
+        $votosRemotosAlianca  = $this->carregarVotosRemotosAlianca($eleicao, $eleicaoCidade->cidade_id);
+        $votosRemotosVida     = $this->carregarVotosRemotosVida($eleicao);
 
         return view('responsavel.resultados', compact(
             'eleicao', 'eleicaoCidade', 'votosRaw', 'todasCidades',
             'votosPorMaquina', 'votosPorCidade', 'vidaVotaramPorCidade',
-            'temVida', 'temAlianca', 'filtro'
+            'temVida', 'temAlianca', 'filtro', 'votosRemotosAlianca', 'votosRemotosVida'
         ));
     }
 
@@ -201,9 +209,37 @@ class ResultadoController extends Controller
         return $mapa;
     }
 
-    private function carregarVotosPorMaquina(Eleicao $eleicao)
+    private function carregarVotosRemotosAlianca(Eleicao $eleicao, int $cidadeId): int
     {
-        return Voto::whereIn('pergunta_id', $eleicao->perguntas->pluck('id'))
+        $aliancaIds = $eleicao->perguntas->where('escopo', 'alianca')->pluck('id');
+        if ($aliancaIds->isEmpty()) return 0;
+
+        return (int) (Voto::whereIn('votos.pergunta_id', $aliancaIds)
+            ->where('votos.origem', 'remoto')
+            ->join('token_votacaos', 'votos.token_hash', '=', 'token_votacaos.token_hash')
+            ->where('token_votacaos.cidade_id', $cidadeId)
+            ->select(DB::raw('count(distinct votos.token_hash) as total'))
+            ->first()->total ?? 0);
+    }
+
+    private function carregarVotosRemotosVida(Eleicao $eleicao): int
+    {
+        $vidaIds = $eleicao->perguntas->where('escopo', 'vida')->pluck('id');
+        if ($vidaIds->isEmpty()) return 0;
+
+        return (int) (Voto::whereIn('pergunta_id', $vidaIds)
+            ->where('origem', 'remoto')
+            ->select(DB::raw('count(distinct token_hash) as total'))
+            ->first()->total ?? 0);
+    }
+
+    private function carregarVotosPorMaquina(Eleicao $eleicao, ?string $escopo = null)
+    {
+        $perguntaIds = $escopo
+            ? $eleicao->perguntas->where('escopo', $escopo)->pluck('id')
+            : $eleicao->perguntas->pluck('id');
+
+        return Voto::whereIn('pergunta_id', $perguntaIds)
             ->where('origem', 'presencial')
             ->whereNotNull('maquina_id')
             ->select('maquina_id', DB::raw('count(distinct token_hash) as total_votos'))

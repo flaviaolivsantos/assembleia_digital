@@ -26,6 +26,10 @@
             : $votosPorMaquina->filter(fn($r) => $r->maquina?->cidade_id === $eleicaoCidade->cidade_id),
     };
 
+    // Total de votos remotos a exibir no grid
+    $remotosTotal = ($mostrarAlianca ? $votosRemotosAlianca : 0)
+                  + ($mostrarVida    ? $votosRemotosVida    : 0);
+
     // Indica resultado parcial (seção visível ainda não encerrada)
     $parcialAlianca   = $mostrarAlianca && !$eleicaoCidade->data_encerramento;
     $parcialVida      = $mostrarVida    && !$eleicao->data_encerramento_vida;
@@ -195,7 +199,7 @@
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
                 <div>
-                    <div class="res-metric-value">{{ $eleitorado }}</div>
+                    <div class="res-metric-value">{{ $compareceram }}</div>
                     <div class="res-metric-label">Eleitores Aptos</div>
                 </div>
             </div>
@@ -206,7 +210,7 @@
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
                 <div>
-                    <div class="res-metric-value" style="color:#dc3545;">{{ max(0, $eleitorado - $votaram) }}</div>
+                    <div class="res-metric-value" style="color:#dc3545;">{{ max(0, $compareceram - $votaram) }}</div>
                     <div class="res-metric-label">Faltaram</div>
                 </div>
             </div>
@@ -361,7 +365,7 @@
 @endif
 
 {{-- ── Auditoria por Máquina ──────────────────────────────────── --}}
-@if($maquinasDaMissao->isNotEmpty())
+@if($maquinasDaMissao->isNotEmpty() || $remotosTotal > 0)
 <div class="card mb-4" style="border-radius:.75rem!important;border:none!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important;">
     <div class="card-header d-flex justify-content-between align-items-center"
          style="background:transparent;border-bottom:1px solid #F0F2F5;">
@@ -372,7 +376,7 @@
     </div>
     <div class="card-body p-0">
         <table class="res-table">
-            <thead><tr><th>Máquina</th><th class="text-end">Votos</th></tr></thead>
+            <thead><tr><th>Máquina / Canal</th><th class="text-end">Votos</th></tr></thead>
             <tbody>
                 @foreach($maquinasDaMissao as $row)
                     <tr>
@@ -380,11 +384,23 @@
                         <td class="text-end fw-semibold">{{ $row->total_votos }}</td>
                     </tr>
                 @endforeach
+                @if($mostrarAlianca && $votosRemotosAlianca > 0)
+                <tr>
+                    <td><i class="bi bi-wifi me-1 text-muted"></i>Votação Remota <span class="badge-tipo badge-alianca ms-1">Aliança</span></td>
+                    <td class="text-end fw-semibold">{{ $votosRemotosAlianca }}</td>
+                </tr>
+                @endif
+                @if($mostrarVida && $votosRemotosVida > 0)
+                <tr>
+                    <td><i class="bi bi-wifi me-1 text-muted"></i>Votação Remota <span class="badge-tipo badge-vida ms-1">Vida</span></td>
+                    <td class="text-end fw-semibold">{{ $votosRemotosVida }}</td>
+                </tr>
+                @endif
             </tbody>
             <tfoot>
                 <tr>
                     <td class="fw-semibold">Total</td>
-                    <td class="text-end fw-bold">{{ $maquinasDaMissao->sum('total_votos') }}</td>
+                    <td class="text-end fw-bold">{{ $maquinasDaMissao->sum('total_votos') + $remotosTotal }}</td>
                 </tr>
             </tfoot>
         </table>
