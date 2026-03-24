@@ -18,7 +18,7 @@
 <div class="container py-4" style="max-width: 860px;">
     <div class="text-center mb-5">
         <h3>{{ $eleicaoCidade->eleicao->titulo }}</h3>
-        <p class="text-muted">Leia com atenção cada pergunta e selecione a quantidade indicada de candidatos.</p>
+
     </div>
 
     @if($errors->any())
