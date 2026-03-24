@@ -188,7 +188,7 @@
                     <tbody>
                         @foreach($opcoesVida as $i => $opcao)
                             <tr @if($i === 0 && $totalVidaVotos > 0) class="table-success" @endif>
-                                <td class="text-muted">{{ $i + 1 }}</td>
+                                <td class="text-muted">{{ $loop->iteration }}</td>
                                 <td>{{ $opcao->nome }}</td>
                                 @foreach($eleicao->cidades as $ec)
                                     <td class="text-end text-muted">
@@ -229,7 +229,7 @@
                             <tbody>
                                 @foreach($opcoesCidade as $i => $opcao)
                                     <tr @if($i === 0 && $totalVotosPergunta > 0) class="table-success" @endif>
-                                        <td class="text-muted">{{ $i + 1 }}</td>
+                                        <td class="text-muted">{{ $loop->iteration }}</td>
                                         <td>{{ $opcao->nome }}</td>
                                         <td class="text-end fw-semibold">{{ $opcao->total_votos }}</td>
                                         <td>

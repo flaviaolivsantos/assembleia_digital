@@ -187,7 +187,7 @@
 @if($temAlianca)
 <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px"><span class="badge text-bg-secondary me-1">Aliança</span></p>
 <div class="row g-3 mb-3">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
@@ -198,18 +198,18 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
-                <div class="res-metric-icon"><i class="bi bi-person-check-fill"></i></div>
+                <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
                 <div>
-                    <div class="res-metric-value">{{ $compareceram }}</div>
-                    <div class="res-metric-label">Compareceram</div>
+                    <div class="res-metric-value" style="color:#dc3545;">{{ max(0, $eleitorado - $votaram) }}</div>
+                    <div class="res-metric-label">Faltaram</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
@@ -220,13 +220,24 @@
             </div>
         </div>
     </div>
+    <div class="col-md-3">
+        <div class="card res-metric-card">
+            <div class="card-body d-flex align-items-center gap-3 py-3">
+                <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
+                <div>
+                    <div class="res-metric-value">{{ $pctAproveit }}%</div>
+                    <div class="res-metric-label">Aproveitamento</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endif
 
 @if($temVida)
 <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px"><span class="badge text-bg-primary me-1">Vida</span> — todas as missões</p>
 <div class="row g-3 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
@@ -237,7 +248,18 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
+        <div class="card res-metric-card">
+            <div class="card-body d-flex align-items-center gap-3 py-3">
+                <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
+                <div>
+                    <div class="res-metric-value" style="color:#dc3545;">{{ max(0, $vidaEleitores - $vidaVotaram) }}</div>
+                    <div class="res-metric-label">Faltaram</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
@@ -248,7 +270,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
@@ -408,109 +430,39 @@
         <div class="card-body p-0">
 
             @if($isVida)
-                {{-- Vida: tabela com colunas por missão --}}
-                <div class="table-responsive">
-                    <table class="res-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Candidato</th>
-                                @foreach($todasCidades as $ec)
-                                    <th class="text-center">{{ $ec->cidade->nome }}</th>
-                                @endforeach
-                                <th class="text-center">Total</th>
-                                <th style="min-width:140px">Resultado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($opcoesCidade as $i => $opcao)
-                                @php
-                                    $pctOpcao = $totalVotosPergunta > 0 ? round($opcao->total_votos / $totalVotosPergunta * 100, 1) : 0;
-                                    $isWinner = $i === 0 && $totalVotosPergunta > 0 && $opcao->total_votos === $maxVotos;
-                                @endphp
-                                <tr class="{{ $isWinner ? 'winner' : '' }}">
-                                    <td class="text-muted">{{ $i + 1 }}</td>
-                                    <td class="{{ $isWinner ? 'winner-name' : '' }}">
-                                        @if($isWinner)<i class="bi bi-trophy-fill me-1" style="color:#00BCD4;font-size:.75rem;"></i>@endif
-                                        {{ $opcao->nome }}
-                                    </td>
-                                    @foreach($todasCidades as $ec)
-                                        <td class="text-center text-muted">
-                                            {{ $votosPorCidade["{$pergunta->id}_{$opcao->id}_{$ec->cidade_id}"] ?? 0 }}
-                                        </td>
-                                    @endforeach
-                                    <td class="text-center fw-semibold">{{ $opcao->total_votos }}</td>
-                                    <td>
-                                        <div class="mini-bar">
-                                            <div class="progress"><div class="progress-bar" style="width:{{ $pctOpcao }}%"></div></div>
-                                            <small>{{ $pctOpcao }}%</small>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                {{-- Participação vida por missão --}}
-                @if($todasCidades->count() > 1)
-                    @php
-                        $totalVidaEleit  = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
-                        $totalVidaVot    = array_sum($vidaVotaramPorCidade);
-                        $pctVidaApGeral  = $totalVidaEleit > 0 ? round($totalVidaVot / $totalVidaEleit * 100, 1) : 0;
-                    @endphp
-                    <div class="px-3 pt-3 pb-1">
-                        <p class="section-heading">Participação Vida por Missão</p>
-                    </div>
-                    <table class="res-table">
-                        <thead>
-                            <tr>
-                                <th>Missão</th>
-                                <th class="text-center">Eleitores</th>
-                                <th class="text-center">Votaram</th>
-                                <th style="min-width:130px">Aproveitamento</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($todasCidades as $ec)
-                                @php
-                                    $ecVidaEleit = ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0);
-                                    $ecVidaVot   = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
-                                    $apPct       = $ecVidaEleit > 0 ? round($ecVidaVot / $ecVidaEleit * 100, 1) : 0;
-                                @endphp
-                                <tr @if($ec->cidade_id === $eleicaoCidade->cidade_id) style="background:rgba(0,188,212,.06)!important;" @endif>
-                                    <td>
-                                        {{ $ec->cidade->nome }}
-                                        @if($ec->cidade_id === $eleicaoCidade->cidade_id)
-                                            <span class="badge-tipo badge-vida ms-1" style="font-size:.65rem;">esta</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">{{ $ecVidaEleit }}</td>
-                                    <td class="text-center">{{ $ecVidaVot }}</td>
-                                    <td>
-                                        <div class="mini-bar">
-                                            <div class="progress"><div class="progress-bar" style="width:{{ $apPct }}%"></div></div>
-                                            <small>{{ $apPct }}%</small>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td class="fw-semibold">Total</td>
-                                <td class="text-center fw-semibold">{{ $totalVidaEleit }}</td>
-                                <td class="text-center fw-semibold">{{ $totalVidaVot }}</td>
+                {{-- Vida: placar geral sem breakdown por missão --}}
+                <table class="res-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Candidato</th>
+                            <th class="text-center">Votos</th>
+                            <th style="min-width:160px">Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($opcoesCidade as $i => $opcao)
+                            @php
+                                $pctOpcao = $totalVotosPergunta > 0 ? round($opcao->total_votos / $totalVotosPergunta * 100, 1) : 0;
+                                $isWinner = $i === 0 && $totalVotosPergunta > 0 && $opcao->total_votos === $maxVotos;
+                            @endphp
+                            <tr class="{{ $isWinner ? 'winner' : '' }}">
+                                <td class="text-muted">{{ $loop->iteration }}</td>
+                                <td class="{{ $isWinner ? 'winner-name' : '' }}">
+                                    @if($isWinner)<i class="bi bi-trophy-fill me-1" style="color:#00BCD4;font-size:.75rem;"></i>@endif
+                                    {{ $opcao->nome }}
+                                </td>
+                                <td class="text-center fw-semibold">{{ $opcao->total_votos }}</td>
                                 <td>
                                     <div class="mini-bar">
-                                        <div class="progress"><div class="progress-bar" style="width:{{ $pctVidaApGeral }}%"></div></div>
-                                        <small>{{ $pctVidaApGeral }}%</small>
+                                        <div class="progress"><div class="progress-bar" style="width:{{ $pctOpcao }}%"></div></div>
+                                        <small>{{ $pctOpcao }}%</small>
                                     </div>
                                 </td>
                             </tr>
-                        </tfoot>
-                    </table>
-                @endif
+                        @endforeach
+                    </tbody>
+                </table>
 
             @else
                 {{-- Aliança: placar simples em tabela --}}
@@ -530,7 +482,7 @@
                                 $isWinner = $i === 0 && $totalVotosPergunta > 0 && $opcao->total_votos === $maxVotos;
                             @endphp
                             <tr class="{{ $isWinner ? 'winner' : '' }}">
-                                <td class="text-muted">{{ $i + 1 }}</td>
+                                <td class="text-muted">{{ $loop->iteration }}</td>
                                 <td class="{{ $isWinner ? 'winner-name' : '' }}">
                                     @if($isWinner)<i class="bi bi-trophy-fill me-1" style="color:#00BCD4;font-size:.75rem;"></i>@endif
                                     {{ $opcao->nome }}

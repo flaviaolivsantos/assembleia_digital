@@ -449,7 +449,7 @@
                     @foreach($opcoesVida as $i => $opcao)
                         @php $pctOpcao = $totalVida > 0 ? round($opcao->total_votos / $totalVida * 100, 1) : 0; @endphp
                         <tr>
-                            <td style="width:30px;color:#6c757d;">{{ $i + 1 }}</td>
+                            <td style="width:30px;color:#6c757d;">{{ $loop->iteration }}</td>
                             <td @if($i === 0 && $totalVida > 0) style="color:var(--azul);font-weight:600;" @endif>
                                 {{ $opcao->nome }}
                             </td>
@@ -510,7 +510,7 @@
                     @foreach($opcoesCidade as $i => $opcao)
                         @php $pctOpcao = $totalVotosPergunta > 0 ? round($opcao->total_votos / $totalVotosPergunta * 100, 1) : 0; @endphp
                         <tr>
-                            <td style="width:30px;color:#6c757d;">{{ $i + 1 }}</td>
+                            <td style="width:30px;color:#6c757d;">{{ $loop->iteration }}</td>
                             <td @if($i === 0 && $totalVotosPergunta > 0) style="color:var(--azul);font-weight:600;" @endif>
                                 {{ $opcao->nome }}
                             </td>
