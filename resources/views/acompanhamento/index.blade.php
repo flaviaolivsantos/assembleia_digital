@@ -43,14 +43,18 @@
     background: transparent;
     border: 1px solid var(--cinza-m);
     border-radius: .4rem;
-    padding: .4rem .85rem;
+    padding: .45rem .9rem;
     display: inline-flex;
     align-items: center;
     gap: .4rem;
-    transition: background .18s;
+    transition: all .2s ease-in-out;
     cursor: pointer;
 }
-.btn-atualizar:hover { background: #e9ecef; }
+.btn-atualizar:hover {
+    background: var(--ciano);
+    border-color: var(--ciano);
+    color: var(--branco);
+}
 
 /* Card principal */
 .painel-card {
@@ -77,17 +81,20 @@
 }
 .tipo-badge {
     font-family: var(--font-corpo);
-    font-size: .78rem;
+    font-size: .75rem;
     font-weight: 600;
     letter-spacing: .04em;
     text-transform: uppercase;
-    color: var(--branco);
-    padding: .28rem .75rem;
-    border-radius: 2rem;
+    color: var(--ciano);
+    background: rgba(0, 188, 212, 0.08);
+    border: 1px solid var(--ciano);
+    padding: .25rem .75rem;
+    border-radius: .35rem;
     display: inline-block;
 }
-.tipo-alianca { background: var(--cinza-e); }
-.tipo-vida    { background: var(--ciano); }
+/* ambos usam a mesma identidade ciano; diferenciação pelo rótulo */
+.tipo-alianca { }
+.tipo-vida    { }
 
 /* Tabela */
 .painel-table {
@@ -96,15 +103,16 @@
     font-family: var(--font-corpo);
 }
 .painel-table thead tr {
-    background: var(--azul);
+    background: var(--bg-page);
+    border-bottom: 2px solid var(--cinza-m);
 }
 .painel-table thead th {
     font-family: var(--font-titulo);
-    font-size: .8rem;
+    font-size: .75rem;
     font-weight: 600;
-    letter-spacing: .05em;
+    letter-spacing: .06em;
     text-transform: uppercase;
-    color: var(--branco);
+    color: var(--azul);
     padding: .8rem 1rem;
     white-space: nowrap;
 }
@@ -112,7 +120,7 @@
 .painel-table tbody tr:nth-child(even) { background: var(--bg-page); }
 .painel-table tbody tr:hover { background: #eef6f8; }
 .painel-table td {
-    padding: .6rem 1rem;
+    padding: .75rem 1rem;
     font-size: .92rem;
     color: var(--cinza-e);
     vertical-align: middle;
