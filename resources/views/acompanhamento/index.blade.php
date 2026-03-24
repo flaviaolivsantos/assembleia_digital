@@ -19,75 +19,93 @@
 <script>
 let intervalo = null;
 
-function renderMissao(m) {
-    const statusMap = {
-        aberta:     '<span class="badge text-bg-success">Aberta</span>',
-        encerrada:  '<span class="badge text-bg-dark">Encerrada</span>',
-        aguardando: '<span class="badge text-bg-secondary">Aguardando</span>',
-    };
-    const corBarra = m.pct >= 100 ? 'bg-success' : (m.pct >= 50 ? 'bg-primary' : 'bg-warning');
-    return `
+const statusBadge = {
+    aberta:     '<span class="badge text-bg-success">Aberta</span>',
+    encerrada:  '<span class="badge text-bg-dark">Encerrada</span>',
+    aguardando: '<span class="badge text-bg-secondary">Aguardando</span>',
+};
+
+function barraProgresso(pct) {
+    const cor = pct >= 100 ? 'bg-success' : (pct >= 50 ? 'bg-primary' : 'bg-warning');
+    return `<div class="d-flex align-items-center gap-2">
+        <div class="progress flex-grow-1" style="height:8px;">
+            <div class="progress-bar ${cor}" style="width:${pct}%"></div>
+        </div>
+        <span class="small text-muted">${pct}%</span>
+    </div>`;
+}
+
+function renderTabela(missoes, campos, badge) {
+    const { nome: campoNome, status, membros, votaram, faltam, pct } = campos;
+    const linhas = missoes.map(m => `
         <tr>
             <td><strong>${m.nome}</strong></td>
-            <td>${statusMap[m.status] ?? ''}</td>
-            <td class="text-center">${m.membros}</td>
-            <td class="text-center text-success fw-semibold">${m.votaram}</td>
-            <td class="text-center text-danger fw-semibold">${m.faltam}</td>
-            <td style="min-width:140px">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="progress flex-grow-1" style="height:8px;">
-                        <div class="progress-bar ${corBarra}" style="width:${m.pct}%"></div>
-                    </div>
-                    <span class="small text-muted">${m.pct}%</span>
-                </div>
-            </td>
-        </tr>`;
+            <td>${statusBadge[m[status]] ?? ''}</td>
+            <td class="text-center">${m[membros]}</td>
+            <td class="text-center text-success fw-semibold">${m[votaram]}</td>
+            <td class="text-center text-danger fw-semibold">${m[faltam]}</td>
+            <td style="min-width:140px">${barraProgresso(m[pct])}</td>
+        </tr>`).join('');
+
+    const totalM = missoes.reduce((s, m) => s + m[membros], 0);
+    const totalV = missoes.reduce((s, m) => s + m[votaram], 0);
+    const totalF = missoes.reduce((s, m) => s + m[faltam], 0);
+    const totalP = totalM > 0 ? Math.round((totalV / totalM) * 100) : 0;
+    const tfoot  = missoes.length > 1 ? `
+        <tfoot class="table-light">
+            <tr>
+                <td colspan="2"><strong>Total</strong></td>
+                <td class="text-center fw-semibold">${totalM}</td>
+                <td class="text-center text-success fw-semibold">${totalV}</td>
+                <td class="text-center text-danger fw-semibold">${totalF}</td>
+                <td style="min-width:140px">${barraProgresso(totalP)}</td>
+            </tr>
+        </tfoot>` : '';
+
+    return `
+        <div class="px-3 pt-2 pb-1">${badge}</div>
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Missão</th><th>Status</th>
+                    <th class="text-center">Membros</th>
+                    <th class="text-center">Votaram</th>
+                    <th class="text-center">Faltam</th>
+                    <th>Participação</th>
+                </tr>
+            </thead>
+            <tbody>${linhas}</tbody>
+            ${tfoot}
+        </table>`;
 }
 
 function renderEleicao(e) {
-    const linhas = e.missoes.map(renderMissao).join('');
-    const totalMembros = e.missoes.reduce((s, m) => s + m.membros, 0);
-    const totalVotaram = e.missoes.reduce((s, m) => s + m.votaram, 0);
-    const totalFaltam  = e.missoes.reduce((s, m) => s + m.faltam, 0);
-    const totalPct     = totalMembros > 0 ? Math.round((totalVotaram / totalMembros) * 100) : 0;
-    const corTotal     = totalPct >= 100 ? 'bg-success' : (totalPct >= 50 ? 'bg-primary' : 'bg-warning');
+    let body = '';
 
-    return `
-        <div class="card mb-4">
-            <div class="card-header"><strong>${e.titulo}</strong></div>
-            <div class="card-body p-0">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Missão</th>
-                            <th>Status</th>
-                            <th class="text-center">Membros</th>
-                            <th class="text-center">Votaram</th>
-                            <th class="text-center">Faltam</th>
-                            <th>Participação</th>
-                        </tr>
-                    </thead>
-                    <tbody>${linhas}</tbody>
-                    ${e.missoes.length > 1 ? `
-                    <tfoot class="table-light">
-                        <tr>
-                            <td colspan="2"><strong>Total</strong></td>
-                            <td class="text-center fw-semibold">${totalMembros}</td>
-                            <td class="text-center text-success fw-semibold">${totalVotaram}</td>
-                            <td class="text-center text-danger fw-semibold">${totalFaltam}</td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="progress flex-grow-1" style="height:8px;">
-                                        <div class="progress-bar ${corTotal}" style="width:${totalPct}%"></div>
-                                    </div>
-                                    <span class="small text-muted">${totalPct}%</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tfoot>` : ''}
-                </table>
-            </div>
+    if (e.tem_alianca) {
+        const badge = e.tem_vida
+            ? '<span class="badge bg-secondary">Realidade de Aliança</span>'
+            : '';
+        body += `<div class="card-body p-0">
+            ${renderTabela(e.missoes,
+                { status: 'status', membros: 'membros', votaram: 'votaram', faltam: 'faltam', pct: 'pct' },
+                badge)}
         </div>`;
+    }
+
+    if (e.tem_vida) {
+        const border = e.tem_alianca ? ' border-top' : '';
+        body += `<div class="card-body p-0${border}">
+            ${renderTabela(e.missoes,
+                { status: 'vida_status', membros: 'vida_membros', votaram: 'vida_votaram', faltam: 'vida_faltam', pct: 'vida_pct' },
+                '<span class="badge bg-primary">Realidade de Vida</span>')}
+        </div>`;
+    }
+
+    return `<div class="card mb-4">
+        <div class="card-header"><strong>${e.titulo}</strong></div>
+        ${body}
+    </div>`;
 }
 
 function atualizar() {
