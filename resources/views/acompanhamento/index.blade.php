@@ -1,130 +1,320 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+
+{{-- ── Estilos do Painel ──────────────────────────────────────────────── --}}
+<style>
+:root {
+    --azul:    #2C3E50;
+    --ciano:   #00BCD4;
+    --branco:  #FFFFFF;
+    --bg-page: #F8F9FA;
+    --cinza-m: #CED4DA;
+    --cinza-e: #495057;
+    --verde:   #28A745;
+    --vermelho:#DC3545;
+    --bg-total:#F0F2F5;
+    --sombra:  0 4px 12px rgba(0,0,0,0.06);
+    --radius:  0.75rem;
+    --font-titulo: 'Montserrat', 'Open Sans', sans-serif;
+    --font-corpo:  'Roboto', 'Lato', sans-serif;
+}
+
+/* Página */
+.painel-wrap { background: var(--bg-page); }
+
+/* Cabeçalho */
+.painel-titulo {
+    font-family: var(--font-titulo);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--azul);
+    margin-bottom: .15rem;
+}
+.painel-subtitulo {
+    font-family: var(--font-corpo);
+    font-size: .875rem;
+    color: var(--cinza-e);
+}
+.btn-atualizar {
+    font-family: var(--font-corpo);
+    font-size: .875rem;
+    color: var(--cinza-e);
+    background: transparent;
+    border: 1px solid var(--cinza-m);
+    border-radius: .4rem;
+    padding: .4rem .85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    transition: background .18s;
+    cursor: pointer;
+}
+.btn-atualizar:hover { background: #e9ecef; }
+
+/* Card principal */
+.painel-card {
+    background: var(--branco);
+    border-radius: var(--radius);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+.painel-card-header {
+    font-family: var(--font-titulo);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--azul);
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-m);
+}
+
+/* Seções dentro do card */
+.painel-section { }
+.painel-section.has-border-bottom { border-bottom: 2px solid var(--bg-total); }
+.painel-section-label {
+    padding: .75rem 1.25rem .5rem;
+}
+.tipo-badge {
+    font-family: var(--font-corpo);
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--branco);
+    padding: .28rem .75rem;
+    border-radius: 2rem;
+    display: inline-block;
+}
+.tipo-alianca { background: var(--cinza-e); }
+.tipo-vida    { background: var(--ciano); }
+
+/* Tabela */
+.painel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-corpo);
+}
+.painel-table thead tr {
+    background: var(--azul);
+}
+.painel-table thead th {
+    font-family: var(--font-titulo);
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--branco);
+    padding: .8rem 1rem;
+    white-space: nowrap;
+}
+.painel-table tbody tr:nth-child(odd)  { background: var(--branco); }
+.painel-table tbody tr:nth-child(even) { background: var(--bg-page); }
+.painel-table tbody tr:hover { background: #eef6f8; }
+.painel-table td {
+    padding: .6rem 1rem;
+    font-size: .92rem;
+    color: var(--cinza-e);
+    vertical-align: middle;
+}
+
+/* Colunas específicas */
+.td-nome   { font-weight: 500; color: var(--azul); }
+.col-num   { text-align: center; white-space: nowrap; }
+.td-membros{ font-weight: 600; color: var(--azul); }
+.td-votaram{ font-weight: 600; color: var(--verde); }
+.td-faltam { font-weight: 600; color: var(--vermelho); }
+.col-progresso { min-width: 160px; }
+
+/* Status badges */
+.status-badge {
+    font-size: .75rem;
+    font-weight: 600;
+    padding: .25rem .65rem;
+    border-radius: 2rem;
+    color: var(--branco);
+    white-space: nowrap;
+}
+.status-aberta    { background: var(--verde); }
+.status-encerrada { background: var(--azul); }
+.status-aguardando{ background: var(--cinza-m); color: var(--cinza-e); }
+
+/* Barra de progresso */
+.progresso-wrap {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+.progresso-bg {
+    flex: 1;
+    height: 7px;
+    background: #E9ECEF;
+    border-radius: 99px;
+    overflow: hidden;
+}
+.progresso-fill {
+    height: 100%;
+    background: var(--ciano);
+    border-radius: 99px;
+    transition: width .4s ease;
+}
+.progresso-pct {
+    font-size: .8rem;
+    color: var(--cinza-e);
+    min-width: 2.4rem;
+    text-align: right;
+}
+
+/* Linha de total */
+.total-row {
+    background: var(--bg-total) !important;
+    border-top: 2px solid var(--cinza-m);
+}
+.td-total-label {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    color: var(--azul) !important;
+}
+.td-total-num {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    color: var(--azul) !important;
+    text-align: center;
+}
+</style>
+
+{{-- ── Cabeçalho ──────────────────────────────────────────────────────── --}}
+<div class="d-flex justify-content-between align-items-start mb-4 painel-wrap">
     <div>
-        <h2 class="mb-0">Painel de Acompanhamento</h2>
-        <p class="text-muted mb-0 small">Atualiza automaticamente a cada 30 segundos.</p>
+        <h1 class="painel-titulo">Painel de Acompanhamento</h1>
+        <p class="painel-subtitulo mb-0">Atualiza automaticamente a cada 30 segundos.</p>
     </div>
-    <button class="btn btn-outline-secondary btn-sm" onclick="atualizar()">
+    <button class="btn-atualizar" onclick="atualizar()">
         <i class="bi bi-arrow-clockwise"></i> Atualizar agora
     </button>
 </div>
 
+{{-- ── Conteúdo (renderizado pelo Blade na primeira carga) ────────────── --}}
 <div id="painel">
     @include('acompanhamento._dados', ['eleicoes' => $eleicoes])
 </div>
 
 @push('scripts')
 <script>
-let intervalo = null;
-
+// ── Helpers ────────────────────────────────────────────────────────────
 const statusBadge = {
-    aberta:     '<span class="badge text-bg-success">Aberta</span>',
-    encerrada:  '<span class="badge text-bg-dark">Encerrada</span>',
-    aguardando: '<span class="badge text-bg-secondary">Aguardando</span>',
+    aberta:     '<span class="status-badge status-aberta">Aberta</span>',
+    encerrada:  '<span class="status-badge status-encerrada">Encerrada</span>',
+    aguardando: '<span class="status-badge status-aguardando">Aguardando</span>',
 };
 
-function barraProgresso(pct) {
-    const cor = pct >= 100 ? 'bg-success' : (pct >= 50 ? 'bg-primary' : 'bg-warning');
-    return `<div class="d-flex align-items-center gap-2">
-        <div class="progress flex-grow-1" style="height:8px;">
-            <div class="progress-bar ${cor}" style="width:${pct}%"></div>
-        </div>
-        <span class="small text-muted">${pct}%</span>
+function progressoHtml(pct) {
+    return `<div class="progresso-wrap">
+        <div class="progresso-bg"><div class="progresso-fill" style="width:${pct}%"></div></div>
+        <span class="progresso-pct">${pct}%</span>
     </div>`;
 }
 
-function renderTabela(missoes, campos, badge) {
-    const { nome: campoNome, status, membros, votaram, faltam, pct } = campos;
+/**
+ * Renderiza uma tabela (aliança ou vida) usando os campos corretos do objeto missão.
+ * @param {Array}  missoes  - lista de missões
+ * @param {Object} k        - mapa de chaves: { status, membros, votaram, faltam, pct }
+ * @param {string} badgeHtml - HTML do badge de tipo (pode ser '')
+ */
+function renderTabela(missoes, k, badgeHtml) {
     const linhas = missoes.map(m => `
         <tr>
-            <td><strong>${m.nome}</strong></td>
-            <td>${statusBadge[m[status]] ?? ''}</td>
-            <td class="text-center">${m[membros]}</td>
-            <td class="text-center text-success fw-semibold">${m[votaram]}</td>
-            <td class="text-center text-danger fw-semibold">${m[faltam]}</td>
-            <td style="min-width:140px">${barraProgresso(m[pct])}</td>
+            <td class="td-nome">${m.nome}</td>
+            <td>${statusBadge[m[k.status]] ?? ''}</td>
+            <td class="col-num td-membros">${m[k.membros]}</td>
+            <td class="col-num td-votaram">${m[k.votaram]}</td>
+            <td class="col-num td-faltam">${m[k.faltam]}</td>
+            <td class="col-progresso">${progressoHtml(m[k.pct])}</td>
         </tr>`).join('');
 
-    const totalM = missoes.reduce((s, m) => s + m[membros], 0);
-    const totalV = missoes.reduce((s, m) => s + m[votaram], 0);
-    const totalF = missoes.reduce((s, m) => s + m[faltam], 0);
+    const totalM = missoes.reduce((s, m) => s + m[k.membros], 0);
+    const totalV = missoes.reduce((s, m) => s + m[k.votaram], 0);
+    const totalF = missoes.reduce((s, m) => s + m[k.faltam], 0);
     const totalP = totalM > 0 ? Math.round((totalV / totalM) * 100) : 0;
-    const tfoot  = missoes.length > 1 ? `
-        <tfoot class="table-light">
-            <tr>
-                <td colspan="2"><strong>Total</strong></td>
-                <td class="text-center fw-semibold">${totalM}</td>
-                <td class="text-center text-success fw-semibold">${totalV}</td>
-                <td class="text-center text-danger fw-semibold">${totalF}</td>
-                <td style="min-width:140px">${barraProgresso(totalP)}</td>
+
+    const tfoot = missoes.length > 1 ? `
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="2" class="td-total-label">Total</td>
+                <td class="col-num td-total-num">${totalM}</td>
+                <td class="col-num td-total-num">${totalV}</td>
+                <td class="col-num td-total-num">${totalF}</td>
+                <td class="col-progresso">${progressoHtml(totalP)}</td>
             </tr>
         </tfoot>` : '';
 
-    return `
-        <div class="px-3 pt-2 pb-1">${badge}</div>
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>Missão</th><th>Status</th>
-                    <th class="text-center">Membros</th>
-                    <th class="text-center">Votaram</th>
-                    <th class="text-center">Faltam</th>
-                    <th>Participação</th>
-                </tr>
-            </thead>
-            <tbody>${linhas}</tbody>
-            ${tfoot}
-        </table>`;
+    const labelHtml = badgeHtml
+        ? `<div class="painel-section-label">${badgeHtml}</div>`
+        : '';
+
+    return `${labelHtml}
+        <div class="table-responsive">
+            <table class="painel-table">
+                <thead>
+                    <tr>
+                        <th>Missão</th>
+                        <th>Status</th>
+                        <th class="col-num">Membros</th>
+                        <th class="col-num">Votaram</th>
+                        <th class="col-num">Faltam</th>
+                        <th class="col-progresso">Participação</th>
+                    </tr>
+                </thead>
+                <tbody>${linhas}</tbody>
+                ${tfoot}
+            </table>
+        </div>`;
 }
 
 function renderEleicao(e) {
-    let body = '';
+    let sections = '';
 
     if (e.tem_alianca) {
         const badge = e.tem_vida
-            ? '<span class="badge bg-secondary">Realidade de Aliança</span>'
+            ? '<span class="tipo-badge tipo-alianca">Realidade de Aliança</span>'
             : '';
-        body += `<div class="card-body p-0">
+        const borderClass = e.tem_vida ? ' has-border-bottom' : '';
+        sections += `<div class="painel-section${borderClass}">
             ${renderTabela(e.missoes,
-                { status: 'status', membros: 'membros', votaram: 'votaram', faltam: 'faltam', pct: 'pct' },
+                { status:'status', membros:'membros', votaram:'votaram', faltam:'faltam', pct:'pct' },
                 badge)}
         </div>`;
     }
 
     if (e.tem_vida) {
-        const border = e.tem_alianca ? ' border-top' : '';
-        body += `<div class="card-body p-0${border}">
+        sections += `<div class="painel-section">
             ${renderTabela(e.missoes,
-                { status: 'vida_status', membros: 'vida_membros', votaram: 'vida_votaram', faltam: 'vida_faltam', pct: 'vida_pct' },
-                '<span class="badge bg-primary">Realidade de Vida</span>')}
+                { status:'vida_status', membros:'vida_membros', votaram:'vida_votaram', faltam:'vida_faltam', pct:'vida_pct' },
+                '<span class="tipo-badge tipo-vida">Realidade de Vida</span>')}
         </div>`;
     }
 
-    return `<div class="card mb-4">
-        <div class="card-header"><strong>${e.titulo}</strong></div>
-        ${body}
+    return `<div class="painel-card">
+        <div class="painel-card-header">${e.titulo}</div>
+        ${sections}
     </div>`;
 }
 
+// ── Auto-refresh ───────────────────────────────────────────────────────
 function atualizar() {
     fetch('{{ route('acompanhamento.dados') }}', {
         headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(r => r.json())
     .then(data => {
-        if (data.length === 0) {
-            document.getElementById('painel').innerHTML =
-                '<div class="alert alert-info">Nenhuma eleição aberta no momento.</div>';
-        } else {
-            document.getElementById('painel').innerHTML = data.map(renderEleicao).join('');
-        }
+        document.getElementById('painel').innerHTML = data.length === 0
+            ? '<div class="alert alert-info">Nenhuma eleição aberta no momento.</div>'
+            : data.map(renderEleicao).join('');
     })
     .catch(() => {});
 }
 
-intervalo = setInterval(atualizar, 30000);
+setInterval(atualizar, 30000);
 </script>
 @endpush
 @endsection

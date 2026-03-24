@@ -1,152 +1,77 @@
 @forelse($eleicoes as $eleicao)
+@php
+    $temAlianca = $eleicao['tem_alianca'];
+    $temVida    = $eleicao['tem_vida'];
+@endphp
+<div class="painel-card">
+    <div class="painel-card-header">{{ $eleicao['titulo'] }}</div>
+
+    {{-- ── Realidade de Aliança ─────────────────────────────────── --}}
+    @if($temAlianca)
     @php
-        $temAlianca = $eleicao['tem_alianca'];
-        $temVida    = $eleicao['tem_vida'];
+        $totalM   = $eleicao['missoes']->sum('membros');
+        $totalV   = $eleicao['missoes']->sum('votaram');
+        $totalF   = $eleicao['missoes']->sum('faltam');
+        $totalPct = $totalM > 0 ? round(($totalV / $totalM) * 100) : 0;
     @endphp
-    <div class="card mb-4">
-        <div class="card-header"><strong>{{ $eleicao['titulo'] }}</strong></div>
-
-        {{-- Aliança section --}}
-        @if($temAlianca)
-        <div class="card-body p-0">
-            @if($temVida)
-            <div class="px-3 pt-2 pb-1">
-                <span class="badge bg-secondary">Realidade de Aliança</span>
-            </div>
-            @endif
-            @php
-                $totalMembros = $eleicao['missoes']->sum('membros');
-                $totalVotaram = $eleicao['missoes']->sum('votaram');
-                $totalFaltam  = $eleicao['missoes']->sum('faltam');
-                $totalPct     = $totalMembros > 0 ? round(($totalVotaram / $totalMembros) * 100) : 0;
-            @endphp
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Missão</th>
-                        <th>Status</th>
-                        <th class="text-center">Membros</th>
-                        <th class="text-center">Votaram</th>
-                        <th class="text-center">Faltam</th>
-                        <th>Participação</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($eleicao['missoes'] as $m)
-                        @php $corBarra = $m['pct'] >= 100 ? 'bg-success' : ($m['pct'] >= 50 ? 'bg-primary' : 'bg-warning'); @endphp
-                        <tr>
-                            <td><strong>{{ $m['nome'] }}</strong></td>
-                            <td>
-                                @if($m['status'] === 'aberta')
-                                    <span class="badge text-bg-success">Aberta</span>
-                                @elseif($m['status'] === 'encerrada')
-                                    <span class="badge text-bg-dark">Encerrada</span>
-                                @else
-                                    <span class="badge text-bg-secondary">Aguardando</span>
-                                @endif
-                            </td>
-                            <td class="text-center">{{ $m['membros'] }}</td>
-                            <td class="text-center text-success fw-semibold">{{ $m['votaram'] }}</td>
-                            <td class="text-center text-danger fw-semibold">{{ $m['faltam'] }}</td>
-                            <td style="min-width:140px">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="progress flex-grow-1" style="height:8px;">
-                                        <div class="progress-bar {{ $corBarra }}" style="width:{{ $m['pct'] }}%"></div>
-                                    </div>
-                                    <span class="small text-muted">{{ $m['pct'] }}%</span>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                @if(count($eleicao['missoes']) > 1)
-                <tfoot class="table-light">
-                    @php $corTotal = $totalPct >= 100 ? 'bg-success' : ($totalPct >= 50 ? 'bg-primary' : 'bg-warning'); @endphp
-                    <tr>
-                        <td colspan="2"><strong>Total</strong></td>
-                        <td class="text-center fw-semibold">{{ $totalMembros }}</td>
-                        <td class="text-center text-success fw-semibold">{{ $totalVotaram }}</td>
-                        <td class="text-center text-danger fw-semibold">{{ $totalFaltam }}</td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="progress flex-grow-1" style="height:8px;">
-                                    <div class="progress-bar {{ $corTotal }}" style="width:{{ $totalPct }}%"></div>
-                                </div>
-                                <span class="small text-muted">{{ $totalPct }}%</span>
-                            </div>
-                        </td>
-                    </tr>
-                </tfoot>
-                @endif
-            </table>
-        </div>
-        @endif
-
-        {{-- Vida section --}}
+    <div class="painel-section {{ $temAlianca && $temVida ? 'has-border-bottom' : '' }}">
         @if($temVida)
-        <div class="card-body p-0 {{ $temAlianca ? 'border-top' : '' }}">
-            <div class="px-3 pt-2 pb-1">
-                <span class="badge bg-primary">Realidade de Vida</span>
-            </div>
-            @php
-                $totalVidaMembros = $eleicao['missoes']->sum('vida_membros');
-                $totalVidaVotaram = $eleicao['missoes']->sum('vida_votaram');
-                $totalVidaFaltam  = $eleicao['missoes']->sum('vida_faltam');
-                $totalVidaPct     = $totalVidaMembros > 0 ? round(($totalVidaVotaram / $totalVidaMembros) * 100) : 0;
-            @endphp
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
+        <div class="painel-section-label">
+            <span class="tipo-badge tipo-alianca">Realidade de Aliança</span>
+        </div>
+        @endif
+        <div class="table-responsive">
+            <table class="painel-table">
+                <thead>
                     <tr>
                         <th>Missão</th>
                         <th>Status</th>
-                        <th class="text-center">Membros</th>
-                        <th class="text-center">Votaram</th>
-                        <th class="text-center">Faltam</th>
-                        <th>Participação</th>
+                        <th class="col-num">Membros</th>
+                        <th class="col-num">Votaram</th>
+                        <th class="col-num">Faltam</th>
+                        <th class="col-progresso">Participação</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($eleicao['missoes'] as $m)
-                        @php $corBarra = $m['vida_pct'] >= 100 ? 'bg-success' : ($m['vida_pct'] >= 50 ? 'bg-primary' : 'bg-warning'); @endphp
-                        <tr>
-                            <td><strong>{{ $m['nome'] }}</strong></td>
-                            <td>
-                                @if($m['vida_status'] === 'aberta')
-                                    <span class="badge text-bg-success">Aberta</span>
-                                @elseif($m['vida_status'] === 'encerrada')
-                                    <span class="badge text-bg-dark">Encerrada</span>
-                                @else
-                                    <span class="badge text-bg-secondary">Aguardando</span>
-                                @endif
-                            </td>
-                            <td class="text-center">{{ $m['vida_membros'] }}</td>
-                            <td class="text-center text-success fw-semibold">{{ $m['vida_votaram'] }}</td>
-                            <td class="text-center text-danger fw-semibold">{{ $m['vida_faltam'] }}</td>
-                            <td style="min-width:140px">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="progress flex-grow-1" style="height:8px;">
-                                        <div class="progress-bar {{ $corBarra }}" style="width:{{ $m['vida_pct'] }}%"></div>
-                                    </div>
-                                    <span class="small text-muted">{{ $m['vida_pct'] }}%</span>
+                    <tr>
+                        <td class="td-nome">{{ $m['nome'] }}</td>
+                        <td>
+                            @if($m['status'] === 'aberta')
+                                <span class="status-badge status-aberta">Aberta</span>
+                            @elseif($m['status'] === 'encerrada')
+                                <span class="status-badge status-encerrada">Encerrada</span>
+                            @else
+                                <span class="status-badge status-aguardando">Aguardando</span>
+                            @endif
+                        </td>
+                        <td class="col-num td-membros">{{ $m['membros'] }}</td>
+                        <td class="col-num td-votaram">{{ $m['votaram'] }}</td>
+                        <td class="col-num td-faltam">{{ $m['faltam'] }}</td>
+                        <td class="col-progresso">
+                            <div class="progresso-wrap">
+                                <div class="progresso-bg">
+                                    <div class="progresso-fill" style="width:{{ $m['pct'] }}%"></div>
                                 </div>
-                            </td>
-                        </tr>
+                                <span class="progresso-pct">{{ $m['pct'] }}%</span>
+                            </div>
+                        </td>
+                    </tr>
                     @endforeach
                 </tbody>
                 @if(count($eleicao['missoes']) > 1)
-                <tfoot class="table-light">
-                    @php $corTotal = $totalVidaPct >= 100 ? 'bg-success' : ($totalVidaPct >= 50 ? 'bg-primary' : 'bg-warning'); @endphp
-                    <tr>
-                        <td colspan="2"><strong>Total</strong></td>
-                        <td class="text-center fw-semibold">{{ $totalVidaMembros }}</td>
-                        <td class="text-center text-success fw-semibold">{{ $totalVidaVotaram }}</td>
-                        <td class="text-center text-danger fw-semibold">{{ $totalVidaFaltam }}</td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="progress flex-grow-1" style="height:8px;">
-                                    <div class="progress-bar {{ $corTotal }}" style="width:{{ $totalVidaPct }}%"></div>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="2" class="td-total-label">Total</td>
+                        <td class="col-num td-total-num">{{ $totalM }}</td>
+                        <td class="col-num td-total-num">{{ $totalV }}</td>
+                        <td class="col-num td-total-num">{{ $totalF }}</td>
+                        <td class="col-progresso">
+                            <div class="progresso-wrap">
+                                <div class="progresso-bg">
+                                    <div class="progresso-fill" style="width:{{ $totalPct }}%"></div>
                                 </div>
-                                <span class="small text-muted">{{ $totalVidaPct }}%</span>
+                                <span class="progresso-pct">{{ $totalPct }}%</span>
                             </div>
                         </td>
                     </tr>
@@ -154,8 +79,83 @@
                 @endif
             </table>
         </div>
-        @endif
     </div>
+    @endif
+
+    {{-- ── Realidade de Vida ────────────────────────────────────── --}}
+    @if($temVida)
+    @php
+        $totalVM  = $eleicao['missoes']->sum('vida_membros');
+        $totalVV  = $eleicao['missoes']->sum('vida_votaram');
+        $totalVF  = $eleicao['missoes']->sum('vida_faltam');
+        $totalVPct = $totalVM > 0 ? round(($totalVV / $totalVM) * 100) : 0;
+    @endphp
+    <div class="painel-section">
+        <div class="painel-section-label">
+            <span class="tipo-badge tipo-vida">Realidade de Vida</span>
+        </div>
+        <div class="table-responsive">
+            <table class="painel-table">
+                <thead>
+                    <tr>
+                        <th>Missão</th>
+                        <th>Status</th>
+                        <th class="col-num">Membros</th>
+                        <th class="col-num">Votaram</th>
+                        <th class="col-num">Faltam</th>
+                        <th class="col-progresso">Participação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($eleicao['missoes'] as $m)
+                    <tr>
+                        <td class="td-nome">{{ $m['nome'] }}</td>
+                        <td>
+                            @if($m['vida_status'] === 'aberta')
+                                <span class="status-badge status-aberta">Aberta</span>
+                            @elseif($m['vida_status'] === 'encerrada')
+                                <span class="status-badge status-encerrada">Encerrada</span>
+                            @else
+                                <span class="status-badge status-aguardando">Aguardando</span>
+                            @endif
+                        </td>
+                        <td class="col-num td-membros">{{ $m['vida_membros'] }}</td>
+                        <td class="col-num td-votaram">{{ $m['vida_votaram'] }}</td>
+                        <td class="col-num td-faltam">{{ $m['vida_faltam'] }}</td>
+                        <td class="col-progresso">
+                            <div class="progresso-wrap">
+                                <div class="progresso-bg">
+                                    <div class="progresso-fill" style="width:{{ $m['vida_pct'] }}%"></div>
+                                </div>
+                                <span class="progresso-pct">{{ $m['vida_pct'] }}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+                @if(count($eleicao['missoes']) > 1)
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="2" class="td-total-label">Total</td>
+                        <td class="col-num td-total-num">{{ $totalVM }}</td>
+                        <td class="col-num td-total-num">{{ $totalVV }}</td>
+                        <td class="col-num td-total-num">{{ $totalVF }}</td>
+                        <td class="col-progresso">
+                            <div class="progresso-wrap">
+                                <div class="progresso-bg">
+                                    <div class="progresso-fill" style="width:{{ $totalVPct }}%"></div>
+                                </div>
+                                <span class="progresso-pct">{{ $totalVPct }}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+                @endif
+            </table>
+        </div>
+    </div>
+    @endif
+</div>
 @empty
-    <div class="alert alert-info">Nenhuma eleição aberta no momento.</div>
+<div class="alert alert-info">Nenhuma eleição aberta no momento.</div>
 @endforelse
