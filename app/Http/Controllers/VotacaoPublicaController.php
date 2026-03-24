@@ -200,11 +200,15 @@ class VotacaoPublicaController extends Controller
 
         session()->forget(['votacao_hash', 'votacao_cidade_id', 'votacao_eleicao_id', 'votacao_escopo', 'votacao_origem', 'votacao_maquina_id']);
 
-        return redirect()->route('votacao.confirmado');
+        return redirect()->route('votacao.confirmado')->with('voto_registrado', true);
     }
 
     public function confirmado()
     {
+        if (!session('voto_registrado')) {
+            return redirect()->route('votacao.index');
+        }
+
         return view('votacao.confirmado');
     }
 }

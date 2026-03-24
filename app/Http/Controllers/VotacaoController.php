@@ -279,11 +279,15 @@ class VotacaoController extends Controller
 
         session()->forget(['votacao_hash', 'votacao_cidade_id', 'votacao_eleicao_id', 'votacao_escopo', 'votacao_origem', 'votacao_maquina_id']);
 
-        return redirect()->route('maquina.confirmado');
+        return redirect()->route('maquina.confirmado')->with('voto_registrado', true);
     }
 
     public function confirmado()
     {
+        if (!session('voto_registrado')) {
+            return redirect()->route('maquina.index');
+        }
+
         return view('maquina.confirmado');
     }
 }
