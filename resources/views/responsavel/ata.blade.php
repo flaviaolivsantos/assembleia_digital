@@ -289,7 +289,11 @@
         </div>
         <div class="doc-meta">
             Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
-            Missão: {{ $eleicaoCidade->cidade->nome }}
+            @if($temVida && !$temAlianca)
+                Todas as Missões
+            @else
+                Missão: {{ $eleicaoCidade->cidade->nome }}
+            @endif
         </div>
     </div>
 
@@ -300,7 +304,11 @@
         <div class="doc-title-sub">
             {{ $eleicao->titulo }}
             &nbsp;&middot;&nbsp;
-            {{ $eleicaoCidade->cidade->nome }}
+            @if($temVida && !$temAlianca)
+                Todas as Missões
+            @else
+                {{ $eleicaoCidade->cidade->nome }}
+            @endif
             &nbsp;&middot;&nbsp;
             {{ $eleicao->data_eleicao->format('d/m/Y') }}
         </div>
@@ -310,12 +318,15 @@
     <div class="section-title">
         <span class="section-icon"></span>1. Participação
     </div>
+
+    @if($temAlianca)
     @php
         $adPct = $eleicaoCidade->qtd_eleitorado > 0
             ? round($eleicaoCidade->qtd_membros       / $eleicaoCidade->qtd_eleitorado * 100, 1) : 0;
         $apPct = $eleicaoCidade->qtd_membros    > 0
             ? round($eleicaoCidade->votos_registrados / $eleicaoCidade->qtd_membros    * 100, 1) : 0;
     @endphp
+    <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Realidade de Aliança — {{ $eleicaoCidade->cidade->nome }}</p>
     <table class="ata-table">
         <thead>
             <tr>
@@ -336,6 +347,69 @@
             </tr>
         </tbody>
     </table>
+    @endif
+
+    @if($temVida)
+    @php
+        $vidaTotalEleit  = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
+        $vidaTotalVotaram = array_sum($vidaVotaramPorCidade);
+        $vidaApPct        = $vidaTotalEleit > 0 ? round($vidaTotalVotaram / $vidaTotalEleit * 100, 1) : 0;
+    @endphp
+    <p style="font-size:.75rem;color:#6c757d;margin:.8rem 0 .4rem;font-style:italic;">Realidade de Vida — Todas as Missões</p>
+    <table class="ata-table">
+        <thead>
+            <tr>
+                <th class="center">Eleitores Aptos</th>
+                <th class="center">Votaram</th>
+                <th class="center">Aproveit.</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="center val-azul">{{ $vidaTotalEleit }}</td>
+                <td class="center val-azul">{{ $vidaTotalVotaram }}</td>
+                <td class="center val-ciano">{{ $vidaApPct }}%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    @if($todasCidades->count() > 1)
+    <p style="font-size:.75rem;color:#6c757d;margin:.4rem 0 .4rem;font-style:italic;">Participação Vida por Missão</p>
+    <table class="ata-table">
+        <thead>
+            <tr>
+                <th>Missão</th>
+                <th class="center">Eleitores</th>
+                <th class="center">Votaram</th>
+                <th class="center">Aproveit.</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($todasCidades as $ec)
+            @php
+                $ecEleit = ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0);
+                $ecVot   = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
+                $ecAp    = $ecEleit > 0 ? round($ecVot / $ecEleit * 100, 1) : 0;
+            @endphp
+            <tr>
+                <td>{{ $ec->cidade->nome }}</td>
+                <td class="center">{{ $ecEleit }}</td>
+                <td class="center val-azul">{{ $ecVot }}</td>
+                <td class="center val-ciano">{{ $ecAp }}%</td>
+            </tr>
+            @endforeach
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                <td class="center">{{ $vidaTotalEleit }}</td>
+                <td class="center">{{ $vidaTotalVotaram }}</td>
+                <td class="center">{{ $vidaApPct }}%</td>
+            </tr>
+        </tfoot>
+    </table>
+    @endif
+    @endif
 
     {{-- 2. Resultados --}}
     <div class="section-title">
@@ -386,31 +460,30 @@
                 </tbody>
             </table>
 
-            {{-- Participação por missão --}}
+            {{-- votos por missão detalhados dentro de cada pergunta vida --}}
             @if($todasCidades->count() > 1)
-                <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Participação por missão</p>
+                <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Votos por missão</p>
                 <table class="ata-table">
                     <thead>
                         <tr>
                             <th>Missão</th>
-                            <th class="center">Aptos</th>
-                            <th class="center">Comparec.</th>
-                            <th class="center">Votaram</th>
+                            @foreach($opcoesVida as $opcao)
+                                <th class="center" style="font-size:.72rem;">{{ $opcao->nome }}</th>
+                            @endforeach
+                            <th class="center">Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($todasCidades as $ec)
-                            <tr @if($ec->cidade_id === $eleicaoCidade->cidade_id) style="background:rgba(0,188,212,.06)!important;" @endif>
-                                <td>
-                                    {{ $ec->cidade->nome }}
-                                    @if($ec->cidade_id === $eleicaoCidade->cidade_id)
-                                        <span style="font-size:.7rem;color:var(--ciano);">(esta missão)</span>
-                                    @endif
-                                </td>
-                                <td class="center">{{ $ec->qtd_eleitorado }}</td>
-                                <td class="center">{{ $ec->qtd_membros }}</td>
-                                <td class="center">{{ $ec->votos_registrados }}</td>
-                            </tr>
+                        @php $totalPorCidade = 0; @endphp
+                        <tr>
+                            <td>{{ $ec->cidade->nome }}</td>
+                            @foreach($opcoesVida as $opcao)
+                                @php $v = $votosPorCidade["{$pergunta->id}_{$opcao->id}_{$ec->cidade_id}"] ?? 0; $totalPorCidade += $v; @endphp
+                                <td class="center">{{ $v }}</td>
+                            @endforeach
+                            <td class="center val-azul">{{ $totalPorCidade }}</td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -454,6 +527,9 @@
     <div class="section-title">
         <span class="section-icon"></span>3. Auditoria
     </div>
+
+    @if($temAlianca)
+    <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Realidade de Aliança — {{ $eleicaoCidade->cidade->nome }}</p>
     <table class="audit-table">
         <tbody>
             <tr>
@@ -487,6 +563,37 @@
             </tr>
         </tbody>
     </table>
+    @endif
+
+    @if($temVida)
+    <p style="font-size:.75rem;color:#6c757d;margin:.8rem 0 .4rem;font-style:italic;">Realidade de Vida — Todas as Missões</p>
+    <table class="audit-table">
+        <tbody>
+            <tr>
+                <td>Horário de abertura</td>
+                <td>{{ $eleicao->data_abertura_vida?->format('d/m/Y H:i') ?? '—' }}</td>
+            </tr>
+            <tr>
+                <td>Horário de encerramento</td>
+                <td>{{ $eleicao->data_encerramento_vida?->format('d/m/Y H:i') ?? '—' }}</td>
+            </tr>
+            <tr>
+                <td>Total esperado de votos</td>
+                <td class="val-azul">{{ $vidaTotalEleit ?? $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0)) }}</td>
+            </tr>
+            <tr>
+                <td>Total realizado</td>
+                <td>
+                    @php $vTot = $vidaTotalVotaram ?? array_sum($vidaVotaramPorCidade); $vEleit = $vidaTotalEleit ?? $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0)); @endphp
+                    <span class="val-azul">{{ $vTot }}</span>
+                    @if($vEleit > 0)
+                        &nbsp;<span class="val-ciano">({{ round($vTot / $vEleit * 100, 1) }}%)</span>
+                    @endif
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    @endif
 
     {{-- 4. Assinatura --}}
     <div class="section-title">

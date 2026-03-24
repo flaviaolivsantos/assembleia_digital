@@ -80,13 +80,21 @@ class ResultadoController extends Controller
             abort(403, 'Ata disponível apenas após o encerramento da votação.');
         }
 
-        $eleicao->load('perguntas.opcoes', 'cidades.cidade');
+        $eleicao->load('perguntas.opcoes', 'cidades.cidade', 'cidades.abertaPor', 'cidades.encerradaPor');
         $eleicaoCidade->load('cidade', 'abertaPor', 'encerradaPor');
 
-        $votosRaw    = $this->carregarVotos($eleicao);
-        $todasCidades = $eleicao->cidades;
+        $temVida    = $eleicao->perguntas->where('escopo', 'vida')->count() > 0;
+        $temAlianca = $eleicao->perguntas->where('escopo', 'alianca')->count() > 0;
 
-        return view('responsavel.ata', compact('eleicao', 'eleicaoCidade', 'votosRaw', 'todasCidades'));
+        $votosRaw             = $this->carregarVotos($eleicao);
+        $votosPorCidade       = $this->carregarVotosPorCidade($eleicao);
+        $todasCidades         = $eleicao->cidades;
+        $vidaVotaramPorCidade = $this->carregarVidaVotaramPorCidade($eleicao);
+
+        return view('responsavel.ata', compact(
+            'eleicao', 'eleicaoCidade', 'votosRaw', 'votosPorCidade', 'todasCidades',
+            'temVida', 'temAlianca', 'vidaVotaramPorCidade'
+        ));
     }
 
     private function carregarVotos(Eleicao $eleicao)
