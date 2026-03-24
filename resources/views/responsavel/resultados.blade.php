@@ -425,6 +425,15 @@
     @php $isVida = $pergunta->escopo === 'vida'; @endphp
     @if($filtro === 'alianca' && $isVida) @continue @endif
     @if($filtro === 'vida'    && !$isVida) @continue @endif
+
+    @php
+        // Para aliança em geral: iterar por cada cidade; caso contrário, cidade única
+        $cidadesLoop = (!$isVida && $filtro === 'geral')
+            ? $todasCidades
+            : collect([null]); // null = não precisa de cidade (vida ou aliança específica)
+    @endphp
+
+    @foreach($cidadesLoop as $ecLoop)
     @php
         if ($isVida) {
             $opcoesCidade = $pergunta->opcoes
@@ -433,14 +442,15 @@
                     return $opcao;
                 })->sortByDesc('total_votos');
         } else {
-            $opcoesCidade = $pergunta->opcoes->where('cidade_id', $eleicaoCidade->cidade_id)
+            $cidFiltro    = $ecLoop ? $ecLoop->cidade_id : $aliancaCidade->cidade_id;
+            $opcoesCidade = $pergunta->opcoes->where('cidade_id', $cidFiltro)
                 ->map(function($opcao) use ($votosRaw, $pergunta) {
                     $opcao->total_votos = $votosRaw->get($pergunta->id . '_' . $opcao->id)?->total ?? 0;
                     return $opcao;
                 })->sortByDesc('total_votos');
         }
         $totalVotosPergunta = $opcoesCidade->sum('total_votos');
-        $maxVotos = $opcoesCidade->max('total_votos');
+        $maxVotos           = $opcoesCidade->max('total_votos');
     @endphp
 
     <div class="card mb-4" style="border-radius:.75rem!important;border:none!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important;">
@@ -449,9 +459,14 @@
             <span style="font-family:'Montserrat',sans-serif;font-weight:600;font-size:.9rem;color:#2C3E50;">
                 {{ $pergunta->pergunta }}
             </span>
-            <span class="badge-tipo {{ $isVida ? 'badge-vida' : 'badge-alianca' }}">
-                {{ $isVida ? 'Realidade de Vida' : 'Realidade de Aliança' }}
-            </span>
+            <div class="d-flex gap-2 align-items-center">
+                @if(!$isVida && $ecLoop)
+                    <span class="badge text-bg-secondary" style="font-size:.65rem;">{{ $ecLoop->cidade->nome }}</span>
+                @endif
+                <span class="badge-tipo {{ $isVida ? 'badge-vida' : 'badge-alianca' }}">
+                    {{ $isVida ? 'Realidade de Vida' : 'Realidade de Aliança' }}
+                </span>
+            </div>
         </div>
         <div class="card-body p-0">
             <table class="res-table">
@@ -490,6 +505,7 @@
             </table>
         </div>
     </div>
+    @endforeach
 @endforeach
 
 @push('scripts')
