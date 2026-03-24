@@ -158,7 +158,8 @@ class VotacaoController extends Controller
             ->map(function ($pergunta) use ($cidadeId) {
                 $pergunta->opcoesDaCidade = $pergunta->opcoesPorCidade($cidadeId)->get();
                 return $pergunta;
-            });
+            })
+            ->filter(fn($p) => $p->opcoesDaCidade->count() > 0);
 
         return view('maquina.votar', compact('eleicaoCidade', 'perguntas'));
     }

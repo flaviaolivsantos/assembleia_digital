@@ -88,7 +88,8 @@ class VotacaoPublicaController extends Controller
             ->map(function ($pergunta) use ($cidadeId) {
                 $pergunta->opcoesDaCidade = $pergunta->opcoesPorCidade($cidadeId)->get();
                 return $pergunta;
-            });
+            })
+            ->filter(fn($p) => $p->opcoesDaCidade->count() > 0);
 
         $confirmRoute = 'votacao.confirmarVoto';
 

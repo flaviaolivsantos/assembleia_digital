@@ -35,7 +35,7 @@
         @foreach($perguntas as $index => $pergunta)
             <div class="card mb-5">
                 <div class="card-header">
-                    <strong>{{ $index + 1 }}. {{ $pergunta->pergunta }}</strong>
+                    <strong>{{ $pergunta->pergunta }}</strong>
                     <span class="badge text-bg-primary ms-2" id="contador-{{ $pergunta->id }}">
                         0 / {{ $pergunta->qtd_respostas }}
                     </span>
