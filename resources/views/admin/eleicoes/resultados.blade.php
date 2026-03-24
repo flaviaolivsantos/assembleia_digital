@@ -22,7 +22,7 @@
     $pctAdGeral = $totalAptosGeral    > 0 ? round($totalComparecGeral / $totalAptosGeral    * 100, 1) : 0;
     $pctApGeral = $totalComparecGeral > 0 ? round($totalVotaramGeral  / $totalComparecGeral * 100, 1) : 0;
 
-    $totalVidaEleitores = $eleicao->cidades->sum('qtd_vida');
+    $totalVidaEleitores = $eleicao->cidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
     $totalVidaVotaram   = array_sum($vidaVotaramPorCidade);
     $pctVidaAp = $totalVidaEleitores > 0 ? round($totalVidaVotaram / $totalVidaEleitores * 100, 1) : 0;
 @endphp
@@ -66,8 +66,9 @@
                     @php
                         $pctAd = $ec->qtd_eleitorado > 0 ? round($ec->qtd_membros / $ec->qtd_eleitorado * 100, 1) : 0;
                         $pctAp = $ec->qtd_membros    > 0 ? round($ec->votos_registrados / $ec->qtd_membros * 100, 1) : 0;
+                        $cidVidaEleit   = ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0);
                         $cidVidaVotaram = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
-                        $pctVidaApCid   = $ec->qtd_vida > 0 ? round($cidVidaVotaram / $ec->qtd_vida * 100, 1) : 0;
+                        $pctVidaApCid   = $cidVidaEleit > 0 ? round($cidVidaVotaram / $cidVidaEleit * 100, 1) : 0;
                     @endphp
                     <h6 class="card-title mb-2">{{ $ec->cidade->nome }}</h6>
 
@@ -90,7 +91,7 @@
                     @if($temVida)
                     <p class="text-muted" style="font-size:.68rem;margin-bottom:.25rem;"><span class="badge text-bg-primary" style="font-size:.65rem;">Vida</span></p>
                     <div class="d-flex justify-content-around text-center mb-2">
-                        <div><div class="fw-bold">{{ $ec->qtd_vida }}</div><div class="text-muted" style="font-size:.7rem">Remotos</div></div>
+                        <div><div class="fw-bold">{{ $cidVidaEleit }}</div><div class="text-muted" style="font-size:.7rem">Eleitores</div></div>
                         <div><div class="fw-bold text-success">{{ $cidVidaVotaram }}</div><div class="text-muted" style="font-size:.7rem">Votaram</div></div>
                     </div>
                     <div class="progress" style="height: 5px;" title="Aproveitamento Vida {{ $pctVidaApCid }}%">
