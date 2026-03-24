@@ -456,6 +456,7 @@
         $totalVotosPergunta = $opcoesCidade->sum('total_votos');
         $maxVotos           = $opcoesCidade->max('total_votos');
     @endphp
+    @if($opcoesCidade->isEmpty()) @continue @endif
 
     <div class="card mb-4" style="border-radius:.75rem!important;border:none!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important;">
         <div class="card-header d-flex justify-content-between align-items-center"
