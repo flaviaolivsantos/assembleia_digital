@@ -198,63 +198,95 @@
 
 {{-- ── Cards de Métricas ──────────────────────────────────────── --}}
 @if($mostrarAlianca)
-@php $cidadesAlianca = $filtro === 'geral' ? $todasCidades : collect([$aliancaCidade]); @endphp
-@foreach($cidadesAlianca as $cAlianca)
-@php
-    $aAptos       = $cAlianca->qtd_membros;
-    $aVotaram     = $cAlianca->votos_registrados;
-    $aPctAproveit = $aAptos > 0 ? round($aVotaram / $aAptos * 100, 1) : 0;
-@endphp
-<p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">
-    <span class="badge text-bg-secondary me-1">Aliança</span>{{ $cAlianca->cidade->nome }}
-</p>
-<div class="row g-3 mb-3">
-    <div class="col-md-3">
-        <div class="card res-metric-card">
-            <div class="card-body d-flex align-items-center gap-3 py-3">
-                <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
-                <div>
-                    <div class="res-metric-value">{{ $aAptos }}</div>
-                    <div class="res-metric-label">Eleitores Aptos</div>
+@if($filtro === 'geral')
+    {{-- GERAL: card consolidado — todas as missões somadas --}}
+    @php
+        $geralAliancaAptos   = $todasCidades->sum('qtd_membros');
+        $geralAliancaVotaram = $todasCidades->sum('votos_registrados');
+        $geralAliancaPct     = $geralAliancaAptos > 0 ? round($geralAliancaVotaram / $geralAliancaAptos * 100, 1) : 0;
+    @endphp
+    <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">
+        <span class="badge text-bg-secondary me-1">Aliança</span>Todas as Missões
+    </p>
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
+                    <div><div class="res-metric-value">{{ $geralAliancaAptos }}</div><div class="res-metric-label">Eleitores Aptos</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
+                    <div><div class="res-metric-value" style="color:#dc3545;">{{ max(0, $geralAliancaAptos - $geralAliancaVotaram) }}</div><div class="res-metric-label">Faltaram</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
+                    <div><div class="res-metric-value">{{ $geralAliancaVotaram }}</div><div class="res-metric-label">Votaram</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
+                    <div><div class="res-metric-value">{{ $geralAliancaPct }}%</div><div class="res-metric-label">Aderência</div></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card res-metric-card">
-            <div class="card-body d-flex align-items-center gap-3 py-3">
-                <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
-                <div>
-                    <div class="res-metric-value" style="color:#dc3545;">{{ max(0, $aAptos - $aVotaram) }}</div>
-                    <div class="res-metric-label">Faltaram</div>
+@else
+    {{-- ALIANÇA específica: uma cidade selecionada --}}
+    @php
+        $aAptos       = $aliancaCidade->qtd_membros;
+        $aVotaram     = $aliancaCidade->votos_registrados;
+        $aPctAproveit = $aAptos > 0 ? round($aVotaram / $aAptos * 100, 1) : 0;
+    @endphp
+    <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">
+        <span class="badge text-bg-secondary me-1">Aliança</span>{{ $aliancaCidade->cidade->nome }}
+    </p>
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
+                    <div><div class="res-metric-value">{{ $aAptos }}</div><div class="res-metric-label">Eleitores Aptos</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
+                    <div><div class="res-metric-value" style="color:#dc3545;">{{ max(0, $aAptos - $aVotaram) }}</div><div class="res-metric-label">Faltaram</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
+                    <div><div class="res-metric-value">{{ $aVotaram }}</div><div class="res-metric-label">Votaram</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
+                    <div><div class="res-metric-value">{{ $aPctAproveit }}%</div><div class="res-metric-label">Aderência</div></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card res-metric-card">
-            <div class="card-body d-flex align-items-center gap-3 py-3">
-                <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
-                <div>
-                    <div class="res-metric-value">{{ $aVotaram }}</div>
-                    <div class="res-metric-label">Votaram</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card res-metric-card">
-            <div class="card-body d-flex align-items-center gap-3 py-3">
-                <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
-                <div>
-                    <div class="res-metric-value">{{ $aPctAproveit }}%</div>
-                    <div class="res-metric-label">Aproveitamento</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endforeach
+@endif
 @endif
 
 @if($mostrarVida)
@@ -301,7 +333,7 @@
                 <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
                 <div>
                     <div class="res-metric-value">{{ $pctVidaAproveit }}%</div>
-                    <div class="res-metric-label">Aproveitamento</div>
+                    <div class="res-metric-label">Aderência</div>
                 </div>
             </div>
         </div>
@@ -309,75 +341,182 @@
 </div>
 @endif
 
-{{-- ── Gráficos de Rosca ──────────────────────────────────────── --}}
-@if($mostrarAlianca)
-<div class="row g-3 mb-4">
-    <div class="col-md-6">
-        <div class="card chart-card h-100">
-            <div class="card-header"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Aderência <span class="badge text-bg-secondary ms-1" style="font-size:.65rem;">Aliança{{ $filtro === 'geral' ? ' — Todas' : ' — '.$aliancaCidade->cidade->nome }}</span></div>
-            <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
-                <div class="chart-wrap">
-                    <canvas id="chartAderencia"></canvas>
-                    <div class="chart-center-label">
-                        <div class="chart-center-pct">{{ $pctAderencia }}%</div>
-                        <div class="chart-center-sub">Aderência</div>
-                    </div>
-                </div>
-                <div class="chart-legend mt-3">
-                    <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $votaram }})</span>
-                    &nbsp;&nbsp;
-                    <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Não votaram ({{ $compareceram - $votaram }})</span>
-                </div>
-                <p class="text-muted small mt-2 mb-0 text-center">Dos membros de aliança, quantos votaram.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card chart-card h-100">
-            <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aproveitamento <span class="badge text-bg-secondary ms-1" style="font-size:.65rem;">Aliança{{ $filtro === 'geral' ? ' — Todas' : ' — '.$aliancaCidade->cidade->nome }}</span></div>
-            <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
-                <div class="chart-wrap">
-                    <canvas id="chartAproveitamento"></canvas>
-                    <div class="chart-center-label">
-                        <div class="chart-center-pct">{{ $pctAproveit }}%</div>
-                        <div class="chart-center-sub">Aproveitamento</div>
-                    </div>
-                </div>
-                <div class="chart-legend mt-3">
-                    <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $votaram }})</span>
-                    &nbsp;&nbsp;
-                    <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Não votaram ({{ $compareceram - $votaram }})</span>
-                </div>
-                <p class="text-muted small mt-2 mb-0 text-center">Dos que compareceram, quantos efetivamente votaram.</p>
-            </div>
-        </div>
-    </div>
-</div>
-@endif
+{{-- ── Gráficos / Painel Comparativo ──────────────────────────── --}}
+@if($filtro === 'geral')
 
-@if($mostrarVida && $vidaEleitores > 0)
-<div class="row g-3 mb-4">
-    <div class="col-md-6 offset-md-3">
-        <div class="card chart-card h-100">
-            <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aproveitamento <span class="badge text-bg-primary ms-1" style="font-size:.65rem;">Vida</span></div>
-            <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
-                <div class="chart-wrap">
-                    <canvas id="chartVidaAproveitamento"></canvas>
-                    <div class="chart-center-label">
-                        <div class="chart-center-pct">{{ $pctVidaAproveit }}%</div>
-                        <div class="chart-center-sub">Aproveitamento</div>
+    {{-- Painel Comparativo por Missão --}}
+    @if($mostrarAlianca || $mostrarVida)
+    <div class="row g-3 mb-4">
+        @if($mostrarAlianca && $mostrarVida)
+        {{-- Gráfico de barras: Aptos vs Votaram por missão (aliança + vida) --}}
+        <div class="col-12">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Participação por Missão
+                    <span class="text-muted small ms-2" style="font-weight:400;text-transform:none;font-family:'Roboto',sans-serif;">Aptos × Votaram</span>
+                </div>
+                <div class="card-body" style="padding:1.5rem;">
+                    <canvas id="chartComparativo" style="max-height:220px;"></canvas>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Donuts individuais: aproveitamento --}}
+        @if($mostrarAlianca)
+        <div class="col-md-{{ $mostrarVida ? '6' : '6 offset-md-3' }}">
+            <div class="card chart-card h-100">
+                <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aderência <span class="badge text-bg-secondary ms-1" style="font-size:.65rem;">Aliança — Todas</span></div>
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <div class="chart-wrap">
+                        <canvas id="chartAproveitamento"></canvas>
+                        <div class="chart-center-label">
+                            <div class="chart-center-pct">{{ $pctAproveit }}%</div>
+                            <div class="chart-center-sub">Votaram</div>
+                        </div>
+                    </div>
+                    <div class="chart-legend mt-3">
+                        <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $votaram }})</span>
+                        &nbsp;&nbsp;
+                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ $compareceram - $votaram }})</span>
                     </div>
                 </div>
-                <div class="chart-legend mt-3">
-                    <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $vidaVotaram }})</span>
-                    &nbsp;&nbsp;
-                    <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Não votaram ({{ $vidaEleitores - $vidaVotaram }})</span>
+            </div>
+        </div>
+        @endif
+        @if($mostrarVida && $vidaEleitores > 0)
+        <div class="col-md-{{ $mostrarAlianca ? '6' : '6 offset-md-3' }}">
+            <div class="card chart-card h-100">
+                <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aderência <span class="badge text-bg-primary ms-1" style="font-size:.65rem;">Vida — Todas</span></div>
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <div class="chart-wrap">
+                        <canvas id="chartVidaAproveitamento"></canvas>
+                        <div class="chart-center-label">
+                            <div class="chart-center-pct">{{ $pctVidaAproveit }}%</div>
+                            <div class="chart-center-sub">Votaram</div>
+                        </div>
+                    </div>
+                    <div class="chart-legend mt-3">
+                        <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $vidaVotaram }})</span>
+                        &nbsp;&nbsp;
+                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ $vidaEleitores - $vidaVotaram }})</span>
+                    </div>
                 </div>
-                <p class="text-muted small mt-2 mb-0 text-center">Dos membros vida, quantos efetivamente votaram.</p>
+            </div>
+        </div>
+        @endif
+    </div>
+
+    {{-- Tabela comparativa por missão --}}
+    <div class="card mb-4" style="border-radius:.75rem!important;border:none!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important;">
+        <div class="card-header d-flex align-items-center" style="background:transparent;border-bottom:1px solid #F0F2F5;">
+            <span style="font-family:'Montserrat',sans-serif;font-weight:600;font-size:.9rem;color:#2C3E50;">
+                <i class="bi bi-table me-2 text-primary"></i>Resultado por Missão
+            </span>
+        </div>
+        <div class="card-body p-0">
+            <table class="res-table">
+                <thead>
+                    <tr>
+                        <th>Missão</th>
+                        @if($mostrarAlianca)<th class="text-center">Al. Aptos</th><th class="text-center">Al. Votaram</th><th class="text-center">Al. %</th>@endif
+                        @if($mostrarVida)<th class="text-center">Vida Aptos</th><th class="text-center">Vida Votaram</th><th class="text-center">Vida %</th>@endif
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($todasCidades as $ec)
+                    @php
+                        $ecAlPct = $ec->qtd_membros > 0 ? round($ec->votos_registrados / $ec->qtd_membros * 100, 1) : 0;
+                        $ecVidaAptos   = ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0);
+                        $ecVidaVotaram = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
+                        $ecVidaPct     = $ecVidaAptos > 0 ? round($ecVidaVotaram / $ecVidaAptos * 100, 1) : 0;
+                    @endphp
+                    <tr>
+                        <td class="fw-semibold">{{ $ec->cidade->nome }}</td>
+                        @if($mostrarAlianca)
+                        <td class="text-center">{{ $ec->qtd_membros }}</td>
+                        <td class="text-center fw-semibold">{{ $ec->votos_registrados }}</td>
+                        <td class="text-center"><span class="badge {{ $ecAlPct >= 80 ? 'text-bg-success' : ($ecAlPct >= 50 ? 'text-bg-warning' : 'text-bg-danger') }}">{{ $ecAlPct }}%</span></td>
+                        @endif
+                        @if($mostrarVida)
+                        <td class="text-center">{{ $ecVidaAptos }}</td>
+                        <td class="text-center fw-semibold">{{ $ecVidaVotaram }}</td>
+                        <td class="text-center"><span class="badge {{ $ecVidaPct >= 80 ? 'text-bg-success' : ($ecVidaPct >= 50 ? 'text-bg-warning' : 'text-bg-danger') }}">{{ $ecVidaPct }}%</span></td>
+                        @endif
+                    </tr>
+                    @endforeach
+                </tbody>
+                @if($todasCidades->count() > 1)
+                <tfoot>
+                    <tr>
+                        <td class="fw-semibold">Total</td>
+                        @if($mostrarAlianca)
+                        @php $totAlPct = $compareceram > 0 ? round($votaram / $compareceram * 100, 1) : 0; @endphp
+                        <td class="text-center fw-semibold">{{ $compareceram }}</td>
+                        <td class="text-center fw-bold">{{ $votaram }}</td>
+                        <td class="text-center fw-bold">{{ $totAlPct }}%</td>
+                        @endif
+                        @if($mostrarVida)
+                        <td class="text-center fw-semibold">{{ $vidaEleitores }}</td>
+                        <td class="text-center fw-bold">{{ $vidaVotaram }}</td>
+                        <td class="text-center fw-bold">{{ $pctVidaAproveit }}%</td>
+                        @endif
+                    </tr>
+                </tfoot>
+                @endif
+            </table>
+        </div>
+    </div>
+    @endif
+
+@else
+    {{-- Filtro específico (aliança ou vida): donuts individuais --}}
+    @if($mostrarAlianca)
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="card chart-card h-100">
+                <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aderência <span class="badge text-bg-secondary ms-1" style="font-size:.65rem;">Aliança — {{ $aliancaCidade->cidade->nome }}</span></div>
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <div class="chart-wrap">
+                        <canvas id="chartAproveitamento"></canvas>
+                        <div class="chart-center-label">
+                            <div class="chart-center-pct">{{ $pctAproveit }}%</div>
+                            <div class="chart-center-sub">Votaram</div>
+                        </div>
+                    </div>
+                    <div class="chart-legend mt-3">
+                        <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $votaram }})</span>
+                        &nbsp;&nbsp;
+                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ $compareceram - $votaram }})</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    @endif
+    @if($mostrarVida && $vidaEleitores > 0)
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="card chart-card h-100">
+                <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aderência <span class="badge text-bg-primary ms-1" style="font-size:.65rem;">Vida</span></div>
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <div class="chart-wrap">
+                        <canvas id="chartVidaAproveitamento"></canvas>
+                        <div class="chart-center-label">
+                            <div class="chart-center-pct">{{ $pctVidaAproveit }}%</div>
+                            <div class="chart-center-sub">Votaram</div>
+                        </div>
+                    </div>
+                    <div class="chart-legend mt-3">
+                        <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $vidaVotaram }})</span>
+                        &nbsp;&nbsp;
+                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ $vidaEleitores - $vidaVotaram }})</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 @endif
 
 {{-- ── Auditoria por Máquina ──────────────────────────────────── --}}
@@ -517,9 +656,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 const CIANO = '#00BCD4';
-const CINZA = '#CED4DA';
+const CINZA  = '#CED4DA';
 
-function criarDonut(id, valor, total, label) {
+function criarDonut(id, valor, total) {
     const restante = Math.max(total - valor, 0);
     const ctx = document.getElementById(id);
     if (!ctx) return;
@@ -533,9 +672,9 @@ function criarDonut(id, valor, total, label) {
             animation: { animateRotate: true, duration: 900, easing: 'easeInOutQuart' },
             plugins: {
                 legend: { display: false },
-                tooltip: { callbacks: { label: function(ctx) {
-                    const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
-                    return ` ${ctx.parsed} (${pct}%)`;
+                tooltip: { callbacks: { label: function(c) {
+                    const pct = total > 0 ? ((c.parsed / total) * 100).toFixed(1) : 0;
+                    return ` ${c.parsed} (${pct}%)`;
                 }}}
             }
         }
@@ -543,11 +682,58 @@ function criarDonut(id, valor, total, label) {
 }
 
 @if($mostrarAlianca)
-criarDonut('chartAderencia',      {{ $votaram }}, {{ $compareceram }}, 'Aderência');
-criarDonut('chartAproveitamento', {{ $votaram }},      {{ $compareceram }}, 'Aproveitamento');
+criarDonut('chartAproveitamento', {{ $votaram }}, {{ $compareceram }});
 @endif
 @if($mostrarVida && $vidaEleitores > 0)
-criarDonut('chartVidaAproveitamento', {{ $vidaVotaram }}, {{ $vidaEleitores }}, 'Aproveitamento Vida');
+criarDonut('chartVidaAproveitamento', {{ $vidaVotaram }}, {{ $vidaEleitores }});
+@endif
+
+@if($filtro === 'geral' && $mostrarAlianca && $mostrarVida)
+(function() {
+    const ctx = document.getElementById('chartComparativo');
+    if (!ctx) return;
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($todasCidades->map(fn($ec) => $ec->cidade->nome)->values()) !!},
+            datasets: [
+                {
+                    label: 'Aliança — Aptos',
+                    data: {!! json_encode($todasCidades->map(fn($ec) => $ec->qtd_membros)->values()) !!},
+                    backgroundColor: 'rgba(73,80,87,.2)',
+                    borderColor: '#495057',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Aliança — Votaram',
+                    data: {!! json_encode($todasCidades->map(fn($ec) => $ec->votos_registrados)->values()) !!},
+                    backgroundColor: CIANO,
+                    borderColor: CIANO,
+                    borderWidth: 1
+                },
+                {
+                    label: 'Vida — Aptos',
+                    data: {!! json_encode($todasCidades->map(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0))->values()) !!},
+                    backgroundColor: 'rgba(13,110,253,.15)',
+                    borderColor: '#0d6efd',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Vida — Votaram',
+                    data: {!! json_encode($todasCidades->map(fn($ec) => $vidaVotaramPorCidade[$ec->cidade_id] ?? 0)->values()) !!},
+                    backgroundColor: 'rgba(13,110,253,.55)',
+                    borderColor: '#0d6efd',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom', labels: { font: { size: 12 } } } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+})();
 @endif
 </script>
 @endpush
