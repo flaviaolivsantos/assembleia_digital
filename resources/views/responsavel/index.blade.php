@@ -252,8 +252,6 @@
                         @endif
                     </div>
 
-                    <p class="el-desc">Votação única — válida para todas as cidades simultaneamente.</p>
-
                     {{-- Timestamps --}}
                     @if($eleicao->data_abertura_vida)
                         <span class="el-timestamp me-3">
@@ -268,22 +266,37 @@
                         </span>
                     @endif
 
-                    {{-- Métricas vida (só quando não há aliança) --}}
-                    @if(!$temAlianca)
+                    {{-- Métricas vida --}}
+                    @php
+                        $vidaMembrosTot = $eleicao->cidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
+                        $vidaVotosTot   = $eleicao->cidades->sum(fn($ec) => $ec->votos_registrados_vida ?? 0);
+                        $vidaPart       = $vidaMembrosTot > 0 ? round($vidaVotosTot / $vidaMembrosTot * 100, 0) : 0;
+                    @endphp
                     <div class="metrics-grid">
-                        @foreach($eleicao->cidades as $ec)
                         <div class="metric-item">
-                            <div class="metric-icon"><i class="bi bi-people-fill"></i></div>
+                            <div class="metric-icon" style="background:rgba(0,188,212,.08);color:var(--ciano);"><i class="bi bi-people-fill"></i></div>
                             <div>
-                                <div class="metric-label">
-                                    @if(auth()->user()->perfil === 'admin'){{ $ec->cidade->nome }}@else Membros Vida @endif
-                                </div>
-                                <div class="metric-value">{{ ($ec->qtd_presencial_vida + $ec->qtd_vida) ?: '—' }}</div>
+                                <div class="metric-label">Membros Vida</div>
+                                <div class="metric-value">{{ $vidaMembrosTot ?: '—' }}</div>
                             </div>
                         </div>
-                        @endforeach
+                        <div class="metric-item">
+                            <div class="metric-icon" style="background:rgba(40,167,69,.08);color:#28A745;"><i class="bi bi-check2-square"></i></div>
+                            <div>
+                                <div class="metric-label">Votos Vida</div>
+                                <div class="metric-value">{{ $vidaVotosTot }}</div>
+                            </div>
+                        </div>
+                        @if($vidaMembrosTot > 0)
+                        <div class="metric-item">
+                            <div class="metric-icon" style="background:rgba(44,62,80,.06);color:var(--azul);"><i class="bi bi-percent"></i></div>
+                            <div>
+                                <div class="metric-label">Participação</div>
+                                <div class="metric-value">{{ $vidaPart }}%</div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
-                    @endif
 
                 </div>
 
@@ -389,6 +402,22 @@
                                     <div class="metric-value">{{ number_format(($ec->votos_registrados / $ec->qtd_membros) * 100, 0) }}%</div>
                                 </div>
                             </div>
+                            @endif
+                        </div>
+
+                        {{-- Timestamps aliança --}}
+                        <div class="mt-1">
+                            @if($ec->data_abertura)
+                                <span class="el-timestamp me-3">
+                                    <i class="bi bi-play-circle text-success"></i>
+                                    Aberta em {{ $ec->data_abertura->format('d/m/Y H:i') }}
+                                </span>
+                            @endif
+                            @if($ec->data_encerramento)
+                                <span class="el-timestamp">
+                                    <i class="bi bi-stop-circle text-danger"></i>
+                                    Encerrada em {{ $ec->data_encerramento->format('d/m/Y H:i') }}
+                                </span>
                             @endif
                         </div>
 
