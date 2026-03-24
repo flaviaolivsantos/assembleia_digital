@@ -31,7 +31,6 @@
     <div class="text-center" style="width: 100%; max-width: 480px; padding: 1rem;">
 
         <h2 class="mb-1">Assembleia Digital</h2>
-        <p class="text-muted mb-4">Máquina de Votação</p>
 
         @if(!$eleicaoCidade || (!$aliancaAberta && !$vidaAberta))
             <div class="alert alert-warning">Nenhuma votação aberta para esta cidade no momento.</div>
@@ -63,7 +62,7 @@
                                     <label class="escopo-card flex-fill text-start">
                                         <input type="radio" name="escopo" value="vida" class="form-check-input me-2"
                                                {{ old('escopo') === 'vida' ? 'checked' : '' }}>
-                                        <span class="badge bg-primary me-1">Vida</span>
+
                                         Realidade de Vida
                                     </label>
                                 </div>
@@ -76,7 +75,7 @@
                         @else
                             <input type="hidden" name="escopo" value="vida">
                             <p class="text-muted small text-start mb-3">
-                                <span class="badge bg-primary me-1">Vida</span>Realidade de Vida
+                                Realidade de Vida
                             </p>
                         @endif
 
