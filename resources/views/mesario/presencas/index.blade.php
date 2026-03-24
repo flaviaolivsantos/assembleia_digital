@@ -111,9 +111,17 @@
 @endif
 
 {{-- Contadores --}}
+@php
+    $faltamGerarAlianca = $eleicaoCidade->qtd_remoto > 0
+        ? max(0, $eleicaoCidade->qtd_remoto - $totalTokensAlianca)
+        : 0;
+    $faltamGerarVida = $eleicaoCidade->qtd_vida > 0
+        ? max(0, $eleicaoCidade->qtd_vida - $totalTokensVida)
+        : 0;
+@endphp
 <div class="row mb-3 g-2 text-center">
     @if($eleicaoCidade->qtd_vida > 0 || $totalTokensVida > 0)
-    <div class="col-3">
+    <div class="col-6 col-md-3">
         <div class="card border-primary">
             <div class="card-body py-2">
                 <div class="fs-5 fw-bold text-primary">{{ $totalTokensVida }}</div>
@@ -125,7 +133,7 @@
     </div>
     @endif
     @if($eleicaoCidade->qtd_membros > 0 || $totalTokensAlianca > 0)
-    <div class="col-3">
+    <div class="col-6 col-md-3">
         <div class="card border-secondary">
             <div class="card-body py-2">
                 <div class="fs-5 fw-bold">{{ $totalTokensAlianca }}</div>
@@ -136,7 +144,27 @@
         </div>
     </div>
     @endif
-    <div class="col-3">
+    @if($faltamGerarVida > 0 || $faltamGerarAlianca > 0)
+    <div class="col-6 col-md-3">
+        <div class="card border-warning">
+            <div class="card-body py-2">
+                @if($faltamGerarVida > 0 && $faltamGerarAlianca > 0)
+                    <div class="fs-5 fw-bold text-warning">{{ $faltamGerarVida + $faltamGerarAlianca }}</div>
+                    <div class="text-muted small">tokens a gerar
+                        <span class="d-block" style="font-size:.75rem">{{ $faltamGerarAlianca }} aliança · {{ $faltamGerarVida }} vida</span>
+                    </div>
+                @elseif($faltamGerarAlianca > 0)
+                    <div class="fs-5 fw-bold text-warning">{{ $faltamGerarAlianca }}</div>
+                    <div class="text-muted small">tokens aliança a gerar</div>
+                @else
+                    <div class="fs-5 fw-bold text-warning">{{ $faltamGerarVida }}</div>
+                    <div class="text-muted small">tokens vida a gerar</div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+    <div class="col-6 col-md-3">
         <div class="card">
             <div class="card-body py-2">
                 <div class="fs-5 fw-bold text-success">{{ $presencas->where('votou', true)->count() }}</div>
@@ -144,7 +172,7 @@
             </div>
         </div>
     </div>
-    <div class="col-3">
+    <div class="col-6 col-md-3">
         <div class="card">
             <div class="card-body py-2">
                 <div class="fs-5 fw-bold text-warning">{{ $presencas->where('votou', false)->count() }}</div>
