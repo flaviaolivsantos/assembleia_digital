@@ -8,7 +8,10 @@
     $votaram      = $eleicaoCidade->votos_registrados;
     $pctAderencia = $eleitorado   > 0 ? round($compareceram / $eleitorado   * 100, 1) : 0;
     $pctAproveit  = $compareceram > 0 ? round($votaram      / $compareceram * 100, 1) : 0;
-    $maquinasDaMissao = $votosPorMaquina->filter(fn($r) => $r->maquina?->cidade_id === $eleicaoCidade->cidade_id);
+    // Vida é nacional — mostra todas as máquinas; aliança-only filtra pela cidade
+    $maquinasDaMissao = $temVida
+        ? $votosPorMaquina
+        : $votosPorMaquina->filter(fn($r) => $r->maquina?->cidade_id === $eleicaoCidade->cidade_id);
 
     // Vida é nacional — soma todas as cidades
     $vidaEleitores   = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
