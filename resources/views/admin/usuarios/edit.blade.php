@@ -34,13 +34,19 @@
 
             <div class="mb-3">
                 <label class="form-label">Nova Senha <span class="text-muted small">(deixe em branco para manter)</span></label>
-                <div class="password-field">
-                    <input type="password" id="password" name="password" class="form-control">
-                    <button type="button" class="password-toggle" tabindex="-1"
-                            onclick="toggleSenha('password','ico-password')">
-                        <i class="bi bi-eye" id="ico-password"></i>
+                <div class="input-group">
+                    <div class="password-field flex-grow-1">
+                        <input type="password" id="password" name="password" class="form-control">
+                        <button type="button" class="password-toggle" tabindex="-1"
+                                onclick="toggleSenha('password','ico-password')">
+                            <i class="bi bi-eye" id="ico-password"></i>
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary" onclick="gerarSenha()" title="Gerar senha aleatória de 4 dígitos">
+                        <i class="bi bi-shuffle"></i> Gerar
                     </button>
                 </div>
+                <div id="senha-gerada" class="form-text text-success fw-semibold" style="display:none;"></div>
             </div>
 
             <div class="mb-3">
@@ -98,6 +104,19 @@ function toggleSenha(inputId, icoId) {
     const ico = document.getElementById(icoId);
     if (inp.type === 'password') { inp.type = 'text'; ico.className = 'bi bi-eye-slash'; }
     else { inp.type = 'password'; ico.className = 'bi bi-eye'; }
+}
+
+function gerarSenha() {
+    const senha = String(Math.floor(1000 + Math.random() * 9000));
+    document.getElementById('password').value = senha;
+    document.getElementById('password_confirmation').value = senha;
+    document.getElementById('password').type = 'text';
+    document.getElementById('password_confirmation').type = 'text';
+    document.getElementById('ico-password').className = 'bi bi-eye-slash';
+    document.getElementById('ico-password-conf').className = 'bi bi-eye-slash';
+    const aviso = document.getElementById('senha-gerada');
+    aviso.textContent = 'Senha gerada: ' + senha + ' — anote antes de salvar.';
+    aviso.style.display = '';
 }
 
 const perfil      = document.getElementById('select-perfil');
