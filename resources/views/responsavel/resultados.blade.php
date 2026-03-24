@@ -10,16 +10,17 @@
     $pctAproveit  = $compareceram > 0 ? round($votaram      / $compareceram * 100, 1) : 0;
     $maquinasDaMissao = $votosPorMaquina->filter(fn($r) => $r->maquina?->cidade_id === $eleicaoCidade->cidade_id);
 
-    $vidaVotaram  = $vidaVotaramPorCidade[$eleicaoCidade->cidade_id] ?? 0;
-    $vidaEleitores = $eleicaoCidade->qtd_vida;
+    // Vida é nacional — soma todas as cidades
+    $vidaEleitores   = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
+    $vidaVotaram     = array_sum($vidaVotaramPorCidade);
     $pctVidaAproveit = $vidaEleitores > 0 ? round($vidaVotaram / $vidaEleitores * 100, 1) : 0;
 
     // Para os gráficos: usa aliança se tiver, senão usa vida
-    $grafComparec = $temAlianca ? $compareceram : $vidaVotaram;
-    $grafEleitores = $temAlianca ? $eleitorado : $vidaEleitores;
-    $grafVotaram  = $temAlianca ? $votaram : $vidaVotaram;
-    $grafPctAd    = $temAlianca ? $pctAderencia : 0;
-    $grafPctAp    = $temAlianca ? $pctAproveit : $pctVidaAproveit;
+    $grafComparec  = $temAlianca ? $compareceram : $vidaVotaram;
+    $grafEleitores = $temAlianca ? $eleitorado   : $vidaEleitores;
+    $grafVotaram   = $temAlianca ? $votaram      : $vidaVotaram;
+    $grafPctAd     = $temAlianca ? $pctAderencia : 0;
+    $grafPctAp     = $temAlianca ? $pctAproveit  : $pctVidaAproveit;
 @endphp
 
 <style>
@@ -220,26 +221,37 @@
 @endif
 
 @if($temVida)
-<p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px"><span class="badge text-bg-primary me-1">Vida</span></p>
+<p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px"><span class="badge text-bg-primary me-1">Vida</span> — todas as missões</p>
 <div class="row g-3 mb-4">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
                 <div>
                     <div class="res-metric-value">{{ $vidaEleitores }}</div>
-                    <div class="res-metric-label">Remotos (Vida)</div>
+                    <div class="res-metric-label">Eleitores Aptos</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
                 <div>
                     <div class="res-metric-value">{{ $vidaVotaram }}</div>
-                    <div class="res-metric-label">Votaram (Vida)</div>
+                    <div class="res-metric-label">Votaram</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card res-metric-card">
+            <div class="card-body d-flex align-items-center gap-3 py-3">
+                <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
+                <div>
+                    <div class="res-metric-value">{{ $pctVidaAproveit }}%</div>
+                    <div class="res-metric-label">Aproveitamento</div>
                 </div>
             </div>
         </div>
@@ -440,7 +452,7 @@
                 {{-- Participação vida por missão --}}
                 @if($todasCidades->count() > 1)
                     @php
-                        $totalVidaEleit  = $todasCidades->sum('qtd_vida');
+                        $totalVidaEleit  = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
                         $totalVidaVot    = array_sum($vidaVotaramPorCidade);
                         $pctVidaApGeral  = $totalVidaEleit > 0 ? round($totalVidaVot / $totalVidaEleit * 100, 1) : 0;
                     @endphp
@@ -451,7 +463,7 @@
                         <thead>
                             <tr>
                                 <th>Missão</th>
-                                <th class="text-center">Remotos</th>
+                                <th class="text-center">Eleitores</th>
                                 <th class="text-center">Votaram</th>
                                 <th style="min-width:130px">Aproveitamento</th>
                             </tr>
@@ -459,8 +471,9 @@
                         <tbody>
                             @foreach($todasCidades as $ec)
                                 @php
-                                    $ecVidaVot = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
-                                    $apPct = $ec->qtd_vida > 0 ? round($ecVidaVot / $ec->qtd_vida * 100, 1) : 0;
+                                    $ecVidaEleit = ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0);
+                                    $ecVidaVot   = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
+                                    $apPct       = $ecVidaEleit > 0 ? round($ecVidaVot / $ecVidaEleit * 100, 1) : 0;
                                 @endphp
                                 <tr @if($ec->cidade_id === $eleicaoCidade->cidade_id) style="background:rgba(0,188,212,.06)!important;" @endif>
                                     <td>
@@ -469,7 +482,7 @@
                                             <span class="badge-tipo badge-vida ms-1" style="font-size:.65rem;">esta</span>
                                         @endif
                                     </td>
-                                    <td class="text-center">{{ $ec->qtd_vida }}</td>
+                                    <td class="text-center">{{ $ecVidaEleit }}</td>
                                     <td class="text-center">{{ $ecVidaVot }}</td>
                                     <td>
                                         <div class="mini-bar">
