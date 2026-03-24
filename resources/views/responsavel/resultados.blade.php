@@ -6,9 +6,13 @@
     $mostrarAlianca  = $temAlianca && ($filtro === 'geral' || $filtro === 'alianca');
     $mostrarVida     = $temVida    && ($filtro === 'geral' || $filtro === 'vida');
 
-    // Métricas de aliança: sempre da cidade aliança selecionada
-    $compareceram = $aliancaCidade->qtd_membros;       // eleitores aptos aliança
-    $votaram      = $aliancaCidade->votos_registrados; // votaram
+    // Métricas de aliança para os gráficos: geral → soma todas cidades; aliança → cidade selecionada
+    $compareceram = $filtro === 'geral'
+        ? $todasCidades->sum('qtd_membros')
+        : $aliancaCidade->qtd_membros;
+    $votaram      = $filtro === 'geral'
+        ? $todasCidades->sum('votos_registrados')
+        : $aliancaCidade->votos_registrados;
     $pctAderencia = $compareceram > 0 ? round($votaram / $compareceram * 100, 1) : 0;
     $pctAproveit  = $compareceram > 0 ? round($votaram / $compareceram * 100, 1) : 0;
 
@@ -310,7 +314,7 @@
 <div class="row g-3 mb-4">
     <div class="col-md-6">
         <div class="card chart-card h-100">
-            <div class="card-header"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Aderência <span class="badge text-bg-secondary ms-1" style="font-size:.65rem;">Aliança</span></div>
+            <div class="card-header"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Aderência <span class="badge text-bg-secondary ms-1" style="font-size:.65rem;">Aliança{{ $filtro === 'geral' ? ' — Todas' : ' — '.$aliancaCidade->cidade->nome }}</span></div>
             <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
                 <div class="chart-wrap">
                     <canvas id="chartAderencia"></canvas>
@@ -330,7 +334,7 @@
     </div>
     <div class="col-md-6">
         <div class="card chart-card h-100">
-            <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aproveitamento <span class="badge text-bg-secondary ms-1" style="font-size:.65rem;">Aliança</span></div>
+            <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aproveitamento <span class="badge text-bg-secondary ms-1" style="font-size:.65rem;">Aliança{{ $filtro === 'geral' ? ' — Todas' : ' — '.$aliancaCidade->cidade->nome }}</span></div>
             <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
                 <div class="chart-wrap">
                     <canvas id="chartAproveitamento"></canvas>
