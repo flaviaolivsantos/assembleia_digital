@@ -150,8 +150,10 @@
             @endif
         </h2>
         <span class="dash-header-sub">
-            <i class="bi bi-geo-alt me-1"></i>{{ $filtro === 'alianca' ? $aliancaCidade->cidade->nome : $eleicaoCidade->cidade->nome }}
-            &nbsp;&middot;&nbsp;
+            @if($filtro === 'alianca')
+                <i class="bi bi-geo-alt me-1"></i>{{ $aliancaCidade->cidade->nome }}
+                &nbsp;&middot;&nbsp;
+            @endif
             <i class="bi bi-calendar3 me-1"></i>{{ $eleicao->data_eleicao->format('d/m/Y') }}
         </span>
     </div>
@@ -192,8 +194,15 @@
 
 {{-- ── Cards de Métricas ──────────────────────────────────────── --}}
 @if($mostrarAlianca)
+@php $cidadesAlianca = $filtro === 'geral' ? $todasCidades : collect([$aliancaCidade]); @endphp
+@foreach($cidadesAlianca as $cAlianca)
+@php
+    $aAptos       = $cAlianca->qtd_membros;
+    $aVotaram     = $cAlianca->votos_registrados;
+    $aPctAproveit = $aAptos > 0 ? round($aVotaram / $aAptos * 100, 1) : 0;
+@endphp
 <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">
-    <span class="badge text-bg-secondary me-1">Aliança</span>{{ $aliancaCidade->cidade->nome }}
+    <span class="badge text-bg-secondary me-1">Aliança</span>{{ $cAlianca->cidade->nome }}
 </p>
 <div class="row g-3 mb-3">
     <div class="col-md-3">
@@ -201,7 +210,7 @@
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
                 <div>
-                    <div class="res-metric-value">{{ $compareceram }}</div>
+                    <div class="res-metric-value">{{ $aAptos }}</div>
                     <div class="res-metric-label">Eleitores Aptos</div>
                 </div>
             </div>
@@ -212,7 +221,7 @@
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
                 <div>
-                    <div class="res-metric-value" style="color:#dc3545;">{{ max(0, $compareceram - $votaram) }}</div>
+                    <div class="res-metric-value" style="color:#dc3545;">{{ max(0, $aAptos - $aVotaram) }}</div>
                     <div class="res-metric-label">Faltaram</div>
                 </div>
             </div>
@@ -223,7 +232,7 @@
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
                 <div>
-                    <div class="res-metric-value">{{ $votaram }}</div>
+                    <div class="res-metric-value">{{ $aVotaram }}</div>
                     <div class="res-metric-label">Votaram</div>
                 </div>
             </div>
@@ -234,13 +243,14 @@
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
                 <div>
-                    <div class="res-metric-value">{{ $pctAproveit }}%</div>
+                    <div class="res-metric-value">{{ $aPctAproveit }}%</div>
                     <div class="res-metric-label">Aproveitamento</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@endforeach
 @endif
 
 @if($mostrarVida)
