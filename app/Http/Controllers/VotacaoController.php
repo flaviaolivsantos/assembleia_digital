@@ -191,7 +191,8 @@ class VotacaoController extends Controller
             abort_unless($eleicao->aberta_vida, 403, 'A votação Realidade de Vida foi encerrada.');
         }
 
-        $perguntas = $eleicao->perguntas->filter(fn($p) => $p->escopo === $escopo);
+        $perguntas = $eleicao->perguntas->filter(fn($p) => $p->escopo === $escopo)
+            ->filter(fn($p) => $p->opcoesPorCidade($cidadeId)->count() > 0);
 
         foreach ($perguntas as $pergunta) {
             $respostas = $request->input('respostas.' . $pergunta->id, []);
