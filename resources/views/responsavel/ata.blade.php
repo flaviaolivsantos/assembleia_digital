@@ -270,6 +270,11 @@
 @php
     $mostrarAlianca = $temAlianca && ($filtro === 'geral' || $filtro === 'alianca');
     $mostrarVida    = $temVida    && ($filtro === 'geral' || $filtro === 'vida');
+    $semZeros       = request()->boolean('sem_zeros', false);
+
+    // Monta URL base para o toggle sem_zeros
+    $toggleParams = array_merge(request()->query(), ['sem_zeros' => $semZeros ? '0' : '1']);
+    $toggleUrl    = route('responsavel.ata', $eleicaoCidade) . '?' . http_build_query($toggleParams);
 @endphp
 
 {{-- ── Barra de ações (não imprime) ──────────────────────── --}}
@@ -277,6 +282,9 @@
     <button onclick="window.print()" class="btn-imprimir">
         &#128438; Imprimir / Salvar PDF
     </button>
+    <a href="{{ $toggleUrl }}" class="btn-voltar" style="{{ $semZeros ? 'background:rgba(0,188,212,.2);border-color:#00BCD4;color:#00BCD4;' : '' }}">
+        {{ $semZeros ? '&#10003; Ocultando zeros' : 'Ocultar zeros' }}
+    </a>
     <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}?filtro={{ $filtro }}{{ $filtro === 'alianca' ? '&alianca_cidade_id='.$aliancaCidade->cidade_id : '' }}" class="btn-voltar">
         &#8592; Voltar
     </a>
@@ -447,6 +455,7 @@
                         $opcao->total_votos = $votosRaw->get($pergunta->id . '_' . $opcao->id)?->total ?? 0;
                         return $opcao;
                     })->sortByDesc('total_votos');
+                if ($semZeros) $opcoesVida = $opcoesVida->filter(fn($o) => $o->total_votos > 0);
                 $totalVida = $opcoesVida->sum('total_votos');
             @endphp
             <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Placar Total Geral</p>
@@ -509,6 +518,7 @@
                         $opcao->total_votos = $votosRaw->get($pergunta->id . '_' . $opcao->id)?->total ?? 0;
                         return $opcao;
                     })->sortByDesc('total_votos');
+                if ($semZeros) $opcoesCidade = $opcoesCidade->filter(fn($o) => $o->total_votos > 0);
                 $totalVotosPergunta = $opcoesCidade->sum('total_votos');
             @endphp
             <table class="ata-table">
