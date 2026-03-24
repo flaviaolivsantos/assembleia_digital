@@ -276,7 +276,7 @@
                         <div class="metric-item">
                             <div class="metric-icon" style="background:rgba(0,188,212,.08);color:var(--ciano);"><i class="bi bi-people-fill"></i></div>
                             <div>
-                                <div class="metric-label">Membros Vida</div>
+                                <div class="metric-label">Vida (membros)</div>
                                 <div class="metric-value">{{ $vidaMembrosTot ?: '—' }}</div>
                             </div>
                         </div>
