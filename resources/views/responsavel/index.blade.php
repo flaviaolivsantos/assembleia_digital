@@ -152,6 +152,24 @@
         height: 1px; background: #F0F2F5; margin: 0 1.5rem;
     }
 
+    /* ── Filtro de status ──────────────────────────────────── */
+    .filter-bar {
+        display: flex; gap: .5rem; flex-wrap: wrap;
+        margin-bottom: 1.25rem;
+    }
+    .filter-btn {
+        font-family: 'Montserrat', sans-serif;
+        font-size: .75rem; font-weight: 600;
+        letter-spacing: .3px; text-transform: uppercase;
+        padding: .4rem .9rem; border-radius: 2rem;
+        border: 1.5px solid var(--cinza-medio);
+        background: var(--branco); color: var(--cinza-esc);
+        cursor: pointer; transition: all .15s;
+        display: inline-flex; align-items: center; gap: 5px;
+    }
+    .filter-btn:hover { border-color: var(--ciano); color: var(--ciano); }
+    .filter-btn.active { background: var(--azul); border-color: var(--azul); color: var(--branco); }
+
     /* ── Responsivo ────────────────────────────────────────── */
     @media (max-width: 576px) {
         .el-section { padding: 1rem; }
@@ -168,6 +186,22 @@
     </div>
 </div>
 
+{{-- ── Filtro por status ────────────────────────────────── --}}
+<div class="filter-bar">
+    <button class="filter-btn active" onclick="filtrar('todos', this)">
+        <i class="bi bi-grid-3x3-gap"></i>Todos
+    </button>
+    <button class="filter-btn" onclick="filtrar('rascunho', this)">
+        <i class="bi bi-clock"></i>Aguardando
+    </button>
+    <button class="filter-btn" onclick="filtrar('aberta', this)">
+        <i class="bi bi-play-circle-fill"></i>Em andamento
+    </button>
+    <button class="filter-btn" onclick="filtrar('encerrada', this)">
+        <i class="bi bi-check-circle-fill"></i>Encerrada
+    </button>
+</div>
+
 @if(session('sucesso'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="bi bi-check-circle-fill me-2"></i>{{ session('sucesso') }}
@@ -181,7 +215,7 @@
         $temAlianca = $eleicao->perguntas->where('escopo', 'alianca')->count() > 0;
     @endphp
 
-    <div class="el-card">
+    <div class="el-card" data-status="{{ $eleicao->status }}">
 
         {{-- ── Cabeçalho do card ── --}}
         <div class="el-card-header">
@@ -400,4 +434,16 @@
         <p class="mt-2 mb-0" style="color:var(--cinza-esc);">Nenhuma eleição disponível.</p>
     </div>
 @endforelse
+@push('scripts')
+<script>
+function filtrar(status, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.el-card[data-status]').forEach(card => {
+        card.style.display = (status === 'todos' || card.dataset.status === status) ? '' : 'none';
+    });
+}
+</script>
+@endpush
 @endsection
