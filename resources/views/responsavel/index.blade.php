@@ -310,10 +310,10 @@
                             <i class="bi bi-stop-circle-fill"></i>Encerrar Votação Vida
                         </a>
                     @endif
-                    @if(!$eleicao->aberta_vida && $eleicao->data_encerramento_vida)
+                    @if($eleicao->aberta_vida || $eleicao->data_encerramento_vida)
                         @php $ecVida = $eleicao->cidades->first(); @endphp
                         @if($ecVida)
-                        <a href="{{ route('responsavel.resultados', $ecVida) }}" class="btn-el btn-resultado">
+                        <a href="{{ route('responsavel.resultados', $ecVida) }}?filtro=vida" class="btn-el btn-resultado">
                             <i class="bi bi-bar-chart-fill"></i>Ver Resultados
                         </a>
                         @endif
@@ -411,8 +411,8 @@
                                 <i class="bi bi-stop-circle-fill"></i>Encerrar Aliança
                             </a>
                         @endif
-                        @if($ec->data_encerramento)
-                            <a href="{{ route('responsavel.resultados', $ec) }}" class="btn-el btn-resultado">
+                        @if($ec->aberta || $ec->data_encerramento)
+                            <a href="{{ route('responsavel.resultados', $ec) }}?filtro=alianca" class="btn-el btn-resultado">
                                 <i class="bi bi-bar-chart-fill"></i>Ver Resultados
                             </a>
                         @endif

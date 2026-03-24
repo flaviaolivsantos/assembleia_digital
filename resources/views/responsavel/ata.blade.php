@@ -267,13 +267,17 @@
     </style>
 </head>
 <body>
+@php
+    $mostrarAlianca = $temAlianca && ($filtro === 'geral' || $filtro === 'alianca');
+    $mostrarVida    = $temVida    && ($filtro === 'geral' || $filtro === 'vida');
+@endphp
 
 {{-- ── Barra de ações (não imprime) ──────────────────────── --}}
 <div class="no-print">
     <button onclick="window.print()" class="btn-imprimir">
         &#128438; Imprimir / Salvar PDF
     </button>
-    <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}" class="btn-voltar">
+    <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}?filtro={{ $filtro }}" class="btn-voltar">
         &#8592; Voltar
     </a>
 </div>
@@ -289,7 +293,7 @@
         </div>
         <div class="doc-meta">
             Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
-            @if($temVida && !$temAlianca)
+            @if($mostrarVida && !$mostrarAlianca)
                 Todas as Missões
             @else
                 Missão: {{ $eleicaoCidade->cidade->nome }}
@@ -304,7 +308,7 @@
         <div class="doc-title-sub">
             {{ $eleicao->titulo }}
             &nbsp;&middot;&nbsp;
-            @if($temVida && !$temAlianca)
+            @if($mostrarVida && !$mostrarAlianca)
                 Todas as Missões
             @else
                 {{ $eleicaoCidade->cidade->nome }}
@@ -319,7 +323,7 @@
         <span class="section-icon"></span>1. Participação
     </div>
 
-    @if($temAlianca)
+    @if($mostrarAlianca)
     @php
         $adPct = $eleicaoCidade->qtd_eleitorado > 0
             ? round($eleicaoCidade->qtd_membros       / $eleicaoCidade->qtd_eleitorado * 100, 1) : 0;
@@ -349,7 +353,7 @@
     </table>
     @endif
 
-    @if($temVida)
+    @if($mostrarVida)
     @php
         $vidaTotalEleit  = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
         $vidaTotalVotaram = array_sum($vidaVotaramPorCidade);
@@ -418,6 +422,8 @@
 
     @foreach($eleicao->perguntas->sortBy('ordem') as $pergunta)
         @php $isVida = $pergunta->escopo === 'vida'; @endphp
+        @if($filtro === 'alianca' && $isVida) @continue @endif
+        @if($filtro === 'vida'    && !$isVida) @continue @endif
 
         <div class="sub-title">
             {{ $loop->iteration }}. {{ $pergunta->pergunta }}
@@ -528,7 +534,7 @@
         <span class="section-icon"></span>3. Auditoria
     </div>
 
-    @if($temAlianca)
+    @if($mostrarAlianca)
     <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Realidade de Aliança — {{ $eleicaoCidade->cidade->nome }}</p>
     <table class="audit-table">
         <tbody>
@@ -565,7 +571,7 @@
     </table>
     @endif
 
-    @if($temVida)
+    @if($mostrarVida)
     <p style="font-size:.75rem;color:#6c757d;margin:.8rem 0 .4rem;font-style:italic;">Realidade de Vida — Todas as Missões</p>
     <table class="audit-table">
         <tbody>
