@@ -331,11 +331,11 @@
                         </a>
                         @endif
                     @endif
-                    @if(auth()->user()->perfil === 'admin' && !$eleicao->aberta_vida && $eleicao->data_encerramento_vida)
+                    {{-- @if(auth()->user()->perfil === 'admin' && !$eleicao->aberta_vida && $eleicao->data_encerramento_vida)
                         <a href="{{ route('responsavel.vida.reabrir', $eleicao) }}" class="btn-el btn-reabrir">
                             <i class="bi bi-arrow-counterclockwise"></i>Reabrir Vida
                         </a>
-                    @endif
+                    @endif --}}
                 </div>
             </div>
         </div>
@@ -445,11 +445,11 @@
                                 <i class="bi bi-bar-chart-fill"></i>Ver Resultados
                             </a>
                         @endif
-                        @if(auth()->user()->perfil === 'admin' && !$ec->aberta && $ec->data_encerramento)
+                        {{-- @if(auth()->user()->perfil === 'admin' && !$ec->aberta && $ec->data_encerramento)
                             <a href="{{ route('responsavel.alianca.reabrir', $ec) }}" class="btn-el btn-reabrir">
                                 <i class="bi bi-arrow-counterclockwise"></i>Reabrir Aliança
                             </a>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
             </div>
