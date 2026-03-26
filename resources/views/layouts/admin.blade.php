@@ -176,6 +176,9 @@
         <a href="{{ route('responsavel.index') }}" class="sidebar-link {{ request()->routeIs('responsavel.*') ? 'active' : '' }}">
             <i class="bi bi-person-check-fill"></i> Responsável
         </a>
+        <a href="{{ route('mesario.index') }}" class="sidebar-link {{ request()->routeIs('mesario.*') ? 'active' : '' }}">
+            <i class="bi bi-people-fill"></i> Mesário
+        </a>
         <a href="{{ route('acompanhamento.index') }}" class="sidebar-link {{ request()->routeIs('acompanhamento.*') ? 'active' : '' }}">
             <i class="bi bi-bar-chart-line-fill"></i> Acompanhamento
         </a>
