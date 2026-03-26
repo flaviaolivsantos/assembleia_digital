@@ -465,23 +465,12 @@
         <div class="table-card">
             <div class="table-card-header">
                 <span class="table-card-title">Todas as Eleições</span>
-                <div class="search-wrap">
-                    <i class="bi bi-search"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar por título...">
-                </div>
-                <select id="filterStatus" class="filter-select">
-                    <option value="">Todos os status</option>
-                    <option value="rascunho">Rascunho</option>
-                    <option value="aberta">Aberta</option>
-                    <option value="encerrada">Encerrada</option>
-                </select>
                 <a href="{{ route('admin.eleicoes.create') }}" class="btn btn-sm btn-primary" style="border-radius:8px;font-size:.8rem;">
-                    <i class="bi bi-plus me-1"></i>Nova
+                    <i class="bi bi-plus me-1"></i>Nova Eleição
                 </a>
             </div>
-
             <div style="overflow-x:auto;">
-                <table class="dash-table" id="electionsTable">
+                <table class="dash-table">
                     <thead>
                         <tr>
                             <th>Título</th>
@@ -491,62 +480,36 @@
                             <th class="text-end">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody">
+                    <tbody>
                         @forelse($eleicoes as $eleicao)
-                        <tr data-title="{{ strtolower($eleicao->titulo) }}" data-status="{{ $eleicao->status }}">
+                        <tr>
                             <td style="font-weight:500;">{{ $eleicao->titulo }}</td>
                             <td style="color:var(--text-muted);font-size:.82rem;">{{ $eleicao->data_eleicao->format('d/m/Y') }}</td>
                             <td>
-                                <span class="status-pill pill-{{ $eleicao->status }}">
-                                    {{ ucfirst($eleicao->status) }}
-                                </span>
+                                <span class="status-pill pill-{{ $eleicao->status }}">{{ ucfirst($eleicao->status) }}</span>
                             </td>
                             <td style="color:var(--text-muted);">{{ $eleicao->cidades_count }}</td>
                             <td class="text-end">
-                                <div class="d-flex justify-content-end gap-1">
-                                    <a href="{{ route('admin.eleicoes.show', $eleicao) }}" class="action-btn" title="Visualizar">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    @if(!$eleicao->estaAberta())
-                                    <div class="dropdown">
-                                        <button class="action-btn dropdown-toggle" data-bs-toggle="dropdown" title="Mais ações" style="border:none!important;">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius:10px;font-size:.82rem;min-width:160px;">
-                                            <li>
-                                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('admin.eleicoes.edit', $eleicao) }}">
-                                                    <i class="bi bi-pencil text-secondary"></i> Editar
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <form method="POST" action="{{ route('admin.eleicoes.duplicate', $eleicao) }}"
-                                                      onsubmit="return confirm('Duplicar {{ addslashes($eleicao->titulo) }}?')">
-                                                    @csrf
-                                                    <button class="dropdown-item d-flex align-items-center gap-2">
-                                                        <i class="bi bi-copy text-info"></i> Duplicar
-                                                    </button>
-                                                </form>
-                                            </li>
-                                            <li><hr class="dropdown-divider my-1"></li>
-                                            <li>
-                                                <form method="POST" action="{{ route('admin.eleicoes.destroy', $eleicao) }}"
-                                                      onsubmit="return confirm('Remover {{ addslashes($eleicao->titulo) }}?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="dropdown-item d-flex align-items-center gap-2 text-danger">
-                                                        <i class="bi bi-trash"></i> Remover
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    @endif
-                                </div>
+                                <a href="{{ route('admin.eleicoes.show', $eleicao) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+                                @if(!$eleicao->estaAberta())
+                                    <a href="{{ route('admin.eleicoes.edit', $eleicao) }}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                                    <form method="POST" action="{{ route('admin.eleicoes.duplicate', $eleicao) }}" class="d-inline"
+                                          onsubmit="return confirm('Duplicar {{ addslashes($eleicao->titulo) }}?')">
+                                        @csrf
+                                        <button class="btn btn-sm btn-outline-info">Duplicar</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.eleicoes.destroy', $eleicao) }}" class="d-inline"
+                                          onsubmit="return confirm('Remover {{ addslashes($eleicao->titulo) }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-outline-danger">Remover</button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                         @empty
-                        <tr id="emptyRow">
-                            <td colspan="5" style="text-align:center;padding:2.5rem;color:var(--text-muted);">
+                        <tr>
+                            <td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">
                                 Nenhuma eleição cadastrada.
                                 <a href="{{ route('admin.eleicoes.create') }}" style="color:var(--ciano);">Criar a primeira</a>.
                             </td>
@@ -554,11 +517,6 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-
-            <div class="table-footer">
-                <span class="table-info-text" id="tableInfo"></span>
-                <div class="pagination-btns" id="pagination"></div>
             </div>
         </div>
 
@@ -570,92 +528,5 @@
 </div>{{-- /main-wrapper --}}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-(function() {
-    const PER_PAGE = 10;
-    let currentPage = 1;
-    let filtered = [];
-
-    const tbody     = document.getElementById('tableBody');
-    const searchEl  = document.getElementById('searchInput');
-    const filterEl  = document.getElementById('filterStatus');
-    const infoEl    = document.getElementById('tableInfo');
-    const pgEl      = document.getElementById('pagination');
-
-    const allRows = Array.from(tbody.querySelectorAll('tr[data-title]'));
-
-    function applyFilters() {
-        const q      = searchEl.value.toLowerCase().trim();
-        const status = filterEl.value;
-        filtered = allRows.filter(row => {
-            const matchTitle  = !q      || row.dataset.title.includes(q);
-            const matchStatus = !status || row.dataset.status === status;
-            return matchTitle && matchStatus;
-        });
-        currentPage = 1;
-        render();
-    }
-
-    function render() {
-        const total = filtered.length;
-        const pages = Math.max(1, Math.ceil(total / PER_PAGE));
-        currentPage = Math.min(currentPage, pages);
-        const start = (currentPage - 1) * PER_PAGE;
-        const end   = start + PER_PAGE;
-
-        allRows.forEach(r => r.style.display = 'none');
-        filtered.forEach((r, i) => { r.style.display = (i >= start && i < end) ? '' : 'none'; });
-
-        // Empty state
-        let emptyRow = tbody.querySelector('#noResults');
-        if (total === 0) {
-            if (!emptyRow) {
-                emptyRow = document.createElement('tr');
-                emptyRow.id = 'noResults';
-                emptyRow.innerHTML = `<td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Nenhuma eleição encontrada.</td>`;
-                tbody.appendChild(emptyRow);
-            }
-            emptyRow.style.display = '';
-        } else if (emptyRow) {
-            emptyRow.style.display = 'none';
-        }
-
-        // Info text
-        const from = total === 0 ? 0 : start + 1;
-        const to   = Math.min(end, total);
-        infoEl.textContent = total === 0 ? 'Nenhum resultado' : `Mostrando ${from}–${to} de ${total}`;
-
-        // Pagination
-        pgEl.innerHTML = '';
-        const prev = btn('<i class="bi bi-chevron-left"></i>', currentPage <= 1);
-        prev.addEventListener('click', () => { currentPage--; render(); });
-        pgEl.appendChild(prev);
-
-        const maxPages = Math.min(pages, 7);
-        for (let p = 1; p <= maxPages; p++) {
-            const b = btn(p, false, p === currentPage);
-            b.addEventListener('click', (pg => () => { currentPage = pg; render(); })(p));
-            pgEl.appendChild(b);
-        }
-
-        const next = btn('<i class="bi bi-chevron-right"></i>', currentPage >= pages);
-        next.addEventListener('click', () => { currentPage++; render(); });
-        pgEl.appendChild(next);
-    }
-
-    function btn(html, disabled, active) {
-        const b = document.createElement('button');
-        b.className = 'pg-btn' + (active ? ' active' : '');
-        b.innerHTML = html;
-        b.disabled = disabled;
-        return b;
-    }
-
-    searchEl.addEventListener('input', applyFilters);
-    filterEl.addEventListener('change', applyFilters);
-
-    applyFilters();
-})();
-</script>
 </body>
 </html>
