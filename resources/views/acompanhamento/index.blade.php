@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+@section('page-title', 'Acompanhamento')
 
 @section('content')
 
