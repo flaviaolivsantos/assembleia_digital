@@ -22,4 +22,9 @@ class Voto extends Model
     {
         return $this->belongsTo(Opcao::class);
     }
+
+    public function maquina()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'maquina_id');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EleicaoCidade;
 use App\Models\Eleicao;
 use App\Models\LogEleicao;
+use App\Models\Voto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -88,6 +89,25 @@ class ResponsavelController extends Controller
             'eleicaoCidade' => $eleicao->cidades->first(),
             'escopo'        => 'vida',
         ]);
+    }
+
+    public function relatorios(EleicaoCidade $eleicaoCidade)
+    {
+        abort_if(auth()->user()->perfil !== 'admin' && $eleicaoCidade->cidade_id !== auth()->user()->cidade_id, 403);
+
+        $eleicao = $eleicaoCidade->eleicao;
+        $eleicao->load('perguntas', 'cidades.cidade');
+
+        $perguntaIds = $eleicao->perguntas->pluck('id');
+
+        $votos = Voto::whereIn('pergunta_id', $perguntaIds)
+            ->with(['pergunta', 'opcao', 'maquina'])
+            ->orderBy('created_at')
+            ->get();
+
+        $todasCidades = $eleicao->cidades;
+
+        return view('responsavel.relatorios', compact('eleicao', 'eleicaoCidade', 'votos', 'todasCidades'));
     }
 
     public function encerrar(EleicaoCidade $eleicaoCidade)

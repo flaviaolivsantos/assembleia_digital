@@ -225,13 +225,23 @@
                     <i class="bi bi-calendar3 me-1"></i>{{ $eleicao->data_eleicao->format('d/m/Y') }}
                 </div>
             </div>
-            @if($eleicao->status === 'aberta')
-                <span class="status-badge status-badge-header"><i class="bi bi-play-circle-fill"></i>Em andamento</span>
-            @elseif($eleicao->status === 'encerrada')
-                <span class="status-badge status-badge-header"><i class="bi bi-check-circle-fill"></i>Encerrada</span>
-            @else
-                <span class="status-badge status-badge-header"><i class="bi bi-clock"></i>Aguardando</span>
-            @endif
+            <div class="d-flex align-items-center gap-2">
+                @if($eleicao->status === 'aberta')
+                    <span class="status-badge status-badge-header"><i class="bi bi-play-circle-fill"></i>Em andamento</span>
+                @elseif($eleicao->status === 'encerrada')
+                    <span class="status-badge status-badge-header"><i class="bi bi-check-circle-fill"></i>Encerrada</span>
+                @else
+                    <span class="status-badge status-badge-header"><i class="bi bi-clock"></i>Aguardando</span>
+                @endif
+                @if($eleicao->status !== 'rascunho')
+                    @php $ecFirst = $eleicao->cidades->first(); @endphp
+                    @if($ecFirst)
+                    <a href="{{ route('responsavel.relatorios', $ecFirst) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                        <i class="bi bi-journal-text me-1"></i>Relatório de Votos
+                    </a>
+                    @endif
+                @endif
+            </div>
         </div>
 
         {{-- ── Realidade de Vida ── --}}
