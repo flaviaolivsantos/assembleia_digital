@@ -144,4 +144,113 @@
     </div>
 </div>
 
+{{-- ─── Logs da Eleição ───────────────────────────────────────────────── --}}
+<h5 class="rel-header-title mt-4 mb-2">Logs da Eleição</h5>
+<div class="card rel-card mb-4">
+    <div class="card-body p-0">
+        <table class="rel-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Horário</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
+                    <th>Descrição</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($logsEleicao as $i => $log)
+                <tr>
+                    <td style="color:#6c757d;font-size:.8rem;">{{ $i + 1 }}</td>
+                    <td style="white-space:nowrap;">
+                        {{ $log->created_at ? \Carbon\Carbon::parse($log->created_at)->format('d/m/Y H:i:s') : '—' }}
+                    </td>
+                    <td>{{ $log->usuario?->nome ?? '—' }}</td>
+                    <td>
+                        @php
+                            $acaoEleicao = $log->acao;
+                            $badgeEleicao = match($acaoEleicao) {
+                                'votacao_aberta'    => ['style' => 'background:rgba(0,188,212,.15);color:#00899e;',    'label' => 'Votação Aberta'],
+                                'votacao_encerrada' => ['style' => 'background:rgba(108,117,125,.15);color:#495057;', 'label' => 'Votação Encerrada'],
+                                'votacao_reaberta'  => ['style' => 'background:rgba(255,193,7,.15);color:#856404;',   'label' => 'Votação Reaberta'],
+                                'vida_aberta'       => ['style' => 'background:rgba(0,188,212,.15);color:#00899e;',   'label' => 'Vida Aberta'],
+                                'vida_encerrada'    => ['style' => 'background:rgba(108,117,125,.15);color:#495057;', 'label' => 'Vida Encerrada'],
+                                'vida_reaberta'     => ['style' => 'background:rgba(255,193,7,.15);color:#856404;',   'label' => 'Vida Reaberta'],
+                                'eleicao_criada'    => ['style' => 'background:rgba(0,188,212,.15);color:#00899e;',   'label' => 'Eleição Criada'],
+                                'membros_alterados' => ['style' => 'background:rgba(108,117,125,.15);color:#495057;', 'label' => 'Membros Alterados'],
+                                default             => ['style' => 'background:rgba(108,117,125,.1);color:#6c757d;',  'label' => $acaoEleicao],
+                            };
+                        @endphp
+                        <span style="font-size:.72rem;font-weight:600;padding:.2em .6em;border-radius:4px;font-family:'Montserrat',sans-serif;{{ $badgeEleicao['style'] }}">
+                            {{ $badgeEleicao['label'] }}
+                        </span>
+                    </td>
+                    <td>{{ $log->descricao ?? '—' }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">Nenhum log de eleição encontrado.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{-- ─── Logs do Sistema ───────────────────────────────────────────────── --}}
+<h5 class="rel-header-title mt-2 mb-2">Logs do Sistema</h5>
+<div class="card rel-card mb-4">
+    <div class="card-body p-0">
+        <table class="rel-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Horário</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
+                    <th>Descrição</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($logsSistema as $i => $log)
+                <tr>
+                    <td style="color:#6c757d;font-size:.8rem;">{{ $i + 1 }}</td>
+                    <td style="white-space:nowrap;">
+                        {{ $log->created_at ? \Carbon\Carbon::parse($log->created_at)->format('d/m/Y H:i:s') : '—' }}
+                    </td>
+                    <td>{{ $log->usuario?->nome ?? '—' }}</td>
+                    <td>
+                        @php
+                            $acaoSistema = $log->acao;
+                            $badgeSistema = match($acaoSistema) {
+                                'login_sucesso'      => ['style' => 'background:rgba(25,135,84,.15);color:#146c43;',   'label' => 'Login OK'],
+                                'login_falha'        => ['style' => 'background:rgba(220,53,69,.15);color:#b02a37;',   'label' => 'Login Falha'],
+                                'logout'             => ['style' => 'background:rgba(108,117,125,.15);color:#495057;', 'label' => 'Logout'],
+                                'usuario_criado'     => ['style' => 'background:rgba(13,110,253,.15);color:#0a58ca;',  'label' => 'Usuário Criado'],
+                                'usuario_atualizado' => ['style' => 'background:rgba(255,193,7,.15);color:#856404;',   'label' => 'Usuário Atualizado'],
+                                'usuario_removido'   => ['style' => 'background:rgba(220,53,69,.15);color:#b02a37;',   'label' => 'Usuário Removido'],
+                                'membros_atualizados'=> ['style' => 'background:rgba(108,117,125,.15);color:#495057;', 'label' => 'Membros Atualizados'],
+                                default              => ['style' => 'background:rgba(108,117,125,.1);color:#6c757d;',  'label' => $acaoSistema],
+                            };
+                        @endphp
+                        <span style="font-size:.72rem;font-weight:600;padding:.2em .6em;border-radius:4px;font-family:'Montserrat',sans-serif;{{ $badgeSistema['style'] }}">
+                            {{ $badgeSistema['label'] }}
+                        </span>
+                    </td>
+                    <td>{{ $log->descricao ?? '—' }}</td>
+                    <td style="font-family:'Courier New',monospace;font-size:.78rem;color:#6c757d;">
+                        {{ $log->ip ?? '—' }}
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">Nenhum log do sistema encontrado.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
 @endsection

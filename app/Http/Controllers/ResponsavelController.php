@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EleicaoCidade;
 use App\Models\Eleicao;
 use App\Models\LogEleicao;
+use App\Models\LogSistema;
 use App\Models\Voto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -107,7 +108,16 @@ class ResponsavelController extends Controller
 
         $todasCidades = $eleicao->cidades;
 
-        return view('responsavel.relatorios', compact('eleicao', 'eleicaoCidade', 'votos', 'todasCidades'));
+        $logsEleicao = LogEleicao::where('eleicao_id', $eleicao->id)
+            ->with('usuario')
+            ->orderBy('created_at')
+            ->get();
+
+        $logsSistema = LogSistema::with('usuario')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('responsavel.relatorios', compact('eleicao', 'eleicaoCidade', 'votos', 'todasCidades', 'logsEleicao', 'logsSistema'));
     }
 
     public function encerrar(EleicaoCidade $eleicaoCidade)
@@ -387,6 +397,8 @@ class ResponsavelController extends Controller
             "Membros em {$eleicaoCidade->cidade->nome}: vida presencial={$qtdPresencialVida}, vida remoto={$qtdVida}; aliança={$qtdTotal} ({$qtdPresencial} presencial + {$qtdRemoto} remoto). Anterior aliança={$anterior}."
             . ($request->justificativa ? " Justificativa: {$request->justificativa}" : '')
         );
+
+        LogSistema::registrar('membros_atualizados', "Membros atualizados para {$eleicaoCidade->cidade->nome}.");
 
         return redirect()->route('responsavel.index')->with('sucesso', 'Quantidade de membros atualizada.');
     }

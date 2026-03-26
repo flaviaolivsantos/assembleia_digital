@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cidade;
+use App\Models\LogSistema;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,8 @@ class UsuarioController extends Controller
             'acesso_ate' => $request->acesso_ate ?: null,
         ]);
 
+        LogSistema::registrar('usuario_criado', "Usuário \"{$request->nome}\" ({$request->perfil}) criado.");
+
         return redirect()->route('admin.usuarios.index')->with('sucesso', 'Usuário criado com sucesso.');
     }
 
@@ -76,6 +79,8 @@ class UsuarioController extends Controller
 
         $usuario->update($dados);
 
+        LogSistema::registrar('usuario_atualizado', "Usuário \"{$usuario->nome}\" atualizado.");
+
         return redirect()->route('admin.usuarios.index')->with('sucesso', 'Usuário atualizado com sucesso.');
     }
 
@@ -85,6 +90,7 @@ class UsuarioController extends Controller
             return back()->withErrors(['geral' => 'Você não pode excluir sua própria conta.']);
         }
 
+        LogSistema::registrar('usuario_removido', "Usuário \"{$usuario->nome}\" removido.");
         $usuario->delete();
 
         return redirect()->route('admin.usuarios.index')->with('sucesso', 'Usuário removido.');
