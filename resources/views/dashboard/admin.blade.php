@@ -459,39 +459,6 @@
             </div>
         </div>
 
-        {{-- Quick Access --}}
-        <div class="section-heading">Acesso Rápido</div>
-        <div class="row g-3 mb-4">
-            <div class="col-6 col-md-3">
-                <a href="{{ route('admin.eleicoes.index') }}" class="quick-card">
-                    <i class="bi bi-list-ul"></i>
-                    <div class="quick-card-title">Ver Eleições</div>
-                    <div class="quick-card-sub">Listar todas</div>
-                </a>
-            </div>
-            <div class="col-6 col-md-3">
-                <a href="{{ route('admin.eleicoes.create') }}" class="quick-card">
-                    <i class="bi bi-plus-circle-fill"></i>
-                    <div class="quick-card-title">Criar Eleição</div>
-                    <div class="quick-card-sub">Nova eleição</div>
-                </a>
-            </div>
-            <div class="col-6 col-md-3">
-                <a href="{{ route('admin.cidades.index') }}" class="quick-card">
-                    <i class="bi bi-geo-alt-fill"></i>
-                    <div class="quick-card-title">Gerenciar Missões</div>
-                    <div class="quick-card-sub">Cidades cadastradas</div>
-                </a>
-            </div>
-            <div class="col-6 col-md-3">
-                <a href="{{ route('admin.usuarios.index') }}" class="quick-card">
-                    <i class="bi bi-people-fill"></i>
-                    <div class="quick-card-title">Ver Usuários</div>
-                    <div class="quick-card-sub">Gerenciar acessos</div>
-                </a>
-            </div>
-        </div>
-
         {{-- Elections table --}}
         <div class="section-heading">Eleições</div>
         <div class="table-card">
