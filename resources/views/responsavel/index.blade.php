@@ -326,6 +326,9 @@
                     @if($eleicao->aberta_vida || $eleicao->data_encerramento_vida)
                         @php $ecVida = $eleicao->cidades->first(); @endphp
                         @if($ecVida)
+                        <a href="{{ route('responsavel.zeresima.vida', $eleicao) }}" class="btn-el btn-secundario" target="_blank">
+                            <i class="bi bi-file-earmark-check"></i>Zerésima
+                        </a>
                         <a href="{{ route('responsavel.resultados', $ecVida) }}?filtro=vida" class="btn-el btn-resultado">
                             <i class="bi bi-bar-chart-fill"></i>Ver Resultados
                         </a>
@@ -441,6 +444,9 @@
                             </a>
                         @endif
                         @if($ec->aberta || $ec->data_encerramento)
+                            <a href="{{ route('responsavel.zeresima.alianca', $ec) }}" class="btn-el btn-secundario" target="_blank">
+                                <i class="bi bi-file-earmark-check"></i>Zerésima
+                            </a>
                             <a href="{{ route('responsavel.resultados', $ec) }}?filtro=alianca" class="btn-el btn-resultado">
                                 <i class="bi bi-bar-chart-fill"></i>Ver Resultados
                             </a>

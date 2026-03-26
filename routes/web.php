@@ -62,8 +62,10 @@ Route::middleware(['auth', 'acesso.ate', 'perfil:responsavel'])->prefix('respons
     Route::post('/{eleicaoCidade}/abrir', [ResponsavelController::class, 'confirmarAbrir'])->name('confirmarAbrir');
     Route::get('/{eleicaoCidade}/encerrar', [ResponsavelController::class, 'encerrar'])->name('encerrar');
     Route::post('/{eleicaoCidade}/encerrar', [ResponsavelController::class, 'confirmarEncerrar'])->name('confirmarEncerrar');
-    Route::get('/{eleicaoCidade}/resultados', [ResultadoController::class, 'showResponsavel'])->name('resultados');
-    Route::get('/{eleicaoCidade}/ata',        [ResultadoController::class, 'ataResponsavel'])->name('ata');
+    Route::get('/{eleicaoCidade}/resultados',  [ResultadoController::class,   'showResponsavel'])->name('resultados');
+    Route::get('/{eleicaoCidade}/ata',         [ResultadoController::class,   'ataResponsavel'])->name('ata');
+    Route::get('/{eleicaoCidade}/zeresima',    [ResponsavelController::class, 'zeresimaAlianca'])->name('zeresima.alianca');
+    Route::get('/vida/{eleicao}/zeresima',     [ResponsavelController::class, 'zeresimaVida'])->name('zeresima.vida');
     Route::get('/{eleicaoCidade}/membros',    [ResponsavelController::class, 'editarMembros'])->name('membros');
     Route::post('/{eleicaoCidade}/membros',   [ResponsavelController::class, 'atualizarMembros'])->name('membros.update');
 

@@ -64,7 +64,30 @@ class ResponsavelController extends Controller
 
         LogEleicao::registrar($eleicaoCidade->eleicao_id, 'votacao_aberta', "Votação aliança aberta em {$eleicaoCidade->cidade->nome}.");
 
-        return redirect()->route('responsavel.index')->with('sucesso', 'Votação aliança aberta com sucesso.');
+        return redirect()->route('responsavel.zeresima.alianca', $eleicaoCidade);
+    }
+
+    public function zeresimaAlianca(EleicaoCidade $eleicaoCidade)
+    {
+        abort_if(auth()->user()->perfil !== 'admin' && $eleicaoCidade->cidade_id !== auth()->user()->cidade_id, 403);
+        $eleicaoCidade->load('cidade', 'abertaPor');
+        $eleicao = $eleicaoCidade->eleicao;
+        $eleicao->load('perguntas.opcoes');
+        return view('responsavel.zeresima', [
+            'eleicao'       => $eleicao,
+            'eleicaoCidade' => $eleicaoCidade,
+            'escopo'        => 'alianca',
+        ]);
+    }
+
+    public function zeresimaVida(Eleicao $eleicao)
+    {
+        $eleicao->load('perguntas.opcoes', 'cidades.cidade');
+        return view('responsavel.zeresima', [
+            'eleicao'       => $eleicao,
+            'eleicaoCidade' => $eleicao->cidades->first(),
+            'escopo'        => 'vida',
+        ]);
     }
 
     public function encerrar(EleicaoCidade $eleicaoCidade)
@@ -142,7 +165,7 @@ class ResponsavelController extends Controller
 
         LogEleicao::registrar($eleicao->id, 'vida_aberta', 'Votação Realidade de Vida aberta.');
 
-        return redirect()->route('responsavel.index')->with('sucesso', 'Votação Realidade de Vida aberta com sucesso.');
+        return redirect()->route('responsavel.zeresima.vida', $eleicao);
     }
 
     public function encerrarVida(Eleicao $eleicao)
