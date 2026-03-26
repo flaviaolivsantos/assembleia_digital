@@ -156,36 +156,59 @@
     </a>
 
     <nav class="sidebar-nav">
-        <div class="sidebar-section">Principal</div>
 
-        <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <i class="bi bi-grid-1x2-fill"></i> Visão Geral
-        </a>
-        <a href="{{ route('admin.eleicoes.index') }}" class="sidebar-link {{ request()->routeIs('admin.eleicoes.*') ? 'active' : '' }}">
-            <i class="bi bi-check2-square"></i> Eleições
-        </a>
-        <a href="{{ route('admin.cidades.index') }}" class="sidebar-link {{ request()->routeIs('admin.cidades.*') ? 'active' : '' }}">
-            <i class="bi bi-building"></i> Missões
-        </a>
-        <a href="{{ route('admin.usuarios.index') }}" class="sidebar-link {{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">
-            <i class="bi bi-people-fill"></i> Usuários
-        </a>
+        @if($perfil === 'admin')
+            <div class="sidebar-section">Principal</div>
+            <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2-fill"></i> Visão Geral
+            </a>
+            <a href="{{ route('admin.eleicoes.index') }}" class="sidebar-link {{ request()->routeIs('admin.eleicoes.*') ? 'active' : '' }}">
+                <i class="bi bi-check2-square"></i> Eleições
+            </a>
+            <a href="{{ route('admin.cidades.index') }}" class="sidebar-link {{ request()->routeIs('admin.cidades.*') ? 'active' : '' }}">
+                <i class="bi bi-building"></i> Missões
+            </a>
+            <a href="{{ route('admin.usuarios.index') }}" class="sidebar-link {{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">
+                <i class="bi bi-people-fill"></i> Usuários
+            </a>
+            <div class="sidebar-section" style="margin-top:.5rem;">Gestão</div>
+            <a href="{{ route('responsavel.index') }}" class="sidebar-link {{ request()->routeIs('responsavel.*') ? 'active' : '' }}">
+                <i class="bi bi-person-check-fill"></i> Responsável
+            </a>
+            <a href="{{ route('mesario.index') }}" class="sidebar-link {{ request()->routeIs('mesario.*') ? 'active' : '' }}">
+                <i class="bi bi-people-fill"></i> Mesário
+            </a>
+            <a href="{{ route('acompanhamento.index') }}" class="sidebar-link {{ request()->routeIs('acompanhamento.*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart-line-fill"></i> Acompanhamento
+            </a>
+            <a href="#" class="sidebar-link" style="opacity:.5;pointer-events:none;">
+                <i class="bi bi-gear-fill"></i> Configurações
+                <span class="badge-soon">Em breve</span>
+            </a>
 
-        <div class="sidebar-section" style="margin-top:.5rem;">Gestão</div>
+        @elseif($perfil === 'responsavel')
+            <div class="sidebar-section">Principal</div>
+            <a href="{{ route('responsavel.index') }}" class="sidebar-link {{ request()->routeIs('responsavel.index') ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2-fill"></i> Início
+            </a>
+            <div class="sidebar-section" style="margin-top:.5rem;">Painel</div>
+            <a href="{{ route('acompanhamento.index') }}" class="sidebar-link {{ request()->routeIs('acompanhamento.*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart-line-fill"></i> Acompanhamento
+            </a>
+            <a href="{{ route('mesario.index') }}" class="sidebar-link {{ request()->routeIs('mesario.*') ? 'active' : '' }}">
+                <i class="bi bi-people-fill"></i> Mesário
+            </a>
 
-        <a href="{{ route('responsavel.index') }}" class="sidebar-link {{ request()->routeIs('responsavel.*') ? 'active' : '' }}">
-            <i class="bi bi-person-check-fill"></i> Responsável
-        </a>
-        <a href="{{ route('mesario.index') }}" class="sidebar-link {{ request()->routeIs('mesario.*') ? 'active' : '' }}">
-            <i class="bi bi-people-fill"></i> Mesário
-        </a>
-        <a href="{{ route('acompanhamento.index') }}" class="sidebar-link {{ request()->routeIs('acompanhamento.*') ? 'active' : '' }}">
-            <i class="bi bi-bar-chart-line-fill"></i> Acompanhamento
-        </a>
-        <a href="#" class="sidebar-link" style="opacity:.5;pointer-events:none;">
-            <i class="bi bi-gear-fill"></i> Configurações
-            <span class="badge-soon">Em breve</span>
-        </a>
+        @elseif($perfil === 'mesario')
+            <div class="sidebar-section">Principal</div>
+            <a href="{{ route('mesario.index') }}" class="sidebar-link {{ request()->routeIs('mesario.*') ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2-fill"></i> Início
+            </a>
+            <a href="{{ route('acompanhamento.index') }}" class="sidebar-link {{ request()->routeIs('acompanhamento.*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart-line-fill"></i> Acompanhamento
+            </a>
+        @endif
+
     </nav>
 
     <div class="sidebar-footer">
@@ -193,7 +216,13 @@
             <div class="sidebar-avatar">{{ strtoupper(substr(auth()->user()->nome, 0, 1)) }}</div>
             <div>
                 <div class="sidebar-user-name">{{ auth()->user()->nome }}</div>
-                <div class="sidebar-user-role">Administrador</div>
+                <div class="sidebar-user-role">
+                    @if($perfil === 'admin') Administrador
+                    @elseif($perfil === 'responsavel') Responsável
+                    @elseif($perfil === 'mesario') Mesário
+                    @else {{ ucfirst($perfil) }}
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -203,21 +232,9 @@
 <div class="main-wrapper">
 
     <header class="topnav">
-        <span class="topnav-title d-none d-md-block">@yield('page-title', 'Administrador')</span>
+        <span class="topnav-title d-none d-md-block">@yield('page-title', 'Painel')</span>
 
-        <nav class="topnav-nav">
-            <a href="{{ route('responsavel.index') }}" class="nav-pill">
-                <i class="bi bi-person-check"></i><span class="d-none d-lg-inline">Responsável</span>
-            </a>
-            <a href="{{ route('mesario.index') }}" class="nav-pill">
-                <i class="bi bi-people"></i><span class="d-none d-lg-inline">Mesário</span>
-            </a>
-            <a href="{{ route('acompanhamento.index') }}" class="nav-pill">
-                <i class="bi bi-bar-chart-line"></i><span class="d-none d-lg-inline">Painel</span>
-            </a>
-        </nav>
-
-        <div class="dropdown ms-2">
+        <div class="dropdown ms-auto">
             <a href="#" class="topnav-user dropdown-toggle" data-bs-toggle="dropdown">
                 <div class="topnav-avatar">{{ strtoupper(substr(auth()->user()->nome, 0, 1)) }}</div>
                 <span class="topnav-user-name d-none d-md-inline">{{ auth()->user()->nome }}</span>

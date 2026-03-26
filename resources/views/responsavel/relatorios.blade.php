@@ -1,4 +1,4 @@
-@extends('layouts.responsavel')
+@extends('layouts.admin')
 @section('page-title', 'Relatórios')
 
 @section('content')
