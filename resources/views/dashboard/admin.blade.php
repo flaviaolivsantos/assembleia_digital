@@ -111,9 +111,9 @@
             height: var(--topnav-h);
             background: #fff;
             border-bottom: 1px solid #E9ECEF;
-            display: flex; align-items: center;
+            display: flex; align-items: center; justify-content: space-between;
             padding: 0 1.5rem;
-            gap: 1rem;
+            gap: .75rem;
             position: sticky; top: 0; z-index: 100;
         }
         .topnav-title {
@@ -149,45 +149,46 @@
         .topnav-user i { font-size: .7rem; color: var(--text-muted); }
 
         /* ── Page content ────────────────────────── */
-        .page-content { padding: 1.75rem; flex: 1; }
+        .page-content { padding: 1.5rem; flex: 1; max-width: 1280px; }
 
         /* ── KPI Cards ───────────────────────────── */
         .kpi-card {
-            background: var(--card-bg); border-radius: 14px;
+            background: var(--card-bg); border-radius: 12px;
             border: none; box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
-            padding: 1.25rem 1.4rem;
+            padding: .9rem 1.1rem;
             transition: transform .15s, box-shadow .15s;
         }
         .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,.09); }
         .kpi-icon-box {
-            width: 44px; height: 44px; border-radius: 10px;
+            width: 38px; height: 38px; border-radius: 9px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.15rem;
+            font-size: 1rem;
         }
         .kpi-value {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2rem; font-weight: 700; color: var(--text-primary);
-            line-height: 1; margin-top: .75rem;
+            font-size: 1.6rem; font-weight: 700; color: var(--text-primary);
+            line-height: 1; margin-top: .5rem;
         }
-        .kpi-label { font-size: .8rem; color: var(--text-muted); margin-top: .3rem; font-weight: 500; }
+        .kpi-label { font-size: .75rem; color: var(--text-muted); margin-top: .2rem; font-weight: 500; }
         .kpi-pill {
             display: inline-flex; align-items: center; gap: 4px;
-            font-size: .7rem; font-weight: 600; padding: .2em .65em;
-            border-radius: 2rem; margin-top: .5rem;
+            font-size: .68rem; font-weight: 600; padding: .15em .55em;
+            border-radius: 2rem; margin-top: .35rem;
         }
 
         /* ── Quick access cards ──────────────────── */
         .quick-card {
             background: #F8F9FA; border: 1.5px solid #E9ECEF;
-            border-radius: 12px; padding: 1.1rem;
+            border-radius: 10px; padding: .65rem .75rem;
             text-decoration: none; color: var(--text-primary);
             display: flex; flex-direction: column; align-items: center;
-            gap: .5rem; transition: all .15s; text-align: center;
+            justify-content: center; gap: .3rem;
+            transition: all .15s; text-align: center; min-height: 72px;
         }
         .quick-card:hover { background: #fff; border-color: var(--ciano); color: var(--text-primary); box-shadow: 0 4px 12px rgba(0,188,212,.12); }
-        .quick-card i { font-size: 1.4rem; color: var(--ciano); }
-        .quick-card-title { font-size: .82rem; font-weight: 600; }
-        .quick-card-sub { font-size: .72rem; color: var(--text-muted); }
+        .quick-card i { font-size: 1.2rem; color: var(--ciano); }
+        .quick-card-title { font-size: .78rem; font-weight: 600; line-height: 1.2; }
+        .quick-card-sub { font-size: .68rem; color: var(--text-muted); }
 
         /* ── Table card ──────────────────────────── */
         .table-card {
