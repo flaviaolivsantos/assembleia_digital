@@ -23,9 +23,9 @@ class DashboardController extends Controller
                 'usuarios'          => User::count(),
             ];
 
-            $eleicoes_recentes = Eleicao::orderByDesc('created_at')->limit(5)->get();
+            $eleicoes = Eleicao::withCount('cidades')->orderByDesc('data_eleicao')->get();
 
-            return view('dashboard.admin', compact('stats', 'eleicoes_recentes'));
+            return view('dashboard.admin', compact('stats', 'eleicoes'));
         }
 
         if ($perfil === 'mesario') {
