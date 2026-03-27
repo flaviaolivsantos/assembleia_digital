@@ -151,8 +151,8 @@
 {{-- ── Sidebar ─────────────────────────────────────────────── --}}
 <aside class="sidebar">
     <a href="{{ route('dashboard') }}" class="sidebar-brand">
-        <img src="{{ asset('images/Coag-Vertical.png') }}" alt="Comunidade Recado" style="width:32px;height:32px;object-fit:contain;border-radius:6px;flex-shrink:0;">
-        <div class="sidebar-brand-text">Comunidade Recado</div>
+        <img src="{{ asset('images/logo_recado.png') }}" alt="Assembleia Digital" style="width:32px;height:32px;object-fit:contain;border-radius:6px;flex-shrink:0;">
+        <div class="sidebar-brand-text">Assembleia Digital</div>
     </a>
 
     <nav class="sidebar-nav">
