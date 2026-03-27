@@ -17,7 +17,7 @@
 <div class="login-wrapper">
     <div class="login-card card">
         <div class="login-header">
-            <p class="brand-name">Assembleia Digital</p>
+            <p class="brand-name">Eleição dos Membros Delegados</p>
         </div>
         <div class="login-body">
             @if(session('error'))
