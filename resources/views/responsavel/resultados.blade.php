@@ -164,8 +164,10 @@
     </div>
     <div class="d-flex gap-2 flex-shrink-0">
         <a href="{{ route('responsavel.ata', $eleicaoCidade) }}?filtro={{ $filtro }}{{ $filtro === 'alianca' ? '&alianca_cidade_id='.$aliancaCidade->cidade_id : '' }}"
-           class="btn btn-outline-dark btn-sm" target="_blank">
-            <i class="bi bi-printer me-1"></i>Imprimir Ata
+           target="_blank"
+           style="font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:600;background:#1B2A3B;color:#fff;padding:.42rem 1rem;border-radius:6px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;"
+           onmouseover="this.style.filter='brightness(.88)'" onmouseout="this.style.filter=''">
+            <i class="bi bi-printer-fill"></i>Imprimir Relatório
         </a>
         <a href="{{ route('responsavel.index') }}" class="btn btn-outline-secondary btn-sm">
             <i class="bi bi-arrow-left me-1"></i>Voltar
@@ -563,6 +565,16 @@
     </div>
 </div>
 @endif
+
+{{-- ── Botão de impressão perto dos resultados ─────────────────── --}}
+<div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;">
+    <a href="{{ route('responsavel.ata', $eleicaoCidade) }}?filtro={{ $filtro }}{{ $filtro === 'alianca' ? '&alianca_cidade_id='.$aliancaCidade->cidade_id : '' }}"
+       target="_blank"
+       style="font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:600;background:#00BCD4;color:#fff;padding:.42rem 1rem;border-radius:6px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;"
+       onmouseover="this.style.filter='brightness(.88)'" onmouseout="this.style.filter=''">
+        <i class="bi bi-printer-fill"></i>Imprimir Relatório de Votos
+    </a>
+</div>
 
 {{-- ── Resultados por Pergunta ────────────────────────────────── --}}
 @foreach($eleicao->perguntas->sortBy('ordem') as $pergunta)
