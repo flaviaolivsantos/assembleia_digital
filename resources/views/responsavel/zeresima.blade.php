@@ -220,10 +220,7 @@
     </div>
     <div class="assinatura-block">
         <div class="assinatura-linha"></div>
-        <div class="assinatura-label">
-            Responsável
-            @if($escopo === 'alianca') — {{ $eleicaoCidade->cidade->nome }} @endif
-        </div>
+        <div class="assinatura-label">Responsável</div>
     </div>
 
     <div class="doc-footer">
