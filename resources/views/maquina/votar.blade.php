@@ -7,11 +7,104 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo_recado.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .candidato-card { cursor: pointer; transition: border 0.15s, background 0.15s; }
-        .candidato-card.selecionado { border-color: #0d6efd !important; background: #e8f0fe; }
+        .candidato-card { cursor: pointer; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; }
+        .candidato-card.selecionado {
+            border-color: #00BCD4 !important;
+            border-width: 3px !important;
+            background: #f0fdff;
+            box-shadow: 0 0 0 2px rgba(0,188,212,.25);
+        }
         .candidato-card input[type=checkbox] { display: none; }
         .candidato-foto { width: 100%; height: 140px; object-fit: cover; border-radius: 6px 6px 0 0; }
+
+        /* ── Sticky bar ── */
+        body { padding-bottom: 80px; }
+
+        #sticky-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: #fff;
+            border-top: 2px solid #e5e7eb;
+            padding: .65rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+            transition: border-color .2s;
+        }
+        #sticky-bar.completo { border-top-color: #00BCD4; }
+
+        .bar-progress {
+            display: flex;
+            flex-direction: column;
+            gap: .15rem;
+            flex: 1;
+        }
+        .bar-progress-label {
+            font-family: 'Inter', sans-serif;
+            font-size: .82rem;
+            color: #6b7280;
+            transition: color .2s;
+        }
+        #sticky-bar.completo .bar-progress-label { color: #00899e; font-weight: 600; }
+
+        .bar-progress-track {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            max-width: 280px;
+        }
+        .bar-progress-fill {
+            height: 100%;
+            background: #00BCD4;
+            border-radius: 2px;
+            transition: width .2s;
+        }
+
+        .bar-perguntas {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        .bar-pergunta-chip {
+            font-size: .72rem;
+            font-family: 'Inter', sans-serif;
+            padding: .2em .65em;
+            border-radius: 2rem;
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .bar-pergunta-chip.chip-ok {
+            background: rgba(0,188,212,.12);
+            color: #00899e;
+            border-color: rgba(0,188,212,.3);
+        }
+
+        .btn-confirmar {
+            padding: .55rem 1.5rem;
+            background: #00BCD4;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: filter .15s, opacity .15s;
+            flex-shrink: 0;
+        }
+        .btn-confirmar:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+        .btn-confirmar:not(:disabled):hover { filter: brightness(.9); }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-light">
 
@@ -68,23 +161,43 @@
             </div>
         @endforeach
 
-        <div class="text-center">
-            <button type="submit" class="btn btn-success btn-lg px-5" id="btn-votar" disabled>
-                Confirmar Voto
-            </button>
-            <p class="text-muted small mt-2">Revise suas escolhas antes de confirmar. Esta ação é irreversível.</p>
-        </div>
     </form>
 </div>
 
+{{-- ── Sticky bottom bar ─────────────────────────────────── --}}
+<div id="sticky-bar">
+    <div class="bar-perguntas" id="bar-chips"></div>
+    <div class="bar-progress">
+        <span class="bar-progress-label" id="bar-label">Selecione os candidatos</span>
+        <div class="bar-progress-track">
+            <div class="bar-progress-fill" id="bar-fill" style="width:0%"></div>
+        </div>
+    </div>
+    <button type="submit" form="form-votacao" class="btn-confirmar" id="btn-votar" disabled>
+        Confirmar Voto
+    </button>
+</div>
+
 <script>
+const PERGUNTAS = {!! $perguntas->map(fn($p) => ['id' => $p->id, 'label' => $p->pergunta, 'qtd' => $p->qtd_respostas])->values()->toJson() !!};
+
+// Cria chips na barra
+const chipsContainer = document.getElementById('bar-chips');
+PERGUNTAS.forEach(function(p) {
+    const chip = document.createElement('span');
+    chip.className = 'bar-pergunta-chip';
+    chip.id = 'chip-' + p.id;
+    chip.textContent = '0/' + p.qtd;
+    chipsContainer.appendChild(chip);
+});
+
 document.querySelectorAll('.candidato-card').forEach(function(card) {
     card.addEventListener('click', function(e) {
         e.preventDefault();
 
-        const checkbox    = this.querySelector('.opcao-check');
-        const perguntaId  = checkbox.dataset.pergunta;
-        const max         = parseInt(checkbox.dataset.max);
+        const checkbox   = this.querySelector('.opcao-check');
+        const perguntaId = checkbox.dataset.pergunta;
+        const max        = parseInt(checkbox.dataset.max);
 
         if (!checkbox.checked) {
             const jaChecados = document.querySelectorAll('.opcao-check[data-pergunta="' + perguntaId + '"]:checked').length;
@@ -110,21 +223,50 @@ document.querySelectorAll('.candidato-card').forEach(function(card) {
             }
         });
 
-        // Atualiza contador
-        document.getElementById('contador-' + perguntaId).textContent = total + ' / ' + max;
+        // Atualiza contador no card-header
+        const contadorEl = document.getElementById('contador-' + perguntaId);
+        if (contadorEl) contadorEl.textContent = total + ' / ' + max;
 
-        // Habilita botão se todas as perguntas estiverem completas
-        verificarCompleto();
+        atualizarBarraInferior();
     });
 });
 
-function verificarCompleto() {
-    const perguntas = {!! $perguntas->pluck('qtd_respostas', 'id')->toJson() !!};
-    let completo = true;
-    for (const [id, qtd] of Object.entries(perguntas)) {
-        const sel = document.querySelectorAll('.opcao-check[data-pergunta="' + id + '"]:checked').length;
-        if (sel !== parseInt(qtd)) { completo = false; break; }
+function atualizarBarraInferior() {
+    let totalSel = 0, totalMax = 0, completo = true;
+
+    PERGUNTAS.forEach(function(p) {
+        const sel = document.querySelectorAll('.opcao-check[data-pergunta="' + p.id + '"]:checked').length;
+        const qtd = parseInt(p.qtd);
+        totalSel += sel;
+        totalMax += qtd;
+        if (sel !== qtd) completo = false;
+
+        // Chip individual
+        const chip = document.getElementById('chip-' + p.id);
+        if (chip) {
+            chip.textContent = sel + '/' + qtd;
+            chip.classList.toggle('chip-ok', sel === qtd);
+        }
+    });
+
+    // Barra de progresso
+    const pct = totalMax > 0 ? Math.round((totalSel / totalMax) * 100) : 0;
+    document.getElementById('bar-fill').style.width = pct + '%';
+
+    // Label
+    const label = document.getElementById('bar-label');
+    if (completo) {
+        label.textContent = 'Tudo pronto! Confirme seu voto.';
+    } else {
+        const faltam = totalMax - totalSel;
+        label.textContent = totalSel + ' de ' + totalMax + ' selecionados — faltam ' + faltam;
     }
+
+    // Estado da barra
+    const bar = document.getElementById('sticky-bar');
+    bar.classList.toggle('completo', completo);
+
+    // Botão
     document.getElementById('btn-votar').disabled = !completo;
 }
 </script>
