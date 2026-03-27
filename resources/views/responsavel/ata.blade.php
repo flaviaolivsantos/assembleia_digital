@@ -3,265 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ata — {{ $eleicao->titulo }} — {{ $eleicaoCidade->cidade->nome }}</title>
+    <title>Ata — {{ $eleicao->titulo }}</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo_recado.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ── Variáveis ──────────────────────────────────────── */
-        :root {
-            --azul:   #2C3E50;
-            --ciano:  #00BCD4;
-            --cinza-claro:  #F8F9FA;
-            --cinza-medio:  #CED4DA;
-            --cinza-escuro: #495057;
-            --branco: #FFFFFF;
-        }
+        /* ── Reset ──────────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ── Base ───────────────────────────────────────────── */
-        * { box-sizing: border-box; }
         body {
-            font-family: 'Roboto', Lato, sans-serif;
-            font-size: 13px;
-            color: var(--cinza-escuro);
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 12px;
+            color: #1f2937;
             background: #fff;
-            margin: 0; padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        /* ── Área de impressão ──────────────────────────────── */
-        .ata-page {
+        /* ── Barra de ações (web only) ──────────────────────────── */
+        .no-print {
+            position: sticky; top: 0; z-index: 100;
+            background: #1B2A3B; padding: .55rem 1rem;
+            display: flex; gap: .5rem; align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,.2);
+        }
+        .btn-imprimir {
+            background: #00BCD4; color: #fff; border: none;
+            padding: .38rem .9rem; border-radius: 5px;
+            font-family: inherit; font-weight: 600; font-size: .78rem;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+        }
+        .btn-imprimir:hover { background: #00a5bb; }
+        .btn-voltar {
+            background: transparent; color: #fff;
+            border: 1px solid rgba(255,255,255,.3);
+            padding: .38rem .9rem; border-radius: 5px;
+            font-size: .78rem; cursor: pointer;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+        }
+        .btn-voltar:hover { border-color: #fff; }
+        .btn-voltar.active {
+            background: rgba(0,188,212,.2);
+            border-color: #00BCD4;
+            color: #00BCD4;
+        }
+
+        /* ── Página ─────────────────────────────────────────────── */
+        .doc-page {
             max-width: 21cm;
             margin: 0 auto;
-            padding: 2cm 2cm 3cm;
+            padding: 1.8cm 1.8cm 2.5cm;
             min-height: 29.7cm;
-            position: relative;
         }
 
-        /* ── Barra de ações (oculta na impressão) ───────────── */
-        .no-print {
-            position: sticky;
-            top: 0; z-index: 100;
-            background: var(--azul);
-            padding: .6rem 1rem;
-            display: flex; gap: .5rem; align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,.25);
-        }
-        .no-print .btn-imprimir {
-            background: var(--ciano); color: #fff; border: none;
-            padding: .4rem .9rem; border-radius: .3rem;
-            font-family: 'Montserrat', sans-serif; font-weight: 600;
-            font-size: .82rem; cursor: pointer; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 5px;
-        }
-        .no-print .btn-voltar {
-            background: transparent; color: #fff;
-            border: 1px solid rgba(255,255,255,.35);
-            padding: .4rem .9rem; border-radius: .3rem;
-            font-size: .82rem; cursor: pointer; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 5px;
-        }
-        .no-print .btn-imprimir:hover { background: #00a5bb; }
-        .no-print .btn-voltar:hover   { border-color: #fff; }
-
-        /* ── Cabeçalho do documento ─────────────────────────── */
-        .doc-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
+        /* ── Cabeçalho 3 colunas ────────────────────────────────── */
+        .doc-head {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 1rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--cinza-medio);
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 1.4rem;
         }
-        .doc-brand {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--azul);
-            letter-spacing: .3px;
+        .doc-head-logo img {
+            height: 72px;
+            object-fit: contain;
         }
-        .doc-brand-sub {
-            font-size: .72rem;
-            color: var(--cinza-escuro);
-            font-weight: 400;
-            margin-top: 2px;
-        }
-        .doc-meta {
-            text-align: right;
-            font-size: .75rem;
-            color: var(--cinza-escuro);
-            line-height: 1.6;
-        }
-
-        /* ── Título central ─────────────────────────────────── */
-        .doc-title-block {
+        .doc-head-title {
             text-align: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--ciano);
         }
-        .doc-title-label {
-            font-family: 'Montserrat', sans-serif;
-            font-size: .68rem;
+        .doc-head-title .label-oficial {
+            font-size: .62rem;
             font-weight: 700;
             letter-spacing: 3px;
             text-transform: uppercase;
-            color: var(--ciano);
+            color: #6b7280;
             margin-bottom: .3rem;
         }
-        .doc-title-main {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--azul);
-            margin-bottom: .2rem;
+        .doc-head-title h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #111827;
+            line-height: 1;
         }
-        .doc-title-sub {
-            font-size: .85rem;
-            color: var(--cinza-escuro);
-        }
-
-        /* ── Títulos de seção ───────────────────────────────── */
-        .section-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: .95rem;
-            font-weight: 700;
-            color: var(--azul);
-            margin: 1.4rem 0 .6rem;
-            padding-bottom: .3rem;
-            border-bottom: 1px solid var(--cinza-medio);
-            page-break-after: avoid;
-        }
-        .section-title .section-icon {
-            display: inline-block;
-            width: 4px; height: 14px;
-            background: var(--ciano);
-            border-radius: 2px;
-            margin-right: 8px;
-            vertical-align: middle;
+        .doc-head-badge {
+            text-align: right;
         }
 
-        /* ── Subtítulos ─────────────────────────────────────── */
-        .sub-title {
-            font-family: 'Montserrat', sans-serif;
+        /* ── Bloco de metadados ─────────────────────────────────── */
+        .doc-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .5rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: .7rem 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .doc-meta-item .meta-label {
+            font-size: .62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: #9ca3af;
+            margin-bottom: .15rem;
+        }
+        .doc-meta-item .meta-value {
             font-size: .82rem;
             font-weight: 600;
-            color: var(--cinza-escuro);
-            margin: .9rem 0 .4rem;
+            color: #111827;
+        }
+
+        /* ── Títulos de seção ───────────────────────────────────── */
+        .section-title {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: .35rem;
+            margin: 1.3rem 0 .65rem;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        .sub-title {
+            font-size: .78rem;
+            font-weight: 700;
+            color: #374151;
+            margin: .9rem 0 .35rem;
             text-transform: uppercase;
             letter-spacing: .5px;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        .sub-title .sub-label {
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+            color: #9ca3af;
+            font-size: .72rem;
         }
 
-        /* ── Tabelas ────────────────────────────────────────── */
-        .ata-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1rem;
-            font-size: .85rem;
-            page-break-inside: avoid;
-        }
-        .ata-table thead tr {
-            background-color: var(--azul);
-        }
-        .ata-table thead th {
-            color: var(--branco);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
+        /* ── Nota descritiva (italic gray) ──────────────────────── */
+        .nota {
             font-size: .75rem;
-            text-transform: uppercase;
-            letter-spacing: .4px;
-            padding: .55rem .75rem;
-            border: 1px solid var(--azul);
-            text-align: left;
+            color: #6b7280;
+            font-style: italic;
+            margin: .2rem 0 .45rem;
         }
-        .ata-table thead th.center { text-align: center; }
-        .ata-table tbody tr:nth-child(odd)  { background-color: var(--branco); }
-        .ata-table tbody tr:nth-child(even) { background-color: var(--cinza-claro); }
-        .ata-table tbody td {
-            padding: .5rem .75rem;
-            border: 1px solid var(--cinza-medio);
-            color: var(--cinza-escuro);
-            vertical-align: middle;
-        }
-        .ata-table tbody td.center { text-align: center; }
-        .ata-table tfoot td {
-            padding: .5rem .75rem;
-            border: 1px solid var(--cinza-medio);
-            background: var(--cinza-claro);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: .82rem;
-            color: var(--azul);
-        }
-        .ata-table tfoot td.center { text-align: center; }
 
-        /* Valores em destaque */
-        .val-azul  { color: var(--azul);  font-weight: 700; }
-        .val-ciano { color: var(--ciano); font-weight: 600; }
-
-        /* ── Auditoria: tabela de 2 colunas ─────────────────── */
+        /* ── Tabela de auditoria (2 colunas) ────────────────────── */
         .audit-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 1rem;
-            font-size: .85rem;
+            font-size: .82rem;
         }
-        .audit-table tr:nth-child(odd)  td:first-child { background: var(--cinza-claro); }
-        .audit-table tr:nth-child(even) td:first-child { background: var(--branco); }
         .audit-table td {
             padding: .45rem .75rem;
-            border: 1px solid var(--cinza-medio);
+            border-bottom: 1px solid #f3f4f6;
             vertical-align: middle;
         }
+        .audit-table tr:last-child td { border-bottom: none; }
         .audit-table td:first-child {
-            font-family: 'Montserrat', sans-serif;
             font-weight: 600;
-            font-size: .78rem;
-            color: var(--azul);
-            width: 42%;
+            font-size: .72rem;
             text-transform: uppercase;
-            letter-spacing: .3px;
+            letter-spacing: .4px;
+            color: #6b7280;
+            width: 42%;
+            background: #f9fafb;
+            border-right: 1px solid #e5e7eb;
         }
-        .audit-table td:last-child { color: var(--cinza-escuro); }
+        .audit-table td:last-child { color: #111827; }
 
-        /* ── Assinatura ─────────────────────────────────────── */
+        /* ── Tabela de resultados ───────────────────────────────── */
+        .ata-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: .82rem;
+            page-break-inside: auto;
+            break-inside: auto;
+        }
+        .ata-table thead tr {
+            background: #f3f4f6;
+        }
+        .ata-table thead th {
+            font-size: .68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #374151;
+            padding: .5rem .75rem;
+            border: 1px solid #e5e7eb;
+            text-align: left;
+        }
+        .ata-table thead th.center { text-align: center; }
+        .ata-table tbody tr:nth-child(odd)  { background: #fff; }
+        .ata-table tbody tr:nth-child(even) { background: #f9fafb; }
+        .ata-table tbody tr { page-break-inside: avoid; break-inside: avoid; }
+        .ata-table tbody td {
+            padding: .45rem .75rem;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            vertical-align: middle;
+        }
+        .ata-table tbody td.center { text-align: center; }
+        .ata-table tfoot td {
+            padding: .45rem .75rem;
+            border: 1px solid #e5e7eb;
+            background: #f3f4f6;
+            font-weight: 700;
+            font-size: .75rem;
+            color: #111827;
+        }
+        .ata-table tfoot td.center { text-align: center; }
+
+        /* Valores em destaque */
+        .val-strong { font-weight: 700; color: #111827; }
+        .val-pct    { font-weight: 600; color: #374151; }
+
+        /* ── Assinatura ─────────────────────────────────────────── */
         .assinatura-block {
-            margin-top: 2.5rem;
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .4rem;
         }
         .assinatura-linha {
-            border-bottom: 1px solid var(--cinza-medio);
-            width: 55%;
-            margin-bottom: .4rem;
+            width: 52%;
+            border-top: 1px solid #6b7280;
         }
         .assinatura-label {
-            font-size: .82rem;
-            color: var(--cinza-escuro);
+            font-size: .78rem;
+            color: #6b7280;
+            text-align: center;
         }
 
-        /* ── Rodapé fixo ────────────────────────────────────── */
+        /* ── Rodapé ─────────────────────────────────────────────── */
         .doc-footer {
-            position: fixed;
-            bottom: .8cm; left: 2cm; right: 2cm;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--cinza-medio);
-            padding-top: .35rem;
-            font-size: .7rem;
-            color: var(--cinza-medio);
+            margin-top: 2.5rem;
+            padding-top: .5rem;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: .65rem;
+            color: #9ca3af;
         }
 
-        /* ── Print ──────────────────────────────────────────── */
+        /* ── Print ──────────────────────────────────────────────── */
+        @page { size: A4 portrait; margin: 1.5cm 1.5cm 2cm; }
+
         @media print {
+            body { margin: 0; background: #fff; }
             .no-print { display: none !important; }
-            body { margin: 0; }
-            .ata-page { padding: 0; margin: 0; max-width: none; min-height: auto; }
-            @page { size: A4 portrait; margin: 2cm 2cm 2.5cm; }
-            .section-title, .sub-title { page-break-after: avoid; break-after: avoid; }
-            .ata-table  { page-break-inside: auto; break-inside: auto; }
-            .ata-table tr { page-break-inside: avoid; break-inside: avoid; }
-            .doc-footer { position: static; margin-top: 1.5rem; border-top: 1px solid var(--cinza-medio); padding-top: .35rem; }
+            .doc-page { padding: 0; margin: 0; max-width: none; min-height: auto; }
+            .ata-table               { page-break-inside: auto;  break-inside: auto; }
+            .ata-table thead         { display: table-header-group; }
+            .ata-table tbody         { page-break-inside: auto;  break-inside: auto; }
+            .ata-table tbody tr      { page-break-inside: avoid; break-inside: avoid; }
+            .section-title { page-break-after: avoid; break-after: avoid; page-break-inside: avoid; break-inside: avoid; }
+            .sub-title     { page-break-after: avoid; break-after: avoid; page-break-inside: avoid; break-inside: avoid; }
+            .assinatura-wrapper { page-break-inside: avoid; break-inside: avoid; }
+            .doc-footer { position: static; margin-top: 1.5rem; }
         }
     </style>
 </head>
@@ -276,59 +287,55 @@
     $toggleUrl    = route('responsavel.ata', $eleicaoCidade) . '?' . http_build_query($toggleParams);
 @endphp
 
-{{-- ── Barra de ações (não imprime) ──────────────────────── --}}
+{{-- ── Barra de ações ────────────────────────────────────── --}}
 <div class="no-print">
-    <button onclick="window.print()" class="btn-imprimir">
-        &#128438; Imprimir / Salvar PDF
-    </button>
-    <a href="{{ $toggleUrl }}" class="btn-voltar" style="{{ $semZeros ? 'background:rgba(0,188,212,.2);border-color:#00BCD4;color:#00BCD4;' : '' }}">
-        {{ $semZeros ? '&#10003; Ocultando zeros' : 'Ocultar zeros' }}
+    <button onclick="window.print()" class="btn-imprimir">🖨 Imprimir / Salvar PDF</button>
+    <a href="{{ $toggleUrl }}" class="btn-voltar {{ $semZeros ? 'active' : '' }}">
+        {{ $semZeros ? '✓ Ocultando zeros' : 'Ocultar zeros' }}
     </a>
-    <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}?filtro={{ $filtro }}{{ $filtro === 'alianca' ? '&alianca_cidade_id='.$aliancaCidade->cidade_id : '' }}" class="btn-voltar">
-        &#8592; Voltar
-    </a>
+    <a href="{{ route('responsavel.resultados', $eleicaoCidade) }}?filtro={{ $filtro }}{{ $filtro === 'alianca' ? '&alianca_cidade_id='.$aliancaCidade->cidade_id : '' }}" class="btn-voltar">← Voltar</a>
 </div>
 
-{{-- ── Página do documento ────────────────────────────────── --}}
-<div class="ata-page">
+<div class="doc-page">
 
-    {{-- Cabeçalho --}}
-    <div class="doc-header" style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-            <img src="{{ asset('images/Coag-Vertical.png') }}" alt="Comunidade Recado" style="height:70px;object-fit:contain;">
+    {{-- ── Cabeçalho 3 colunas ──────────────────────────────── --}}
+    <div class="doc-head">
+        <div class="doc-head-logo">
+            <img src="{{ asset('images/Coag-Vertical.png') }}" alt="Comunidade Recado">
         </div>
-        <div class="doc-meta">
-            Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
-            @if($mostrarVida && !$mostrarAlianca)
-                Todas as Missões
-            @else
-                Missão: {{ $aliancaCidade->cidade->nome }}
-            @endif
-            <br><strong>Comunidade Recado</strong>
+        <div class="doc-head-title">
+            <div class="label-oficial">Documento Oficial</div>
+            <h1>Ata de Eleição</h1>
+        </div>
+        <div class="doc-head-badge"></div>
+    </div>
+
+    {{-- ── Metadados ─────────────────────────────────────────── --}}
+    <div class="doc-meta-grid">
+        <div class="doc-meta-item">
+            <div class="meta-label">Eleição</div>
+            <div class="meta-value">{{ $eleicao->titulo }}</div>
+        </div>
+        <div class="doc-meta-item">
+            <div class="meta-label">Realidade</div>
+            <div class="meta-value">
+                @if($mostrarVida && !$mostrarAlianca)
+                    Vida — Todas as Missões
+                @elseif($mostrarAlianca && !$mostrarVida)
+                    Aliança — {{ $aliancaCidade->cidade->nome }}
+                @else
+                    Aliança + Vida
+                @endif
+            </div>
+        </div>
+        <div class="doc-meta-item">
+            <div class="meta-label">Data da Eleição</div>
+            <div class="meta-value">{{ $eleicao->data_eleicao->format('d/m/Y') }}</div>
         </div>
     </div>
 
-    {{-- Título central --}}
-    <div class="doc-title-block">
-        <div class="doc-title-label">Documento Oficial</div>
-        <div class="doc-title-main">Ata de Eleição</div>
-        <div class="doc-title-sub">
-            {{ $eleicao->titulo }}
-            &nbsp;&middot;&nbsp;
-            @if($mostrarVida && !$mostrarAlianca)
-                Todas as Missões
-            @else
-                {{ $aliancaCidade->cidade->nome }}
-            @endif
-            &nbsp;&middot;&nbsp;
-            {{ $eleicao->data_eleicao->format('d/m/Y') }}
-        </div>
-    </div>
-
-    {{-- 1. Participação --}}
-    <div class="section-title">
-        <span class="section-icon"></span>1. Participação
-    </div>
+    {{-- ── 1. Participação ────────────────────────────────────── --}}
+    <div class="section-title">1. Participação</div>
 
     @if($mostrarAlianca)
     @php
@@ -337,7 +344,7 @@
         $apPct = $aliancaCidade->qtd_membros    > 0
             ? round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_membros    * 100, 1) : 0;
     @endphp
-    <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Realidade de Aliança — {{ $aliancaCidade->cidade->nome }}</p>
+    <p class="nota">Realidade de Aliança — {{ $aliancaCidade->cidade->nome }}</p>
     <table class="ata-table">
         <thead>
             <tr>
@@ -350,11 +357,11 @@
         </thead>
         <tbody>
             <tr>
-                <td class="center val-azul">{{ $aliancaCidade->qtd_membros }}</td>
-                <td class="center val-azul">{{ $aliancaCidade->qtd_membros }}</td>
-                <td class="center val-azul">{{ $aliancaCidade->votos_registrados }}</td>
-                <td class="center val-ciano">{{ $adPct }}%</td>
-                <td class="center val-ciano">{{ $apPct }}%</td>
+                <td class="center val-strong">{{ $aliancaCidade->qtd_membros }}</td>
+                <td class="center val-strong">{{ $aliancaCidade->qtd_membros }}</td>
+                <td class="center val-strong">{{ $aliancaCidade->votos_registrados }}</td>
+                <td class="center val-pct">{{ $adPct }}%</td>
+                <td class="center val-pct">{{ $apPct }}%</td>
             </tr>
         </tbody>
     </table>
@@ -366,7 +373,7 @@
         $vidaTotalVotaram = array_sum($vidaVotaramPorCidade);
         $vidaApPct        = $vidaTotalEleit > 0 ? round($vidaTotalVotaram / $vidaTotalEleit * 100, 1) : 0;
     @endphp
-    <p style="font-size:.75rem;color:#6c757d;margin:.8rem 0 .4rem;font-style:italic;">Realidade de Vida — Todas as Missões</p>
+    <p class="nota" style="{{ $mostrarAlianca ? 'margin-top:.8rem;' : '' }}">Realidade de Vida — Todas as Missões</p>
     <table class="ata-table">
         <thead>
             <tr>
@@ -377,15 +384,15 @@
         </thead>
         <tbody>
             <tr>
-                <td class="center val-azul">{{ $vidaTotalEleit }}</td>
-                <td class="center val-azul">{{ $vidaTotalVotaram }}</td>
-                <td class="center val-ciano">{{ $vidaApPct }}%</td>
+                <td class="center val-strong">{{ $vidaTotalEleit }}</td>
+                <td class="center val-strong">{{ $vidaTotalVotaram }}</td>
+                <td class="center val-pct">{{ $vidaApPct }}%</td>
             </tr>
         </tbody>
     </table>
 
     @if($todasCidades->count() > 1)
-    <p style="font-size:.75rem;color:#6c757d;margin:.4rem 0 .4rem;font-style:italic;">Participação Vida por Missão</p>
+    <p class="nota">Participação Vida por Missão</p>
     <table class="ata-table">
         <thead>
             <tr>
@@ -405,8 +412,8 @@
             <tr>
                 <td>{{ $ec->cidade->nome }}</td>
                 <td class="center">{{ $ecEleit }}</td>
-                <td class="center val-azul">{{ $ecVot }}</td>
-                <td class="center val-ciano">{{ $ecAp }}%</td>
+                <td class="center val-strong">{{ $ecVot }}</td>
+                <td class="center val-pct">{{ $ecAp }}%</td>
             </tr>
             @endforeach
         </tbody>
@@ -422,29 +429,22 @@
     @endif
     @endif
 
-    {{-- 2. Resultados --}}
-    <div class="section-title">
-        <span class="section-icon"></span>2. Resultados
-    </div>
+    {{-- ── 2. Resultados ──────────────────────────────────────── --}}
+    <div class="section-title">2. Resultados</div>
 
     @foreach($eleicao->perguntas->sortBy('ordem') as $pergunta)
         @php $isVida = $pergunta->escopo === 'vida'; @endphp
         @if($filtro === 'alianca' && $isVida) @continue @endif
         @if($filtro === 'vida'    && !$isVida) @continue @endif
 
-        {{-- Para aliança: verifica se há candidatos para esta cidade antes de exibir --}}
         @if(!$isVida)
-            @php
-                $preCheck = $pergunta->opcoes->where('cidade_id', $aliancaCidade->cidade_id);
-            @endphp
+            @php $preCheck = $pergunta->opcoes->where('cidade_id', $aliancaCidade->cidade_id); @endphp
             @if($preCheck->isEmpty()) @continue @endif
         @endif
 
         <div class="sub-title">
             {{ $loop->iteration }}. {{ $pergunta->pergunta }}
-            <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6c757d;font-size:.75rem;">
-                — Realidade de {{ $isVida ? 'Vida' : 'Aliança' }}
-            </span>
+            <span class="sub-label">— Realidade de {{ $isVida ? 'Vida' : 'Aliança' }}</span>
         </div>
 
         @if($isVida)
@@ -457,7 +457,7 @@
                 if ($semZeros) $opcoesVida = $opcoesVida->filter(fn($o) => $o->total_votos > 0);
                 $totalVida = $opcoesVida->sum('total_votos');
             @endphp
-            <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Placar Total Geral</p>
+            <p class="nota">Placar Total Geral</p>
             <table class="ata-table">
                 <thead>
                     <tr>
@@ -468,27 +468,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($opcoesVida as $i => $opcao)
+                    @foreach($opcoesVida as $opcao)
                         @php $pctOpcao = $totalVida > 0 ? round($opcao->total_votos / $totalVida * 100, 1) : 0; @endphp
                         <tr>
-                            <td style="width:30px;color:#6c757d;">{{ $loop->iteration }}</td>
+                            <td style="width:30px;color:#9ca3af;">{{ $loop->iteration }}</td>
                             <td>{{ $opcao->nome }}</td>
-                            <td class="center val-azul">{{ $opcao->total_votos }}</td>
-                            <td class="center val-ciano">{{ $pctOpcao }}%</td>
+                            <td class="center val-strong">{{ $opcao->total_votos }}</td>
+                            <td class="center val-pct">{{ $pctOpcao }}%</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
 
-            {{-- votos por missão detalhados dentro de cada pergunta vida --}}
             @if($todasCidades->count() > 1)
-                <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Votos por missão</p>
+                <p class="nota">Votos por missão</p>
                 <table class="ata-table">
                     <thead>
                         <tr>
                             <th>Missão</th>
                             @foreach($opcoesVida as $opcao)
-                                <th class="center" style="font-size:.72rem;">{{ $opcao->nome }}</th>
+                                <th class="center" style="font-size:.68rem;">{{ $opcao->nome }}</th>
                             @endforeach
                             <th class="center">Total</th>
                         </tr>
@@ -502,7 +501,7 @@
                                 @php $v = $votosPorCidade["{$pergunta->id}_{$opcao->id}_{$ec->cidade_id}"] ?? 0; $totalPorCidade += $v; @endphp
                                 <td class="center">{{ $v }}</td>
                             @endforeach
-                            <td class="center val-azul">{{ $totalPorCidade }}</td>
+                            <td class="center val-strong">{{ $totalPorCidade }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -528,13 +527,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($opcoesCidade as $i => $opcao)
+                    @foreach($opcoesCidade as $opcao)
                         @php $pctOpcao = $totalVotosPergunta > 0 ? round($opcao->total_votos / $totalVotosPergunta * 100, 1) : 0; @endphp
                         <tr>
-                            <td style="width:30px;color:#6c757d;">{{ $loop->iteration }}</td>
+                            <td style="width:30px;color:#9ca3af;">{{ $loop->iteration }}</td>
                             <td>{{ $opcao->nome }}</td>
-                            <td class="center val-azul">{{ $opcao->total_votos }}</td>
-                            <td class="center val-ciano">{{ $pctOpcao }}%</td>
+                            <td class="center val-strong">{{ $opcao->total_votos }}</td>
+                            <td class="center val-pct">{{ $pctOpcao }}%</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -542,13 +541,11 @@
         @endif
     @endforeach
 
-    {{-- 3. Auditoria --}}
-    <div class="section-title">
-        <span class="section-icon"></span>3. Auditoria
-    </div>
+    {{-- ── 3. Auditoria ───────────────────────────────────────── --}}
+    <div class="section-title">3. Auditoria</div>
 
     @if($mostrarAlianca)
-    <p style="font-size:.75rem;color:#6c757d;margin:.2rem 0 .4rem;font-style:italic;">Realidade de Aliança — {{ $aliancaCidade->cidade->nome }}</p>
+    <p class="nota">Realidade de Aliança — {{ $aliancaCidade->cidade->nome }}</p>
     <table class="audit-table">
         <tbody>
             <tr>
@@ -569,14 +566,14 @@
             </tr>
             <tr>
                 <td>Total esperado de votos</td>
-                <td class="val-azul">{{ $aliancaCidade->qtd_membros }}</td>
+                <td><strong>{{ $aliancaCidade->qtd_membros }}</strong></td>
             </tr>
             <tr>
                 <td>Total realizado</td>
                 <td>
-                    <span class="val-azul">{{ $aliancaCidade->votos_registrados }}</span>
+                    <strong>{{ $aliancaCidade->votos_registrados }}</strong>
                     @if($aliancaCidade->qtd_membros > 0)
-                        &nbsp;<span class="val-ciano">({{ round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_membros * 100, 1) }}%)</span>
+                        &nbsp;<span class="val-pct">({{ round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_membros * 100, 1) }}%)</span>
                     @endif
                 </td>
             </tr>
@@ -585,7 +582,7 @@
     @endif
 
     @if($mostrarVida)
-    <p style="font-size:.75rem;color:#6c757d;margin:.8rem 0 .4rem;font-style:italic;">Realidade de Vida — Todas as Missões</p>
+    <p class="nota" style="{{ $mostrarAlianca ? 'margin-top:.8rem;' : '' }}">Realidade de Vida — Todas as Missões</p>
     <table class="audit-table">
         <tbody>
             <tr>
@@ -598,15 +595,15 @@
             </tr>
             <tr>
                 <td>Total esperado de votos</td>
-                <td class="val-azul">{{ $vidaTotalEleit ?? $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0)) }}</td>
+                <td><strong>{{ $vidaTotalEleit ?? $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0)) }}</strong></td>
             </tr>
             <tr>
                 <td>Total realizado</td>
                 <td>
                     @php $vTot = $vidaTotalVotaram ?? array_sum($vidaVotaramPorCidade); $vEleit = $vidaTotalEleit ?? $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0)); @endphp
-                    <span class="val-azul">{{ $vTot }}</span>
+                    <strong>{{ $vTot }}</strong>
                     @if($vEleit > 0)
-                        &nbsp;<span class="val-ciano">({{ round($vTot / $vEleit * 100, 1) }}%)</span>
+                        &nbsp;<span class="val-pct">({{ round($vTot / $vEleit * 100, 1) }}%)</span>
                     @endif
                 </td>
             </tr>
@@ -614,21 +611,20 @@
     </table>
     @endif
 
-    {{-- 4. Assinatura --}}
-    <div class="section-title">
-        <span class="section-icon"></span>4. Assinatura
-    </div>
-    <div class="assinatura-block">
-        <div class="assinatura-linha"></div>
-        <div class="assinatura-label">Responsável</div>
+    {{-- ── 4. Assinatura ──────────────────────────────────────── --}}
+    <div class="assinatura-wrapper">
+        <div class="section-title" style="margin-top:2rem;">4. Assinatura</div>
+        <div class="assinatura-block">
+            <div class="assinatura-linha"></div>
+            <div class="assinatura-label">Responsável</div>
+        </div>
     </div>
 
-    {{-- Rodapé fixo --}}
+    {{-- ── Rodapé ────────────────────────────────────────────── --}}
     <div class="doc-footer">
-        <span>Documento gerado automaticamente pelo sistema Comunidade Recado em {{ now()->format('d/m/Y H:i') }}.</span>
+        Ata gerada automaticamente pelo sistema Assembleia Digital / Assessoria de Gestão — Comunidade Recado em {{ now()->format('d/m/Y \à\s H:i:s') }}
     </div>
 
-</div>{{-- /ata-page --}}
-
+</div>
 </body>
 </html>
