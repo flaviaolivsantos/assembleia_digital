@@ -87,7 +87,7 @@
         /* ── Escopo único (apenas aliança ou vida) ──────── */
         .escopo-single {
             font-size: .82rem;
-            color: #6b7280;
+            color: #374151;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -109,7 +109,7 @@
         }
         .contador-item {
             font-size: .82rem;
-            color: #6b7280;
+            color: #374151;
             display: flex;
             align-items: center;
             gap: .3rem;
@@ -123,7 +123,7 @@
         /* ── Instrução ──────────────────────────────────── */
         .instrucao {
             font-size: .8rem;
-            color: #9ca3af;
+            color: #4b5563;
             margin-bottom: 1rem;
             text-align: center;
         }
@@ -133,7 +133,7 @@
         .password-input {
             width: 100%;
             padding: .75rem 2.8rem .75rem 1rem;
-            border: 1.5px solid #e5e7eb;
+            border: 1.5px solid #d1d5db;
             border-radius: 8px;
             font-size: 1rem;
             font-family: inherit;
@@ -143,7 +143,7 @@
             transition: border-color .15s, box-shadow .15s;
             background: #fff;
         }
-        .password-input::placeholder { color: #d1d5db; }
+        .password-input::placeholder { color: #9ca3af; }
         .password-input:focus {
             border-color: #00BCD4;
             box-shadow: 0 0 0 3px rgba(0,188,212,.12);
@@ -153,7 +153,7 @@
             height: 100%; width: 2.8rem;
             display: flex; align-items: center; justify-content: center;
             background: none; border: none; cursor: pointer;
-            color: #d1d5db; font-size: .95rem; transition: color .2s; outline: none;
+            color: #6b7280; font-size: .95rem; transition: color .2s; outline: none;
         }
         .password-toggle:hover { color: #00BCD4; }
 
@@ -185,7 +185,7 @@
             margin-top: .75rem;
             padding: .55rem;
             background: transparent;
-            color: #9ca3af;
+            color: #6b7280;
             border: none;
             font-family: inherit;
             font-size: .82rem;
@@ -193,7 +193,7 @@
             transition: color .15s;
             text-align: center;
         }
-        .btn-sair:hover { color: #00BCD4; }
+        .btn-sair:hover { color: #111827; }
 
         /* ── Alerta de erro ─────────────────────────────── */
         .alert-erro {
