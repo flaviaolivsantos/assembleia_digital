@@ -257,12 +257,11 @@
             .no-print { display: none !important; }
             body { margin: 0; }
             .ata-page { padding: 0; margin: 0; max-width: none; min-height: auto; }
-            @page {
-                size: A4 portrait;
-                margin: 2cm 2cm 2.5cm;
-            }
-            .section-title, .sub-title { page-break-after: avoid; }
-            .ata-table { page-break-inside: avoid; }
+            @page { size: A4 portrait; margin: 2cm 2cm 2.5cm; }
+            .section-title, .sub-title { page-break-after: avoid; break-after: avoid; }
+            .ata-table  { page-break-inside: auto; break-inside: auto; }
+            .ata-table tr { page-break-inside: avoid; break-inside: avoid; }
+            .doc-footer { position: static; margin-top: 1.5rem; border-top: 1px solid var(--cinza-medio); padding-top: .35rem; }
         }
     </style>
 </head>
