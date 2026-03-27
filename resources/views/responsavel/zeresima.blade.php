@@ -291,9 +291,7 @@
             <div class="label-oficial">Documento Oficial</div>
             <h1>Zerésima</h1>
         </div>
-        <div class="doc-head-badge">
-            <span class="badge-oficial">Zerésima</span>
-        </div>
+        <div class="doc-head-badge"></div>
     </div>
 
     {{-- ── Metadados ─────────────────────────────────────────── --}}
