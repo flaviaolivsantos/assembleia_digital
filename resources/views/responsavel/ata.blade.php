@@ -294,9 +294,8 @@
 
     {{-- Cabeçalho --}}
     <div class="doc-header">
-        <div>
-            <img src="{{ asset('images/logo_recado.png') }}" alt="Comunidade Recado" style="height:32px;object-fit:contain;margin-bottom:3px;">
-            <div class="doc-brand">Comunidade Recado</div>
+        <div style="display:flex;align-items:center;justify-content:center;">
+            <img src="{{ asset('images/logo_recado.png') }}" alt="Comunidade Recado" style="height:48px;object-fit:contain;">
         </div>
         <div class="doc-meta">
             Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
@@ -305,6 +304,7 @@
             @else
                 Missão: {{ $aliancaCidade->cidade->nome }}
             @endif
+            <br><strong>Comunidade Recado</strong>
         </div>
     </div>
 
