@@ -18,7 +18,6 @@
     <div class="login-card card">
         <div class="login-header">
             <p class="brand-name">Assembleia Digital</p>
-            <p class="brand-sub">Sistema de votação</p>
         </div>
         <div class="login-body">
             @if(session('error'))
