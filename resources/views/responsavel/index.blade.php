@@ -286,7 +286,7 @@
                 </div>
 
                 {{-- Botões --}}
-                <div class="d-flex flex-column gap-2 align-items-end justify-content-center" style="min-width:160px;">
+                <div class="d-flex flex-column gap-2 align-items-stretch justify-content-center" style="width:180px;flex-shrink:0;">
                     @if(!$temAlianca)
                         @foreach($eleicao->cidades as $ec)
                             @if(!($ec->data_encerramento_vida ?? false))
@@ -394,7 +394,7 @@
                     </div>
 
                     {{-- Botões --}}
-                    <div class="d-flex flex-column gap-2 align-items-end justify-content-center" style="min-width:160px;">
+                    <div class="d-flex flex-column gap-2 align-items-stretch justify-content-center" style="width:180px;flex-shrink:0;">
                         @if(!$ec->data_encerramento)
                             <a href="{{ route('responsavel.membros', $ec) }}" class="btn-ac btn-outline">
                                 <i class="bi bi-people"></i>Alterar Membros
