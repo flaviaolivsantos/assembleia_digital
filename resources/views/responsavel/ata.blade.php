@@ -294,11 +294,10 @@
 
     {{-- Cabeçalho --}}
     <div class="doc-header" style="display:flex;justify-content:space-between;align-items:center;">
-        <div style="flex:1;"></div>
-        <div style="flex:1;display:flex;justify-content:center;align-items:center;">
-            <img src="{{ asset('images/Coag-Vertical.png') }}" alt="Comunidade Recado" style="height:56px;object-fit:contain;">
+        <div>
+            <img src="{{ asset('images/Coag-Vertical.png') }}" alt="Comunidade Recado" style="height:70px;object-fit:contain;">
         </div>
-        <div class="doc-meta" style="flex:1;">
+        <div class="doc-meta">
             Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
             @if($mostrarVida && !$mostrarAlianca)
                 Todas as Missões
