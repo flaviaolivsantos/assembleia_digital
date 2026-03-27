@@ -10,9 +10,9 @@
         .candidato-card { cursor: pointer; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; }
         .candidato-card.selecionado {
             border-color: #00BCD4 !important;
-            border-width: 3px !important;
+            border-width: 4px !important;
             background: #f0fdff;
-            box-shadow: 0 0 0 2px rgba(0,188,212,.25);
+            box-shadow: 0 0 0 3px rgba(0,188,212,.35);
         }
         .candidato-card input[type=checkbox] { display: none; }
         .candidato-foto { width: 100%; height: 140px; object-fit: cover; border-radius: 6px 6px 0 0; }
