@@ -259,16 +259,24 @@
         }
 
         /* ── Print ──────────────────────────────────────────────── */
+        /* Fix 1: margin:0 no @page elimina header/footer automático do navegador */
+        @page { size: A4 portrait; margin: 0; }
+
         @media print {
-            @page {
-                size: A4 portrait;
-                margin: 1.5cm;
-            }
+            /* Fix 1: margem de volta no body (dentro do documento, não na área do browser) */
+            body { margin: 1.5cm; background: #fff; }
+            /* Fix 4: ocultar todos os elementos de interface */
             .no-print { display: none !important; }
-            body { background: #fff; }
             .doc-page { padding: 0; margin: 0; max-width: none; min-height: auto; }
+            /* Fix 2: thead e tbody não cortam linhas no meio */
+            .ata-table thead { display: table-header-group; page-break-inside: avoid; break-inside: avoid; }
+            .ata-table tbody { page-break-inside: avoid; break-inside: avoid; }
+            .ata-table tr    { page-break-inside: avoid; break-inside: avoid; }
             .section-title, .sub-title { page-break-after: avoid; break-after: avoid; }
-            .doc-footer { position: fixed; bottom: 0; left: 0; right: 0; margin: 0; padding: .3rem 1.5cm; background: #fff; }
+            /* Fix 3: assinatura nunca fica órfã — título + bloco viajam juntos */
+            .assinatura-wrapper { page-break-inside: avoid; break-inside: avoid; }
+            /* Rodapé estático no final do conteúdo */
+            .doc-footer { position: static; margin-top: 1.5rem; }
         }
     </style>
 </head>
@@ -393,10 +401,12 @@
     @endforeach
 
     {{-- ── 3. Assinatura ────────────────────────────────────── --}}
-    <div class="section-title" style="margin-top:2rem;">3. Assinatura</div>
-    <div class="assinatura-block">
-        <div class="assinatura-linha"></div>
-        <div class="assinatura-label">Responsável</div>
+    <div class="assinatura-wrapper">
+        <div class="section-title" style="margin-top:2rem;">3. Assinatura</div>
+        <div class="assinatura-block">
+            <div class="assinatura-linha"></div>
+            <div class="assinatura-label">Responsável</div>
+        </div>
     </div>
 
     {{-- ── Rodapé ────────────────────────────────────────────── --}}
