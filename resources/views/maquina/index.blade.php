@@ -30,7 +30,7 @@
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="text-center" style="width: 100%; max-width: 480px; padding: 1rem;">
 
-        <img src="{{ asset('images/Tatuí.png') }}" alt="Tatuí" style="height:72px;object-fit:contain;margin-bottom:.5rem;"><br>
+        <img src="{{ asset('images/Tatui.png') }}" alt="Tatuí" style="height:72px;object-fit:contain;margin-bottom:.5rem;"><br>
         <h2 class="mb-1">Eleição dos Membros Delegados</h2>
 
         @if(!$eleicaoCidade || (!$aliancaAberta && !$vidaAberta))
