@@ -45,7 +45,8 @@
         .bar-progress-label {
             font-family: 'Inter', sans-serif;
             font-size: .82rem;
-            color: #6b7280;
+            color: #374151;
+            font-weight: 500;
             transition: color .2s;
         }
         #sticky-bar.completo .bar-progress-label { color: #00899e; font-weight: 600; }
