@@ -66,7 +66,8 @@ Route::middleware(['auth', 'acesso.ate', 'perfil:responsavel'])->prefix('respons
     Route::get('/{eleicaoCidade}/ata',         [ResultadoController::class,   'ataResponsavel'])->name('ata');
     Route::get('/{eleicaoCidade}/zeresima',    [ResponsavelController::class, 'zeresimaAlianca'])->name('zeresima.alianca');
     Route::get('/vida/{eleicao}/zeresima',     [ResponsavelController::class, 'zeresimaVida'])->name('zeresima.vida');
-    Route::get('/{eleicaoCidade}/relatorios',  [ResponsavelController::class, 'relatorios'])->name('relatorios');
+    Route::get('/{eleicaoCidade}/relatorios',          [ResponsavelController::class, 'relatorios'])->name('relatorios');
+    Route::get('/{eleicaoCidade}/relatorios/imprimir', [ResponsavelController::class, 'relatoriosImprimir'])->name('relatorios.imprimir');
     Route::get('/{eleicaoCidade}/membros',    [ResponsavelController::class, 'editarMembros'])->name('membros');
     Route::post('/{eleicaoCidade}/membros',   [ResponsavelController::class, 'atualizarMembros'])->name('membros.update');
 

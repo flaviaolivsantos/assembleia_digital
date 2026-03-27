@@ -59,6 +59,12 @@
             <i class="bi bi-calendar3 me-1"></i>{{ $eleicao->data_eleicao->format('d/m/Y') }}
         </span>
     </div>
+    <a href="{{ route('responsavel.relatorios.imprimir', $eleicaoCidade) }}?filtro={{ $filtro }}"
+       target="_blank"
+       style="font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:600;background:#00BCD4;color:#fff;padding:.42rem 1rem;border-radius:6px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;"
+       onmouseover="this.style.filter='brightness(.88)'" onmouseout="this.style.filter=''">
+        <i class="bi bi-printer-fill"></i>Imprimir
+    </a>
     <a href="{{ route('responsavel.index') }}" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left me-1"></i>Voltar
     </a>

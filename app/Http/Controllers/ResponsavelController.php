@@ -120,6 +120,25 @@ class ResponsavelController extends Controller
         return view('responsavel.relatorios', compact('eleicao', 'eleicaoCidade', 'votos', 'todasCidades', 'logsEleicao', 'logsSistema'));
     }
 
+    public function relatoriosImprimir(EleicaoCidade $eleicaoCidade)
+    {
+        abort_if(auth()->user()->perfil !== 'admin' && $eleicaoCidade->cidade_id !== auth()->user()->cidade_id, 403);
+
+        $eleicao = $eleicaoCidade->eleicao;
+        $eleicao->load('perguntas', 'cidades.cidade');
+
+        $perguntaIds = $eleicao->perguntas->pluck('id');
+
+        $votos = Voto::whereIn('pergunta_id', $perguntaIds)
+            ->with(['pergunta', 'opcao', 'maquina'])
+            ->orderBy('created_at')
+            ->get();
+
+        $filtro = request('filtro', 'todos');
+
+        return view('responsavel.relatorios-imprimir', compact('eleicao', 'eleicaoCidade', 'votos', 'filtro'));
+    }
+
     public function encerrar(EleicaoCidade $eleicaoCidade)
     {
         abort_if(auth()->user()->perfil !== 'admin' && $eleicaoCidade->cidade_id !== auth()->user()->cidade_id, 403);
