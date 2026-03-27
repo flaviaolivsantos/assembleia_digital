@@ -113,6 +113,7 @@ Route::middleware(['auth', 'acesso.ate', 'perfil:maquina'])->prefix('votacao')->
 
 // Painel de acompanhamento (admin, responsável, mesário)
 Route::middleware(['auth', 'acesso.ate', 'perfil:mesario'])->prefix('painel')->name('acompanhamento.')->group(function () {
-    Route::get('/',      [AcompanhamentoController::class, 'index'])->name('index');
-    Route::get('/dados', [AcompanhamentoController::class, 'dados'])->name('dados');
+    Route::get('/',         [AcompanhamentoController::class, 'index'])->name('index');
+    Route::get('/dados',    [AcompanhamentoController::class, 'dados'])->name('dados');
+    Route::get('/imprimir', [AcompanhamentoController::class, 'imprimir'])->name('imprimir');
 });

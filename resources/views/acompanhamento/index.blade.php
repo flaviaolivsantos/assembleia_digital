@@ -198,9 +198,14 @@
         <h1 class="painel-titulo">Painel de Acompanhamento</h1>
         <p class="painel-subtitulo mb-0">Atualiza automaticamente a cada 30 segundos.</p>
     </div>
-    <button class="btn-atualizar" onclick="atualizar()">
-        <i class="bi bi-arrow-clockwise"></i> Atualizar agora
-    </button>
+    <div style="display:flex;gap:.5rem;">
+        <a href="{{ route('acompanhamento.imprimir') }}" target="_blank" class="btn-atualizar">
+            <i class="bi bi-printer"></i> Imprimir relatório
+        </a>
+        <button class="btn-atualizar" onclick="atualizar()">
+            <i class="bi bi-arrow-clockwise"></i> Atualizar agora
+        </button>
+    </div>
 </div>
 
 {{-- ── Conteúdo (renderizado pelo Blade na primeira carga) ────────────── --}}

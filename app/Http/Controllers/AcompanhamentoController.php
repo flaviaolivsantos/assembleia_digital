@@ -13,6 +13,14 @@ class AcompanhamentoController extends Controller
         ]);
     }
 
+    public function imprimir()
+    {
+        return view('acompanhamento.imprimir', [
+            'eleicoes'  => $this->dados(),
+            'geradoEm'  => now()->format('d/m/Y \à\s H:i:s'),
+        ]);
+    }
+
     public function dados()
     {
         $user    = auth()->user();
