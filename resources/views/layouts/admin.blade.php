@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comunidade Recado</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo_recado.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/Coag.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -151,7 +151,7 @@
 {{-- ── Sidebar ─────────────────────────────────────────────── --}}
 <aside class="sidebar">
     <a href="{{ route('dashboard') }}" class="sidebar-brand">
-        <img src="{{ asset('images/logo_recado.png') }}" alt="Comunidade Recado" style="width:32px;height:32px;object-fit:contain;border-radius:6px;flex-shrink:0;">
+        <img src="{{ asset('images/Coag.png') }}" alt="Comunidade Recado" style="width:32px;height:32px;object-fit:contain;border-radius:6px;flex-shrink:0;">
         <div class="sidebar-brand-text">Comunidade Recado</div>
     </a>
 

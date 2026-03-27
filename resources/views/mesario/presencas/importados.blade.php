@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tokens Gerados — {{ $eleicaoCidade->cidade->nome }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo_recado.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/Coag.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .token-cell { font-family: monospace; font-size: 1.05rem; letter-spacing: 0.05em; }

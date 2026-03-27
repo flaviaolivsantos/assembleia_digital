@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zerésima — {{ $eleicao->titulo }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo_recado.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/Coag.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
@@ -106,7 +106,7 @@
     <div class="doc-header" style="display:flex;justify-content:space-between;align-items:center;">
         <div style="flex:1;"></div>
         <div style="flex:1;display:flex;justify-content:center;align-items:center;">
-            <img src="{{ asset('images/logo_recado.png') }}" alt="Comunidade Recado" style="height:56px;object-fit:contain;">
+            <img src="{{ asset('images/Coag.png') }}" alt="Comunidade Recado" style="height:56px;object-fit:contain;">
         </div>
         <div class="doc-meta" style="flex:1;">
             Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
