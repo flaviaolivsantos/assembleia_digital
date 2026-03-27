@@ -259,12 +259,11 @@
         }
 
         /* ── Print ──────────────────────────────────────────────── */
-        /* Fix 1: margin:0 no @page elimina header/footer automático do navegador */
-        @page { size: A4 portrait; margin: 0; }
+        /* @page com margem real — garante espaço em TODAS as páginas */
+        @page { size: A4 portrait; margin: 1.5cm 1.5cm 2cm; }
 
         @media print {
-            /* Fix 1: margem de volta no body (dentro do documento, não na área do browser) */
-            body { margin: 1.5cm; background: #fff; }
+            body { margin: 0; background: #fff; }
             /* Fix 4: ocultar todos os elementos de interface */
             .no-print { display: none !important; }
             .doc-page { padding: 0; margin: 0; max-width: none; min-height: auto; }
