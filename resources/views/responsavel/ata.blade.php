@@ -620,7 +620,7 @@
     </div>
     <div class="assinatura-block">
         <div class="assinatura-linha"></div>
-        <div class="assinatura-label">Responsável — {{ $aliancaCidade->cidade->nome }}</div>
+        <div class="assinatura-label">Responsável</div>
     </div>
 
     {{-- Rodapé fixo --}}
