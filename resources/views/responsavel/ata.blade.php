@@ -444,7 +444,6 @@
 
         <div class="sub-title">
             {{ $loop->iteration }}. {{ $pergunta->pergunta }}
-            <span class="sub-label">— Realidade de {{ $isVida ? 'Vida' : 'Aliança' }}</span>
         </div>
 
         @if($isVida)
