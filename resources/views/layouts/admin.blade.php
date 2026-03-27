@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assembleia Digital</title>
+    <title>Comunidade Recado</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo_recado.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -151,8 +151,8 @@
 {{-- ── Sidebar ─────────────────────────────────────────────── --}}
 <aside class="sidebar">
     <a href="{{ route('dashboard') }}" class="sidebar-brand">
-        <div class="sidebar-brand-icon"><i class="bi bi-check2-square"></i></div>
-        <div class="sidebar-brand-text">Assembleia Digital <span>Sistema de Votação</span></div>
+        <img src="{{ asset('images/logo_recado.png') }}" alt="Comunidade Recado" style="width:32px;height:32px;object-fit:contain;border-radius:6px;flex-shrink:0;">
+        <div class="sidebar-brand-text">Comunidade Recado</div>
     </a>
 
     <nav class="sidebar-nav">
@@ -260,7 +260,7 @@
     </div>
 
     <footer style="text-align:center;padding:.75rem 1.5rem;font-size:.72rem;color:var(--text-muted);border-top:1px solid #E9ECEF;margin-left:0;">
-        Assembleia Digital &mdash; Desenvolvido por Assessoria de Gestão
+        Comunidade Recado &mdash; Desenvolvido por Assessoria de Gestão
     </footer>
 </div>
 

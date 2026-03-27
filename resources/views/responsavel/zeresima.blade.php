@@ -105,8 +105,8 @@
     {{-- Cabeçalho --}}
     <div class="doc-header">
         <div>
-            <div class="doc-brand">Assembleia Digital</div>
-            <div class="doc-brand-sub">Sistema de Votação</div>
+            <img src="{{ asset('images/logo_recado.png') }}" alt="Comunidade Recado" style="height:32px;object-fit:contain;margin-bottom:3px;">
+            <div class="doc-brand">Comunidade Recado</div>
         </div>
         <div class="doc-meta">
             Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
@@ -227,7 +227,7 @@
     </div>
 
     <div class="doc-footer">
-        <span>Zerésima gerada automaticamente pelo sistema Assembleia Digital em {{ now()->format('d/m/Y H:i') }}.</span>
+        <span>Zerésima gerada automaticamente pelo sistema Comunidade Recado em {{ now()->format('d/m/Y H:i') }}.</span>
     </div>
 
 </div>
