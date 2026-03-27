@@ -121,7 +121,7 @@
 
     /* primário sólido */
     .btn-open   { background: #16a34a; color: #fff; }
-    .btn-close  { background: #dc2626; color: #fff; }
+    .btn-encerrar { background: #dc2626; color: #fff; }
     .btn-result { background: #1B2A3B; color: #fff; }
 
     /* outline (secundário) */
@@ -304,7 +304,7 @@
                         </a>
                     @endif
                     @if($eleicao->aberta_vida)
-                        <a href="{{ route('responsavel.vida.encerrar', $eleicao) }}" class="btn-ac btn-close">
+                        <a href="{{ route('responsavel.vida.encerrar', $eleicao) }}" class="btn-ac btn-encerrar">
                             <i class="bi bi-stop-circle-fill"></i>Encerrar Vida
                         </a>
                     @endif
@@ -406,7 +406,7 @@
                             </a>
                         @endif
                         @if($ec->aberta)
-                            <a href="{{ route('responsavel.encerrar', $ec) }}" class="btn-ac btn-close">
+                            <a href="{{ route('responsavel.encerrar', $ec) }}" class="btn-ac btn-encerrar">
                                 <i class="bi bi-stop-circle-fill"></i>Encerrar Aliança
                             </a>
                         @endif
