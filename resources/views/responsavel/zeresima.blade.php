@@ -370,17 +370,16 @@
     <div class="section-title">2. Relação de Candidatos — Votos Zerados</div>
 
     @foreach($eleicao->perguntas->where('escopo', $escopo)->sortBy('ordem') as $pergunta)
-        <div class="sub-title">{{ $loop->iteration }}. {{ $pergunta->pergunta }}</div>
-
         @php
             $opcoes = $escopo === 'alianca'
                 ? $pergunta->opcoes->where('cidade_id', $eleicaoCidade->cidade_id)->sortBy('nome')
                 : $pergunta->opcoes->sortBy('nome');
         @endphp
 
-        @if($opcoes->isEmpty())
-            <p style="font-size:.78rem;color:#9ca3af;font-style:italic;margin-bottom:.8rem;">Nenhum candidato cadastrado.</p>
-        @else
+        @if($opcoes->isEmpty()) @continue @endif
+
+        <div class="sub-title">{{ $loop->iteration }}. {{ $pergunta->pergunta }}</div>
+
         <table class="ata-table">
             <thead>
                 <tr>
@@ -399,7 +398,6 @@
                 @endforeach
             </tbody>
         </table>
-        @endif
     @endforeach
 
     {{-- ── 3. Assinatura ────────────────────────────────────── --}}
