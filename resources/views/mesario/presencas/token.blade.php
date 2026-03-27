@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+@section('page-title', 'Confirmação de Presença')
 
 @section('content')
 <div class="text-center py-4">
