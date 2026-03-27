@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votação — Assembleia Digital</title>
+    <title>Eleição dos Membros Delegados</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo_recado.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -30,7 +30,8 @@
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="text-center" style="width: 100%; max-width: 480px; padding: 1rem;">
 
-        <h2 class="mb-1">Assembleia Digital</h2>
+        <img src="{{ asset('images/Tatuí.png') }}" alt="Tatuí" style="height:72px;object-fit:contain;margin-bottom:.5rem;"><br>
+        <h2 class="mb-1">Eleição dos Membros Delegados</h2>
 
         @if(!$eleicaoCidade || (!$aliancaAberta && !$vidaAberta))
             <div class="alert alert-warning">Nenhuma votação aberta para esta cidade no momento.</div>
@@ -56,7 +57,6 @@
                                     <label class="escopo-card flex-fill text-start">
                                         <input type="radio" name="escopo" value="alianca" class="form-check-input me-2"
                                                {{ old('escopo', 'alianca') === 'alianca' ? 'checked' : '' }} required>
-                                        <span class="badge bg-secondary me-1">Aliança</span>
                                         Realidade de Aliança
                                     </label>
                                     <label class="escopo-card flex-fill text-start">
@@ -70,7 +70,7 @@
                         @elseif($aliancaAberta)
                             <input type="hidden" name="escopo" value="alianca">
                             <p class="text-muted small text-start mb-3">
-                                <span class="badge bg-secondary me-1">Aliança</span>Realidade de Aliança
+                                Realidade de Aliança
                             </p>
                         @else
                             <input type="hidden" name="escopo" value="vida">
