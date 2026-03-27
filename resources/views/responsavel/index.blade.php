@@ -19,7 +19,9 @@
         border-radius: 12px;
         box-shadow: 0 1px 4px rgba(0,0,0,.06);
         margin-bottom: 1.25rem;
-        overflow: hidden;
+    }
+    .el-card-head {
+        border-radius: 12px 12px 0 0;
     }
 
     /* ── Cabeçalho do card ─────────────────────────────────── */
