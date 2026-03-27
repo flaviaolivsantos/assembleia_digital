@@ -268,11 +268,14 @@
             /* Fix 4: ocultar todos os elementos de interface */
             .no-print { display: none !important; }
             .doc-page { padding: 0; margin: 0; max-width: none; min-height: auto; }
-            /* Fix 2: thead e tbody não cortam linhas no meio */
-            .ata-table thead { display: table-header-group; page-break-inside: avoid; break-inside: avoid; }
-            .ata-table tbody { page-break-inside: avoid; break-inside: avoid; }
-            .ata-table tr    { page-break-inside: avoid; break-inside: avoid; }
-            .section-title, .sub-title { page-break-after: avoid; break-after: avoid; }
+            /* Fix 2: tabela flui livremente; apenas as linhas não são cortadas */
+            .ata-table               { page-break-inside: auto;  break-inside: auto; }
+            .ata-table thead         { display: table-header-group; }
+            .ata-table tbody         { page-break-inside: auto;  break-inside: auto; }
+            .ata-table tbody tr      { page-break-inside: avoid; break-inside: avoid; }
+            /* Fix 3: título nunca fica separado da tabela nem é cortado no meio */
+            .section-title { page-break-after: avoid; break-after: avoid; page-break-inside: avoid; break-inside: avoid; }
+            .sub-title     { page-break-after: avoid; break-after: avoid; page-break-inside: avoid; break-inside: avoid; }
             /* Fix 3: assinatura nunca fica órfã — título + bloco viajam juntos */
             .assinatura-wrapper { page-break-inside: avoid; break-inside: avoid; }
             /* Rodapé estático no final do conteúdo */
