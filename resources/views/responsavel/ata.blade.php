@@ -293,11 +293,12 @@
 <div class="ata-page">
 
     {{-- Cabeçalho --}}
-    <div class="doc-header">
-        <div style="display:flex;align-items:center;justify-content:center;">
-            <img src="{{ asset('images/logo_recado.png') }}" alt="Comunidade Recado" style="height:48px;object-fit:contain;">
+    <div class="doc-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="flex:1;"></div>
+        <div style="flex:1;display:flex;justify-content:center;align-items:center;">
+            <img src="{{ asset('images/logo_recado.png') }}" alt="Comunidade Recado" style="height:56px;object-fit:contain;">
         </div>
-        <div class="doc-meta">
+        <div class="doc-meta" style="flex:1;">
             Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
             @if($mostrarVida && !$mostrarAlianca)
                 Todas as Missões
