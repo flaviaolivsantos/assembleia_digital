@@ -7,142 +7,324 @@
     <link rel="icon" type="image/png" href="{{ asset('images/Coag-Vertical.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --azul:         #2C3E50;
-            --ciano:        #00BCD4;
-            --cinza-claro:  #F8F9FA;
-            --cinza-medio:  #CED4DA;
-            --cinza-escuro: #495057;
-            --branco:       #FFFFFF;
+        /* ── Reset ──────────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 12px;
+            color: #1f2937;
+            background: #fff;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
-        * { box-sizing: border-box; }
-        body { font-family: 'Roboto', sans-serif; font-size: 13px; color: var(--cinza-escuro); background: #fff; margin: 0; padding: 0; }
 
-        .ata-page { max-width: 21cm; margin: 0 auto; padding: 2cm 2cm 3cm; min-height: 29.7cm; position: relative; }
-
+        /* ── Barra de ações (web only) ──────────────────────────── */
         .no-print {
             position: sticky; top: 0; z-index: 100;
-            background: var(--azul); padding: .6rem 1rem;
+            background: #1B2A3B; padding: .55rem 1rem;
             display: flex; gap: .5rem; align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,.25);
+            box-shadow: 0 2px 6px rgba(0,0,0,.2);
         }
-        .no-print .btn-imprimir {
-            background: var(--ciano); color: #fff; border: none;
-            padding: .4rem .9rem; border-radius: .3rem;
-            font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: .82rem;
-            cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+        .btn-imprimir {
+            background: #00BCD4; color: #fff; border: none;
+            padding: .38rem .9rem; border-radius: 5px;
+            font-family: inherit; font-weight: 600; font-size: .78rem;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
         }
-        .no-print .btn-voltar {
-            background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.35);
-            padding: .4rem .9rem; border-radius: .3rem; font-size: .82rem;
-            cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+        .btn-imprimir:hover { background: #00a5bb; }
+        .btn-voltar {
+            background: transparent; color: #fff;
+            border: 1px solid rgba(255,255,255,.3);
+            padding: .38rem .9rem; border-radius: 5px;
+            font-size: .78rem; cursor: pointer;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
         }
-        .no-print .btn-imprimir:hover { background: #00a5bb; }
-        .no-print .btn-voltar:hover   { border-color: #fff; }
+        .btn-voltar:hover { border-color: #fff; }
 
-        .doc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--cinza-medio); }
-        .doc-brand { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: var(--azul); letter-spacing: .3px; }
-        .doc-brand-sub { font-size: .72rem; color: var(--cinza-escuro); font-weight: 400; margin-top: 2px; }
-        .doc-meta { text-align: right; font-size: .75rem; color: var(--cinza-escuro); line-height: 1.6; }
+        /* ── Página ─────────────────────────────────────────────── */
+        .doc-page {
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 1.8cm 1.8cm 2.5cm;
+            min-height: 29.7cm;
+        }
 
-        .doc-title-block { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--ciano); }
-        .doc-title-label { font-family: 'Montserrat', sans-serif; font-size: .68rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--ciano); margin-bottom: .3rem; }
-        .doc-title-main  { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--azul); margin-bottom: .2rem; }
-        .doc-title-sub   { font-size: .85rem; color: var(--cinza-escuro); }
+        /* ── Cabeçalho 3 colunas ────────────────────────────────── */
+        .doc-head {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 1.4rem;
+        }
+        .doc-head-logo img {
+            height: 72px;
+            object-fit: contain;
+        }
+        .doc-head-title {
+            text-align: center;
+        }
+        .doc-head-title .label-oficial {
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: .3rem;
+        }
+        .doc-head-title h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #111827;
+            line-height: 1;
+        }
+        .doc-head-badge {
+            text-align: right;
+        }
+        .doc-head-badge .badge-oficial {
+            display: inline-block;
+            border: 1.5px solid #d1d5db;
+            border-radius: 5px;
+            padding: .3rem .7rem;
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #374151;
+            background: #f9fafb;
+        }
 
-        .doc-aviso { background: #fff8e1; border: 1px solid #ffe082; border-radius: .4rem; padding: .6rem 1rem; font-size: .82rem; color: #7a5800; margin-bottom: 1.2rem; }
+        /* ── Bloco de metadados ─────────────────────────────────── */
+        .doc-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .5rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: .7rem 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .doc-meta-item .meta-label {
+            font-size: .62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: #9ca3af;
+            margin-bottom: .15rem;
+        }
+        .doc-meta-item .meta-value {
+            font-size: .82rem;
+            font-weight: 600;
+            color: #111827;
+        }
 
-        .section-title { font-family: 'Montserrat', sans-serif; font-size: .95rem; font-weight: 700; color: var(--azul); margin: 1.4rem 0 .6rem; padding-bottom: .3rem; border-bottom: 1px solid var(--cinza-medio); page-break-after: avoid; }
-        .section-title .section-icon { display: inline-block; width: 4px; height: 14px; background: var(--ciano); border-radius: 2px; margin-right: 8px; vertical-align: middle; }
-        .sub-title { font-family: 'Montserrat', sans-serif; font-size: .82rem; font-weight: 600; color: var(--cinza-escuro); margin: .9rem 0 .4rem; text-transform: uppercase; letter-spacing: .5px; }
+        /* ── Aviso ──────────────────────────────────────────────── */
+        .doc-aviso {
+            border-left: 3px solid #d1d5db;
+            background: #f9fafb;
+            padding: .55rem .85rem;
+            font-size: .78rem;
+            color: #4b5563;
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 1.3rem;
+        }
 
-        .ata-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: .85rem; page-break-inside: avoid; }
-        .ata-table thead tr { background-color: var(--azul); }
-        .ata-table thead th { color: var(--branco); font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: .75rem; text-transform: uppercase; letter-spacing: .4px; padding: .55rem .75rem; border: 1px solid var(--azul); }
+        /* ── Títulos de seção ───────────────────────────────────── */
+        .section-title {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: .35rem;
+            margin: 1.3rem 0 .65rem;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        .sub-title {
+            font-size: .78rem;
+            font-weight: 700;
+            color: #374151;
+            margin: .9rem 0 .35rem;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+
+        /* ── Tabela de auditoria (2 colunas) ────────────────────── */
+        .audit-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: .82rem;
+        }
+        .audit-table td {
+            padding: .45rem .75rem;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+        .audit-table tr:last-child td { border-bottom: none; }
+        .audit-table td:first-child {
+            font-weight: 600;
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: #6b7280;
+            width: 38%;
+            background: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+        }
+        .audit-table td:last-child { color: #111827; }
+
+        /* ── Tabela de candidatos ───────────────────────────────── */
+        .ata-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: .82rem;
+            page-break-inside: auto;
+            break-inside: auto;
+        }
+        .ata-table thead tr {
+            background: #f3f4f6;
+        }
+        .ata-table thead th {
+            font-size: .68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #374151;
+            padding: .5rem .75rem;
+            border: 1px solid #e5e7eb;
+            text-align: left;
+        }
         .ata-table thead th.center { text-align: center; }
-        .ata-table tbody tr:nth-child(odd)  { background-color: var(--branco); }
-        .ata-table tbody tr:nth-child(even) { background-color: var(--cinza-claro); }
-        .ata-table tbody td { padding: .5rem .75rem; border: 1px solid var(--cinza-medio); color: var(--cinza-escuro); vertical-align: middle; }
+        .ata-table tbody tr:nth-child(odd)  { background: #fff; }
+        .ata-table tbody tr:nth-child(even) { background: #f9fafb; }
+        .ata-table tbody tr { page-break-inside: avoid; break-inside: avoid; }
+        .ata-table tbody td {
+            padding: .45rem .75rem;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            vertical-align: middle;
+        }
         .ata-table tbody td.center { text-align: center; }
-        .zero-badge { display: inline-block; background: var(--cinza-claro); color: var(--cinza-escuro); font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .78rem; padding: .15em .55em; border-radius: .25rem; border: 1px solid var(--cinza-medio); }
+        .zero-badge {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #6b7280;
+            font-weight: 700;
+            font-size: .75rem;
+            padding: .1em .5em;
+            border-radius: 3px;
+            border: 1px solid #d1d5db;
+        }
 
-        .audit-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: .85rem; }
-        .audit-table td { padding: .45rem .75rem; border: 1px solid var(--cinza-medio); vertical-align: middle; }
-        .audit-table tr:nth-child(odd)  td:first-child { background: var(--cinza-claro); }
-        .audit-table tr:nth-child(even) td:first-child { background: var(--branco); }
-        .audit-table td:first-child { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: .78rem; color: var(--azul); width: 42%; text-transform: uppercase; letter-spacing: .3px; }
+        /* ── Assinatura ─────────────────────────────────────────── */
+        .assinatura-block {
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .4rem;
+        }
+        .assinatura-linha {
+            width: 52%;
+            border-top: 1px solid #6b7280;
+        }
+        .assinatura-label {
+            font-size: .78rem;
+            color: #6b7280;
+            text-align: center;
+        }
 
-        .assinatura-block { margin-top: 2.5rem; }
-        .assinatura-linha { border-bottom: 1px solid var(--cinza-medio); width: 55%; margin-bottom: .4rem; }
-        .assinatura-label { font-size: .82rem; color: var(--cinza-escuro); }
+        /* ── Rodapé ─────────────────────────────────────────────── */
+        .doc-footer {
+            margin-top: 2.5rem;
+            padding-top: .5rem;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: .65rem;
+            color: #9ca3af;
+        }
 
-        .doc-footer { position: fixed; bottom: .8cm; left: 2cm; right: 2cm; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--cinza-medio); padding-top: .35rem; font-size: .7rem; color: var(--cinza-medio); }
-
+        /* ── Print ──────────────────────────────────────────────── */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm;
+            }
             .no-print { display: none !important; }
-            body { margin: 0; }
-            .ata-page { padding: 0; margin: 0; max-width: none; min-height: auto; }
-            @page { size: A4 portrait; margin: 2cm 2cm 2.5cm; }
+            body { background: #fff; }
+            .doc-page { padding: 0; margin: 0; max-width: none; min-height: auto; }
             .section-title, .sub-title { page-break-after: avoid; break-after: avoid; }
-            .ata-table  { page-break-inside: auto; break-inside: auto; }
-            .ata-table tr { page-break-inside: avoid; break-inside: avoid; }
-            .doc-footer { position: static; margin-top: 1.5rem; border-top: 1px solid var(--cinza-medio); padding-top: .35rem; }
+            .doc-footer { position: fixed; bottom: 0; left: 0; right: 0; margin: 0; padding: .3rem 1.5cm; background: #fff; }
         }
     </style>
 </head>
 <body>
 
+{{-- ── Barra de ações ────────────────────────────────────── --}}
 <div class="no-print">
-    <button onclick="window.print()" class="btn-imprimir">&#128438; Imprimir / Salvar PDF</button>
-    <a href="{{ route('responsavel.index') }}" class="btn-voltar">&#8592; Voltar ao Painel</a>
+    <button onclick="window.print()" class="btn-imprimir">🖨 Imprimir / Salvar PDF</button>
+    <a href="{{ route('responsavel.index') }}" class="btn-voltar">← Voltar ao Painel</a>
 </div>
 
-<div class="ata-page">
+<div class="doc-page">
 
-    {{-- Cabeçalho --}}
-    <div class="doc-header" style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-            <img src="{{ asset('images/Coag-Vertical.png') }}" alt="Comunidade Recado" style="height:70px;object-fit:contain;">
+    {{-- ── Cabeçalho 3 colunas ──────────────────────────────── --}}
+    <div class="doc-head">
+        <div class="doc-head-logo">
+            <img src="{{ asset('images/Coag-Vertical.png') }}" alt="Comunidade Recado">
         </div>
-        <div class="doc-meta">
-            Gerado em {{ now()->format('d/m/Y \à\s H:i') }}<br>
-            @if($escopo === 'alianca')
-                Missão: {{ $eleicaoCidade->cidade->nome }}
-            @else
-                Todas as Missões
-            @endif
-            <br><strong>Comunidade Recado</strong>
+        <div class="doc-head-title">
+            <div class="label-oficial">Documento Oficial</div>
+            <h1>Zerésima</h1>
+        </div>
+        <div class="doc-head-badge">
+            <span class="badge-oficial">Zerésima</span>
         </div>
     </div>
 
-    {{-- Título central --}}
-    <div class="doc-title-block">
-        <div class="doc-title-label">Documento Oficial</div>
-        <div class="doc-title-main">Zerésima</div>
-        <div class="doc-title-sub">
-            {{ $eleicao->titulo }}
-            &nbsp;&middot;&nbsp;
-            @if($escopo === 'alianca')
-                Realidade de Aliança — {{ $eleicaoCidade->cidade->nome }}
-            @else
-                Realidade de Vida — Todas as Missões
-            @endif
-            &nbsp;&middot;&nbsp;
-            {{ now()->format('d/m/Y H:i') }}
+    {{-- ── Metadados ─────────────────────────────────────────── --}}
+    <div class="doc-meta-grid">
+        <div class="doc-meta-item">
+            <div class="meta-label">Eleição</div>
+            <div class="meta-value">{{ $eleicao->titulo }}</div>
+        </div>
+        <div class="doc-meta-item">
+            <div class="meta-label">Realidade</div>
+            <div class="meta-value">
+                @if($escopo === 'alianca')
+                    Aliança — {{ $eleicaoCidade->cidade->nome }}
+                @else
+                    Vida — Todas as Missões
+                @endif
+            </div>
+        </div>
+        <div class="doc-meta-item">
+            <div class="meta-label">Data / Hora de Abertura</div>
+            <div class="meta-value">{{ now()->format('d/m/Y H:i') }}</div>
         </div>
     </div>
 
+    {{-- ── Aviso ─────────────────────────────────────────────── --}}
     <div class="doc-aviso">
         Este documento certifica que, no momento da abertura da votação, todos os candidatos registrados possuem <strong>zero votos</strong>, atestando a integridade do processo eleitoral.
     </div>
 
-    {{-- 1. Dados da Abertura --}}
-    <div class="section-title">
-        <span class="section-icon"></span>1. Dados da Abertura
-    </div>
+    {{-- ── 1. Dados da Abertura ─────────────────────────────── --}}
+    <div class="section-title">1. Dados da Abertura</div>
     <table class="audit-table">
         <tbody>
             <tr>
@@ -160,11 +342,11 @@
                 </td>
             </tr>
             <tr>
-                <td>Data da eleição</td>
+                <td>Data da Eleição</td>
                 <td>{{ $eleicao->data_eleicao->format('d/m/Y') }}</td>
             </tr>
             <tr>
-                <td>Horário de abertura</td>
+                <td>Horário de Abertura</td>
                 <td><strong>{{ now()->format('d/m/Y H:i:s') }}</strong></td>
             </tr>
             @if($escopo === 'alianca')
@@ -176,10 +358,8 @@
         </tbody>
     </table>
 
-    {{-- 2. Relação de Candidatos --}}
-    <div class="section-title">
-        <span class="section-icon"></span>2. Relação de Candidatos (votos zerados)
-    </div>
+    {{-- ── 2. Relação de Candidatos ─────────────────────────── --}}
+    <div class="section-title">2. Relação de Candidatos — Votos Zerados</div>
 
     @foreach($eleicao->perguntas->where('escopo', $escopo)->sortBy('ordem') as $pergunta)
         <div class="sub-title">{{ $loop->iteration }}. {{ $pergunta->pergunta }}</div>
@@ -191,20 +371,20 @@
         @endphp
 
         @if($opcoes->isEmpty())
-            <p style="font-size:.8rem;color:#6c757d;font-style:italic;">Nenhum candidato cadastrado.</p>
+            <p style="font-size:.78rem;color:#9ca3af;font-style:italic;margin-bottom:.8rem;">Nenhum candidato cadastrado.</p>
         @else
         <table class="ata-table">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th style="width:36px;">#</th>
                     <th>Candidato</th>
-                    <th class="center">Votos</th>
+                    <th class="center" style="width:80px;">Votos</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($opcoes as $i => $opcao)
+                @foreach($opcoes as $opcao)
                 <tr>
-                    <td style="width:30px;color:#6c757d;">{{ $loop->iteration }}</td>
+                    <td style="color:#9ca3af;">{{ $loop->iteration }}</td>
                     <td>{{ $opcao->nome }}</td>
                     <td class="center"><span class="zero-badge">0</span></td>
                 </tr>
@@ -214,20 +394,18 @@
         @endif
     @endforeach
 
-    {{-- 3. Assinatura --}}
-    <div class="section-title">
-        <span class="section-icon"></span>3. Assinatura
-    </div>
+    {{-- ── 3. Assinatura ────────────────────────────────────── --}}
+    <div class="section-title" style="margin-top:2rem;">3. Assinatura</div>
     <div class="assinatura-block">
         <div class="assinatura-linha"></div>
         <div class="assinatura-label">Responsável</div>
     </div>
 
+    {{-- ── Rodapé ────────────────────────────────────────────── --}}
     <div class="doc-footer">
-        <span>Zerésima gerada automaticamente pelo sistema Comunidade Recado em {{ now()->format('d/m/Y H:i') }}.</span>
+        Zerésima gerada automaticamente pelo sistema Assembleia Digital / Assessoria de Gestão — Comunidade Recado em {{ now()->format('d/m/Y \à\s H:i:s') }}
     </div>
 
 </div>
-
 </body>
 </html>
