@@ -84,6 +84,15 @@
                 </select>
             </div>
 
+            <div class="mb-3" id="campo-escopo" style="{{ old('perfil', $usuario->perfil) === 'maquina' ? '' : 'display:none;' }}">
+                <label class="form-label">Realidade visível</label>
+                <select name="escopo_maquina" class="form-select">
+                    <option value="ambos"   {{ old('escopo_maquina', $usuario->escopo_maquina) === 'ambos'   ? 'selected' : '' }}>Aliança e Vida</option>
+                    <option value="alianca" {{ old('escopo_maquina', $usuario->escopo_maquina) === 'alianca' ? 'selected' : '' }}>Apenas Aliança</option>
+                    <option value="vida"    {{ old('escopo_maquina', $usuario->escopo_maquina) === 'vida'    ? 'selected' : '' }}>Apenas Vida</option>
+                </select>
+            </div>
+
             <div class="mb-4">
                 <label class="form-label">Acesso válido até <span class="text-muted small">(opcional)</span></label>
                 <input type="datetime-local" name="acesso_ate" class="form-control @error('acesso_ate') is-invalid @enderror"
@@ -122,11 +131,14 @@ function gerarSenha() {
 
 const perfil      = document.getElementById('select-perfil');
 const campoCidade = document.getElementById('campo-cidade');
+const campoEscopo = document.getElementById('campo-escopo');
 
-perfil.addEventListener('change', function () {
-    campoCidade.style.display = this.value === 'admin' ? 'none' : '';
-});
+function atualizarCampos() {
+    campoCidade.style.display = perfil.value === 'admin'   ? 'none' : '';
+    campoEscopo.style.display = perfil.value === 'maquina' ? ''     : 'none';
+}
 
-if (perfil.value === 'admin') campoCidade.style.display = 'none';
+perfil.addEventListener('change', atualizarCampos);
+atualizarCampos();
 </script>
 @endsection

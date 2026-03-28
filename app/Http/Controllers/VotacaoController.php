@@ -23,8 +23,9 @@ class VotacaoController extends Controller
             ->whereHas('eleicao', fn($q) => $q->where('status', 'aberta'))
             ->first();
 
-        $aliancaAberta = $eleicaoCidade && $eleicaoCidade->aberta;
-        $vidaAberta    = $eleicaoCidade && $eleicaoCidade->eleicao->aberta_vida;
+        $escopo        = auth()->user()->escopo_maquina ?? 'ambos';
+        $aliancaAberta = $eleicaoCidade && $eleicaoCidade->aberta         && in_array($escopo, ['ambos', 'alianca']);
+        $vidaAberta    = $eleicaoCidade && $eleicaoCidade->eleicao->aberta_vida && in_array($escopo, ['ambos', 'vida']);
 
         return view('maquina.index', compact('eleicaoCidade', 'aliancaAberta', 'vidaAberta'));
     }

@@ -15,6 +15,7 @@ class User extends Authenticatable
         'email',
         'password',
         'perfil',
+        'escopo_maquina',
         'cidade_id',
         'acesso_ate',
     ];

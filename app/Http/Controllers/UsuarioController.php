@@ -59,12 +59,13 @@ class UsuarioController extends Controller
         ]);
 
         User::create([
-            'nome'       => $request->nome,
-            'email'      => $request->email,
-            'password'   => $request->password,
-            'perfil'     => $request->perfil,
-            'cidade_id'  => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
-            'acesso_ate' => $request->acesso_ate ?: null,
+            'nome'           => $request->nome,
+            'email'          => $request->email,
+            'password'       => $request->password,
+            'perfil'         => $request->perfil,
+            'escopo_maquina' => $request->perfil === 'maquina' ? ($request->escopo_maquina ?: 'ambos') : 'ambos',
+            'cidade_id'      => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
+            'acesso_ate'     => $request->acesso_ate ?: null,
         ]);
 
         LogSistema::registrar('usuario_criado', "Usuário \"{$request->nome}\" ({$request->perfil}) criado.");
@@ -90,11 +91,12 @@ class UsuarioController extends Controller
         ]);
 
         $dados = [
-            'nome'       => $request->nome,
-            'email'      => $request->email,
-            'perfil'     => $request->perfil,
-            'cidade_id'  => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
-            'acesso_ate' => $request->acesso_ate ?: null,
+            'nome'           => $request->nome,
+            'email'          => $request->email,
+            'perfil'         => $request->perfil,
+            'escopo_maquina' => $request->perfil === 'maquina' ? ($request->escopo_maquina ?: 'ambos') : 'ambos',
+            'cidade_id'      => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
+            'acesso_ate'     => $request->acesso_ate ?: null,
         ];
 
         if ($request->filled('password')) {
