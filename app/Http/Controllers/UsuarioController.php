@@ -63,7 +63,7 @@ class UsuarioController extends Controller
             'email'          => $request->email,
             'password'       => $request->password,
             'perfil'         => $request->perfil,
-            'escopo_maquina' => $request->perfil === 'maquina' ? ($request->escopo_maquina ?: 'ambos') : 'ambos',
+            'escopo_maquina' => $request->perfil === 'maquina' ? $this->resolverEscopo($request) : 'ambos',
             'cidade_id'      => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
             'acesso_ate'     => $request->acesso_ate ?: null,
         ]);
@@ -94,7 +94,7 @@ class UsuarioController extends Controller
             'nome'           => $request->nome,
             'email'          => $request->email,
             'perfil'         => $request->perfil,
-            'escopo_maquina' => $request->perfil === 'maquina' ? ($request->escopo_maquina ?: 'ambos') : 'ambos',
+            'escopo_maquina' => $request->perfil === 'maquina' ? $this->resolverEscopo($request) : 'ambos',
             'cidade_id'      => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
             'acesso_ate'     => $request->acesso_ate ?: null,
         ];
@@ -108,6 +108,17 @@ class UsuarioController extends Controller
         LogSistema::registrar('usuario_atualizado', "Usuário \"{$usuario->nome}\" atualizado.");
 
         return redirect()->route('admin.usuarios.index')->with('sucesso', 'Usuário atualizado com sucesso.');
+    }
+
+    private function resolverEscopo(Request $request): string
+    {
+        $alianca = $request->boolean('escopo_alianca');
+        $vida    = $request->boolean('escopo_vida');
+
+        if ($alianca && $vida) return 'ambos';
+        if ($alianca)          return 'alianca';
+        if ($vida)             return 'vida';
+        return 'ambos'; // fallback: nenhum marcado
     }
 
     public function destroy(User $usuario)

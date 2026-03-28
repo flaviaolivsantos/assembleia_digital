@@ -83,12 +83,18 @@
             </div>
 
             <div class="mb-3" id="campo-escopo" style="display:none;">
-                <label class="form-label">Realidade visível</label>
-                <select name="escopo_maquina" class="form-select">
-                    <option value="ambos"   {{ old('escopo_maquina', 'ambos') === 'ambos'   ? 'selected' : '' }}>Aliança e Vida</option>
-                    <option value="alianca" {{ old('escopo_maquina') === 'alianca'           ? 'selected' : '' }}>Apenas Aliança</option>
-                    <option value="vida"    {{ old('escopo_maquina') === 'vida'              ? 'selected' : '' }}>Apenas Vida</option>
-                </select>
+                <label class="form-label d-block">Realidade visível</label>
+                @php $escopoOld = old('escopo_maquina', 'ambos'); @endphp
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="escopo_alianca" id="escopo_alianca" value="1"
+                        {{ in_array($escopoOld, ['ambos','alianca']) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="escopo_alianca">Aliança</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="escopo_vida" id="escopo_vida" value="1"
+                        {{ in_array($escopoOld, ['ambos','vida']) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="escopo_vida">Vida</label>
+                </div>
             </div>
 
             <div class="mb-4">
