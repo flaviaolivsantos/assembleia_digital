@@ -29,6 +29,12 @@ class AuthController extends Controller
 
         LogSistema::registrar('login_sucesso', 'Login realizado por ' . auth()->user()->nome . ' (' . $request->email . ').');
 
+        $perfil = auth()->user()->perfil;
+
+        if ($perfil === 'maquina') {
+            return redirect()->route('maquina.index');
+        }
+
         return redirect()->route('dashboard');
     }
 
