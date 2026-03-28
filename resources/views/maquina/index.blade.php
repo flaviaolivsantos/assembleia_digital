@@ -220,7 +220,12 @@
 <div class="login-wrap">
 
     {{-- ── Banner de branding ──────────────────────────── --}}
-    <img src="{{ asset('images/Tatui.png') }}" alt="Tatuí" class="brand-banner">
+    @php
+        $nomeCidade   = $eleicaoCidade?->cidade?->nome ?? '';
+        $arquivoCidade = public_path('images/' . $nomeCidade . '.png');
+        $bannerImg    = file_exists($arquivoCidade) ? asset('images/' . $nomeCidade . '.png') : asset('images/Tatui.png');
+    @endphp
+    <img src="{{ $bannerImg }}" alt="{{ $nomeCidade }}" class="brand-banner">
 
     {{-- ── Card de login ──────────────────────────────── --}}
     <div class="login-card">
