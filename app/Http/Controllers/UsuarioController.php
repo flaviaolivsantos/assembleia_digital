@@ -9,10 +9,34 @@ use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $usuarios = User::with('cidade')->orderBy('nome')->get();
-        return view('admin.usuarios.index', compact('usuarios'));
+        $perfil   = $request->input('perfil');
+        $cidadeId = $request->input('cidade_id');
+        $ordenar  = in_array($request->input('ordenar'), ['nome', 'perfil', 'cidade']) ? $request->input('ordenar') : 'nome';
+        $direcao  = $request->input('direcao', 'asc') === 'desc' ? 'desc' : 'asc';
+
+        $query = User::with('cidade')
+            ->leftJoin('cidades', 'users.cidade_id', '=', 'cidades.id')
+            ->select('users.*');
+
+        if ($perfil) {
+            $query->where('users.perfil', $perfil);
+        }
+        if ($cidadeId) {
+            $query->where('users.cidade_id', $cidadeId);
+        }
+
+        if ($ordenar === 'cidade') {
+            $query->orderBy('cidades.nome', $direcao);
+        } else {
+            $query->orderBy('users.' . $ordenar, $direcao);
+        }
+
+        $usuarios = $query->get();
+        $cidades  = Cidade::orderBy('nome')->get();
+
+        return view('admin.usuarios.index', compact('usuarios', 'cidades', 'perfil', 'cidadeId', 'ordenar', 'direcao'));
     }
 
     public function create()

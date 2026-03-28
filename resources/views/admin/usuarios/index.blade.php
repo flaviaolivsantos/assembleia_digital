@@ -15,15 +15,67 @@
     <div class="alert alert-danger">{{ $errors->first() }}</div>
 @endif
 
+{{-- ── Filtros ── --}}
+@php
+    $queryBase = array_filter(['perfil' => $perfil, 'cidade_id' => $cidadeId, 'ordenar' => $ordenar, 'direcao' => $direcao]);
+    $sortDir = fn($col) => ($ordenar === $col && $direcao === 'asc') ? 'desc' : 'asc';
+    $sortUrl = fn($col) => route('admin.usuarios.index', array_merge($queryBase, ['ordenar' => $col, 'direcao' => $sortDir($col)]));
+    $sortIcon = fn($col) => $ordenar === $col ? ($direcao === 'asc' ? '↑' : '↓') : '↕';
+@endphp
+
+<form method="GET" action="{{ route('admin.usuarios.index') }}" class="d-flex gap-2 flex-wrap mb-3 align-items-end">
+    <input type="hidden" name="ordenar"  value="{{ $ordenar }}">
+    <input type="hidden" name="direcao"  value="{{ $direcao }}">
+
+    <div>
+        <label class="form-label mb-1" style="font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#6c757d;">Perfil</label>
+        <select name="perfil" class="form-select form-select-sm" style="min-width:140px;">
+            <option value="">Todos</option>
+            @foreach(['admin' => 'Admin', 'responsavel' => 'Responsável', 'mesario' => 'Mesário', 'maquina' => 'Máquina'] as $val => $label)
+                <option value="{{ $val }}" {{ $perfil === $val ? 'selected' : '' }}>{{ $label }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div>
+        <label class="form-label mb-1" style="font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#6c757d;">Missão</label>
+        <select name="cidade_id" class="form-select form-select-sm" style="min-width:160px;">
+            <option value="">Todas</option>
+            @foreach($cidades as $cidade)
+                <option value="{{ $cidade->id }}" {{ $cidadeId == $cidade->id ? 'selected' : '' }}>{{ $cidade->nome }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
+
+    @if($perfil || $cidadeId)
+        <a href="{{ route('admin.usuarios.index', array_filter(['ordenar' => $ordenar, 'direcao' => $direcao])) }}"
+           class="btn btn-sm btn-outline-secondary">Limpar</a>
+    @endif
+</form>
+
 <div class="card">
     <div class="card-body p-0">
         <table class="table table-hover mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Nome</th>
+                    <th>
+                        <a href="{{ $sortUrl('nome') }}" class="text-decoration-none text-dark">
+                            Nome <span class="text-muted">{{ $sortIcon('nome') }}</span>
+                        </a>
+                    </th>
                     <th>E-mail</th>
-                    <th>Perfil</th>
-                    <th>Missão</th>
+                    <th>
+                        <a href="{{ $sortUrl('perfil') }}" class="text-decoration-none text-dark">
+                            Perfil <span class="text-muted">{{ $sortIcon('perfil') }}</span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ $sortUrl('cidade') }}" class="text-decoration-none text-dark">
+                            Missão <span class="text-muted">{{ $sortIcon('cidade') }}</span>
+                        </a>
+                    </th>
                     <th>Acesso até</th>
                     <th></th>
                 </tr>
