@@ -63,7 +63,7 @@ class UsuarioController extends Controller
             'email'      => $request->email,
             'password'   => $request->password,
             'perfil'     => $request->perfil,
-            'cidade_id'  => $request->cidade_id ?: null,
+            'cidade_id'  => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
             'acesso_ate' => $request->acesso_ate ?: null,
         ]);
 
@@ -93,7 +93,7 @@ class UsuarioController extends Controller
             'nome'       => $request->nome,
             'email'      => $request->email,
             'perfil'     => $request->perfil,
-            'cidade_id'  => $request->cidade_id ?: null,
+            'cidade_id'  => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
             'acesso_ate' => $request->acesso_ate ?: null,
         ];
 
