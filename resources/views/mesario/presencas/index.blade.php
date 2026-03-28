@@ -9,10 +9,6 @@
             {{ $eleicaoCidade->eleicao->titulo }} — {{ $eleicaoCidade->cidade->nome }}
         </p>
     </div>
-    <div class="text-end">
-        <div class="fs-4 fw-bold">{{ $presencas->where('votou', false)->count() }}</div>
-        <div class="text-muted small">aguardando votar</div>
-    </div>
 </div>
 
 @if(session('sucesso'))
