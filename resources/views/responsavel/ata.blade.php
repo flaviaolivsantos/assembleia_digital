@@ -570,15 +570,24 @@
                 <td>{{ $aliancaCidade->encerradaPor?->nome ?? '—' }}</td>
             </tr>
             <tr>
-                <td>Total esperado de votos</td>
-                <td><strong>{{ $aliancaCidade->qtd_membros }}</strong></td>
+                <td>Total Consagrados</td>
+                <td><strong>{{ $aliancaCidade->qtd_consagrados ?: '—' }}</strong></td>
+            </tr>
+            <tr>
+                <td>Membros Aptos</td>
+                <td><strong>{{ $aliancaCidade->qtd_eleitorado ?: '—' }}</strong></td>
             </tr>
             <tr>
                 <td>Total realizado</td>
                 <td>
+                    @php
+                        $pctRealizado = $aliancaCidade->qtd_consagrados > 0
+                            ? floor($aliancaCidade->votos_registrados / $aliancaCidade->qtd_consagrados * 10000) / 100
+                            : 0;
+                    @endphp
                     <strong>{{ $aliancaCidade->votos_registrados }}</strong>
-                    @if($aliancaCidade->qtd_membros > 0)
-                        &nbsp;<span class="val-pct">({{ round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_membros * 100, 1) }}%)</span>
+                    @if($aliancaCidade->qtd_consagrados > 0)
+                        &nbsp;<span class="val-pct">({{ number_format($pctRealizado, 2, ',', '') }}%)</span>
                     @endif
                 </td>
             </tr>
@@ -599,16 +608,25 @@
                 <td>{{ $eleicao->data_encerramento_vida?->format('d/m/Y H:i') ?? '—' }}</td>
             </tr>
             <tr>
-                <td>Total esperado de votos</td>
+                <td>Total Consagrados</td>
+                <td><strong>{{ $vidaTotalConsagrados ?: '—' }}</strong></td>
+            </tr>
+            <tr>
+                <td>Membros Aptos</td>
                 <td><strong>{{ $vidaTotalEleit ?? $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0)) }}</strong></td>
             </tr>
             <tr>
                 <td>Total realizado</td>
                 <td>
-                    @php $vTot = $vidaTotalVotaram ?? array_sum($vidaVotaramPorCidade); $vEleit = $vidaTotalEleit ?? $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0)); @endphp
+                    @php
+                        $vTot = $vidaTotalVotaram ?? array_sum($vidaVotaramPorCidade);
+                        $pctVidaRealizado = isset($vidaTotalConsagrados) && $vidaTotalConsagrados > 0
+                            ? floor($vTot / $vidaTotalConsagrados * 10000) / 100
+                            : 0;
+                    @endphp
                     <strong>{{ $vTot }}</strong>
-                    @if($vEleit > 0)
-                        &nbsp;<span class="val-pct">({{ round($vTot / $vEleit * 100, 1) }}%)</span>
+                    @if(isset($vidaTotalConsagrados) && $vidaTotalConsagrados > 0)
+                        &nbsp;<span class="val-pct">({{ number_format($pctVidaRealizado, 2, ',', '') }}%)</span>
                     @endif
                 </td>
             </tr>
