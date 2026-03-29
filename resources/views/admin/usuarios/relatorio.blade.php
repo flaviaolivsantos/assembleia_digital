@@ -125,9 +125,18 @@
         <div></div>
     </div>
 
+    @php
+        $escopoLabels = ['ambos' => 'Aliança e Vida', 'alianca' => 'Apenas Aliança', 'vida' => 'Apenas Vida'];
+        $total = $usuarios->flatten()->count();
+    @endphp
+
     <div class="doc-meta">
         <div>
             <div class="meta-label">Total de usuários</div>
+            <div class="meta-value">{{ $total }}</div>
+        </div>
+        <div>
+            <div class="meta-label">Missões</div>
             <div class="meta-value">{{ $usuarios->count() }}</div>
         </div>
         <div>
@@ -136,28 +145,27 @@
         </div>
     </div>
 
-    <table class="ata-table">
-        @php
-            $escopoLabels = ['ambos' => 'Aliança e Vida', 'alianca' => 'Apenas Aliança', 'vida' => 'Apenas Vida'];
-        @endphp
+    @foreach($usuarios as $missao => $membros)
+    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;border-bottom:1px solid #e5e7eb;padding-bottom:.3rem;margin:1.2rem 0 .5rem;page-break-after:avoid;">
+        {{ $missao }} <span style="font-weight:400;color:#9ca3af;">({{ $membros->count() }})</span>
+    </div>
+    <table class="ata-table" style="margin-bottom:0;">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Nome</th>
                 <th>E-mail</th>
                 <th>Perfil</th>
-                <th>Missão</th>
                 <th>Realidade Liberada</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($usuarios as $i => $usuario)
+            @foreach($membros as $i => $usuario)
             <tr>
                 <td style="color:#9ca3af;font-size:.72rem;">{{ $i + 1 }}</td>
                 <td style="font-weight:600;">{{ $usuario->nome }}</td>
                 <td>{{ $usuario->email }}</td>
                 <td>{{ ucfirst($usuario->perfil) }}</td>
-                <td>{{ $usuario->cidade->nome ?? '—' }}</td>
                 <td>
                     @if(in_array($usuario->perfil, ['maquina','mesario']))
                         {{ $escopoLabels[$usuario->escopo_maquina] ?? '—' }}
@@ -168,10 +176,14 @@
             </tr>
             @endforeach
         </tbody>
+    </table>
+    @endforeach
+
+    <table class="ata-table" style="margin-top:1rem;">
         <tfoot>
             <tr>
-                <td colspan="5">Total</td>
-                <td>{{ $usuarios->count() }}</td>
+                <td colspan="4">Total geral</td>
+                <td>{{ $total }}</td>
             </tr>
         </tfoot>
     </table>

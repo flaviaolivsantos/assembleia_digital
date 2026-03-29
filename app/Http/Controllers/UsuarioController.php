@@ -112,7 +112,13 @@ class UsuarioController extends Controller
 
     public function relatorio()
     {
-        $usuarios = User::with('cidade')->orderBy('perfil')->orderBy('nome')->get();
+        $usuarios = User::with('cidade')
+            ->leftJoin('cidades', 'users.cidade_id', '=', 'cidades.id')
+            ->select('users.*')
+            ->orderBy('cidades.nome')
+            ->orderBy('users.nome')
+            ->get()
+            ->groupBy(fn($u) => $u->cidade->nome ?? '— Sem Missão');
         return view('admin.usuarios.relatorio', compact('usuarios'));
     }
 
