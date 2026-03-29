@@ -372,8 +372,8 @@
         $vidaTotalConsagrados = $todasCidades->sum('qtd_consagrados_vida');
         $vidaTotalEleit       = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
         $vidaTotalVotaram     = array_sum($vidaVotaramPorCidade);
-        $vidaAdPct            = $vidaTotalConsagrados > 0 ? round($vidaTotalEleit    / $vidaTotalConsagrados * 100, 1) : 0;
-        $vidaApPct            = $vidaTotalConsagrados > 0 ? round($vidaTotalVotaram  / $vidaTotalConsagrados * 100, 1) : 0;
+        $vidaFaltaram         = max(0, $vidaTotalConsagrados - $vidaTotalVotaram);
+        $vidaAdPct            = $vidaTotalConsagrados > 0 ? floor($vidaTotalVotaram / $vidaTotalConsagrados * 10000) / 100 : 0;
     @endphp
     <p class="nota" style="{{ $mostrarAlianca ? 'margin-top:.8rem;' : '' }}">Realidade de Vida — Todas as Missões</p>
     <table class="ata-table">
@@ -382,8 +382,8 @@
                 <th class="center">Total de Membros</th>
                 <th class="center">Eleitores Aptos</th>
                 <th class="center">Votaram</th>
+                <th class="center">Faltaram</th>
                 <th class="center">Aderência</th>
-                <th class="center">Aproveit.</th>
             </tr>
         </thead>
         <tbody>
@@ -391,8 +391,8 @@
                 <td class="center val-strong">{{ $vidaTotalConsagrados ?: '—' }}</td>
                 <td class="center val-strong">{{ $vidaTotalEleit }}</td>
                 <td class="center val-strong">{{ $vidaTotalVotaram }}</td>
-                <td class="center val-pct">{{ $vidaAdPct }}%</td>
-                <td class="center val-pct">{{ $vidaApPct }}%</td>
+                <td class="center val-strong">{{ $vidaTotalConsagrados ? $vidaFaltaram : '—' }}</td>
+                <td class="center val-pct">{{ number_format($vidaAdPct, 2, ',', '') }}%</td>
             </tr>
         </tbody>
     </table>
