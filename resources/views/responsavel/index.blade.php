@@ -369,7 +369,7 @@
                             </div>
                             @if($ec->qtd_membros > 0)
                             <div class="metric-cell">
-                                <div class="metric-label">Participação</div>
+                                <div class="metric-label">Participação (Aliança)</div>
                                 <div class="metric-value">{{ number_format(($ec->votos_registrados / $ec->qtd_membros) * 100, 0) }}%</div>
                             </div>
                             @endif
