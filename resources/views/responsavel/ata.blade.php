@@ -375,7 +375,7 @@
         $vidaFaltaram         = max(0, $vidaTotalConsagrados - $vidaTotalVotaram);
         $vidaAdPct            = $vidaTotalConsagrados > 0 ? floor($vidaTotalVotaram / $vidaTotalConsagrados * 10000) / 100 : 0;
     @endphp
-    <p class="nota" style="{{ $mostrarAlianca ? 'margin-top:.8rem;' : '' }}">Realidade de Vida — Todas as Missões</p>
+    <p class="nota" style="{{ $mostrarAlianca ? 'margin-top:.8rem;' : '' }}">Realidade de Vida</p>
     <table class="ata-table">
         <thead>
             <tr>
@@ -606,7 +606,7 @@
     @endif
 
     @if($mostrarVida)
-    <p class="nota" style="{{ $mostrarAlianca ? 'margin-top:.8rem;' : '' }}">Realidade de Vida — Todas as Missões</p>
+    <p class="nota" style="{{ $mostrarAlianca ? 'margin-top:.8rem;' : '' }}">Realidade de Vida</p>
     <table class="audit-table">
         <tbody>
             <tr>
