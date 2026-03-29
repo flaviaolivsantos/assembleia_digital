@@ -577,7 +577,7 @@
             </tr>
             <tr>
                 <td>Encerrada por</td>
-                <td>{{ $aliancaCidade->encerradaPor?->nome ?? '—' }}</td>
+                <td>{{ $aliancaCidade->encerradaPor?->nome ?? 'Sistema (Automático)' }}</td>
             </tr>
             <tr>
                 <td>Total Consagrados</td>

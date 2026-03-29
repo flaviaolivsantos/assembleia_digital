@@ -336,7 +336,7 @@
                     <td class="c">{{ $ec->data_abertura?->format('d/m/Y H:i') ?? '—' }}</td>
                     <td class="c">{{ $ec->data_encerramento?->format('d/m/Y H:i') ?? '—' }}</td>
                     <td>{{ $ec->abertaPor?->nome ?? '—' }}</td>
-                    <td>{{ $ec->encerradaPor?->nome ?? '—' }}</td>
+                    <td>{{ $ec->encerradaPor?->nome ?? 'Sistema (Automático)' }}</td>
                     <td class="c val-azul">{{ $ec->qtd_membros }}</td>
                     <td class="c">
                         <span class="val-azul">{{ $ec->votos_registrados }}</span>
