@@ -339,15 +339,16 @@
 
     @if($mostrarAlianca)
     @php
-        $adPct = $aliancaCidade->qtd_eleitorado > 0
-            ? round($aliancaCidade->qtd_membros       / $aliancaCidade->qtd_eleitorado * 100, 1) : 0;
-        $apPct = $aliancaCidade->qtd_membros    > 0
-            ? round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_membros    * 100, 1) : 0;
+        $adPct = $aliancaCidade->qtd_consagrados > 0
+            ? round($aliancaCidade->qtd_membros       / $aliancaCidade->qtd_consagrados * 100, 1) : 0;
+        $apPct = $aliancaCidade->qtd_consagrados > 0
+            ? round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_consagrados * 100, 1) : 0;
     @endphp
     <p class="nota">Realidade de Aliança — {{ $aliancaCidade->cidade->nome }}</p>
     <table class="ata-table">
         <thead>
             <tr>
+                <th class="center">Total de Membros</th>
                 <th class="center">Eleitores Aptos</th>
                 <th class="center">Compareceram</th>
                 <th class="center">Votaram</th>
@@ -357,7 +358,8 @@
         </thead>
         <tbody>
             <tr>
-                <td class="center val-strong">{{ $aliancaCidade->qtd_membros }}</td>
+                <td class="center val-strong">{{ $aliancaCidade->qtd_consagrados ?: '—' }}</td>
+                <td class="center val-strong">{{ $aliancaCidade->qtd_eleitorado }}</td>
                 <td class="center val-strong">{{ $aliancaCidade->qtd_membros }}</td>
                 <td class="center val-strong">{{ $aliancaCidade->votos_registrados }}</td>
                 <td class="center val-pct">{{ $adPct }}%</td>
@@ -369,23 +371,29 @@
 
     @if($mostrarVida)
     @php
-        $vidaTotalEleit  = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
-        $vidaTotalVotaram = array_sum($vidaVotaramPorCidade);
-        $vidaApPct        = $vidaTotalEleit > 0 ? round($vidaTotalVotaram / $vidaTotalEleit * 100, 1) : 0;
+        $vidaTotalConsagrados = $todasCidades->sum('qtd_consagrados_vida');
+        $vidaTotalEleit       = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
+        $vidaTotalVotaram     = array_sum($vidaVotaramPorCidade);
+        $vidaAdPct            = $vidaTotalConsagrados > 0 ? round($vidaTotalEleit    / $vidaTotalConsagrados * 100, 1) : 0;
+        $vidaApPct            = $vidaTotalConsagrados > 0 ? round($vidaTotalVotaram  / $vidaTotalConsagrados * 100, 1) : 0;
     @endphp
     <p class="nota" style="{{ $mostrarAlianca ? 'margin-top:.8rem;' : '' }}">Realidade de Vida — Todas as Missões</p>
     <table class="ata-table">
         <thead>
             <tr>
+                <th class="center">Total de Membros</th>
                 <th class="center">Eleitores Aptos</th>
                 <th class="center">Votaram</th>
+                <th class="center">Aderência</th>
                 <th class="center">Aproveit.</th>
             </tr>
         </thead>
         <tbody>
             <tr>
+                <td class="center val-strong">{{ $vidaTotalConsagrados ?: '—' }}</td>
                 <td class="center val-strong">{{ $vidaTotalEleit }}</td>
                 <td class="center val-strong">{{ $vidaTotalVotaram }}</td>
+                <td class="center val-pct">{{ $vidaAdPct }}%</td>
                 <td class="center val-pct">{{ $vidaApPct }}%</td>
             </tr>
         </tbody>
