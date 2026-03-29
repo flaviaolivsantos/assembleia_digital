@@ -462,7 +462,7 @@
                 if ($semZeros) $opcoesVida = $opcoesVida->filter(fn($o) => $o->total_votos > 0);
                 $totalVida = $opcoesVida->sum('total_votos');
             @endphp
-            <p class="nota">Placar Total Geral</p>
+            <p class="nota">Resultado geral</p>
             <table class="ata-table">
                 <thead>
                     <tr>
