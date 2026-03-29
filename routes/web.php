@@ -53,7 +53,7 @@ Route::middleware(['auth', 'acesso.ate', 'perfil:admin'])->prefix('admin')->name
     Route::get('eleicoes/{eleicao}/ata',        [ResultadoController::class, 'ata'])->name('eleicoes.ata');
     Route::get('eleicoes/{eleicao}/logs',       [LogController::class, 'index'])->name('eleicoes.logs');
     Route::resource('usuarios', UsuarioController::class)->except(['show']);
-    Route::get('usuarios-relatorio', [UsuarioController::class, 'relatorio'])->name('admin.usuarios.relatorio');
+    Route::get('usuarios-relatorio', [UsuarioController::class, 'relatorio'])->name('usuarios.relatorio');
 });
 
 // Responsavel
