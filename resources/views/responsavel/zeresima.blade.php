@@ -316,7 +316,7 @@
                 @if($escopo === 'alianca')
                     Aliança — {{ $eleicaoCidade->cidade->nome }}
                 @else
-                    Vida — Todas as Missões
+                    Vida
                 @endif
             </div>
         </div>
