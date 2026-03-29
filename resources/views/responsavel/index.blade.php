@@ -364,7 +364,7 @@
                                 <div class="metric-value">{{ $ec->qtd_membros }}</div>
                             </div>
                             <div class="metric-cell">
-                                <div class="metric-label">Votaram</div>
+                                <div class="metric-label">Votaram (Aliança)</div>
                                 <div class="metric-value">{{ $ec->votos_registrados }}</div>
                             </div>
                             @if($ec->qtd_membros > 0)
