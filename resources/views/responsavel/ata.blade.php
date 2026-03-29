@@ -341,9 +341,8 @@
     @php
         $faltaram = max(0, $aliancaCidade->qtd_consagrados - $aliancaCidade->votos_registrados);
         $adPct    = $aliancaCidade->qtd_consagrados > 0
-            ? round($aliancaCidade->qtd_membros       / $aliancaCidade->qtd_consagrados * 100, 1) : 0;
-        $apPct    = $aliancaCidade->qtd_consagrados > 0
-            ? round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_consagrados * 100, 1) : 0;
+            ? floor($aliancaCidade->votos_registrados / $aliancaCidade->qtd_consagrados * 10000) / 100
+            : 0;
     @endphp
     <p class="nota">Realidade de Aliança — {{ $aliancaCidade->cidade->nome }}</p>
     <table class="ata-table">
@@ -354,7 +353,6 @@
                 <th class="center">Votaram</th>
                 <th class="center">Faltaram</th>
                 <th class="center">Aderência</th>
-                <th class="center">Aproveit.</th>
             </tr>
         </thead>
         <tbody>
@@ -363,8 +361,7 @@
                 <td class="center val-strong">{{ $aliancaCidade->qtd_eleitorado }}</td>
                 <td class="center val-strong">{{ $aliancaCidade->votos_registrados }}</td>
                 <td class="center val-strong">{{ $aliancaCidade->qtd_consagrados ? $faltaram : '—' }}</td>
-                <td class="center val-pct">{{ $adPct }}%</td>
-                <td class="center val-pct">{{ $apPct }}%</td>
+                <td class="center val-pct">{{ number_format($adPct, 2, ',', '') }}%</td>
             </tr>
         </tbody>
     </table>

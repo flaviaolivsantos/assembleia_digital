@@ -198,7 +198,6 @@
                 <th class="c">Votaram</th>
                 <th class="c">Faltaram</th>
                 <th class="c">Aderência</th>
-                <th class="c">Aproveit.</th>
             </tr>
         </thead>
         <tbody>
@@ -208,8 +207,9 @@
                     $totAptos       += $ec->qtd_eleitorado;
                     $totVotos       += $ec->votos_registrados;
                     $faltaram = max(0, $ec->qtd_consagrados - $ec->votos_registrados);
-                    $adPct = $ec->qtd_consagrados > 0 ? round($ec->qtd_membros       / $ec->qtd_consagrados * 100, 1) : 0;
-                    $apPct = $ec->qtd_consagrados > 0 ? round($ec->votos_registrados / $ec->qtd_consagrados * 100, 1) : 0;
+                    $adPct = $ec->qtd_consagrados > 0
+                        ? floor($ec->votos_registrados / $ec->qtd_consagrados * 10000) / 100
+                        : 0;
                 @endphp
                 <tr>
                     <td>{{ $ec->cidade->nome }}</td>
@@ -217,16 +217,16 @@
                     <td class="c val-azul">{{ $ec->qtd_eleitorado }}</td>
                     <td class="c val-azul">{{ $ec->votos_registrados }}</td>
                     <td class="c val-azul">{{ $ec->qtd_consagrados ? $faltaram : '—' }}</td>
-                    <td class="c val-ciano">{{ $adPct }}%</td>
-                    <td class="c val-ciano">{{ $apPct }}%</td>
+                    <td class="c val-ciano">{{ number_format($adPct, 2, ',', '') }}%</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             @php
-                $totFaltaram    = max(0, $totConsagrados - $totVotos);
-                $adTotalPct     = $totConsagrados > 0 ? round(($totConsagrados - $totFaltaram) / $totConsagrados * 100, 1) : 0;
-                $apTotalPct     = $totConsagrados > 0 ? round($totVotos / $totConsagrados * 100, 1) : 0;
+                $totFaltaram = max(0, $totConsagrados - $totVotos);
+                $adTotalPct  = $totConsagrados > 0
+                    ? floor($totVotos / $totConsagrados * 10000) / 100
+                    : 0;
             @endphp
             <tr>
                 <td>Total Geral</td>
@@ -234,8 +234,7 @@
                 <td class="c">{{ $totAptos }}</td>
                 <td class="c">{{ $totVotos }}</td>
                 <td class="c">{{ $totConsagrados ? $totFaltaram : '—' }}</td>
-                <td class="c" style="color:var(--ciano);">{{ $adTotalPct }}%</td>
-                <td class="c" style="color:var(--ciano);">{{ $apTotalPct }}%</td>
+                <td class="c" style="color:var(--ciano);">{{ number_format($adTotalPct, 2, ',', '') }}%</td>
             </tr>
         </tfoot>
     </table>
