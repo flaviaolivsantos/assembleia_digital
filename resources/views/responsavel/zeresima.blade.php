@@ -371,7 +371,7 @@
     </table>
 
     {{-- ── 2. Relação de Candidatos ─────────────────────────── --}}
-    <div class="section-title">2. Relação de Candidatos — Votos Zerados</div>
+    <div class="section-title">2. Relação de Candidatos</div>
 
     @foreach($eleicao->perguntas->where('escopo', $escopo)->sortBy('ordem') as $pergunta)
         @php
