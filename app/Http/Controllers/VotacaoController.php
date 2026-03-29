@@ -162,7 +162,10 @@ class VotacaoController extends Controller
             })
             ->filter(fn($p) => $p->opcoesDaCidade->count() > 0);
 
-        return view('maquina.votar', compact('eleicaoCidade', 'perguntas'));
+        return response()
+            ->view('maquina.votar', compact('eleicaoCidade', 'perguntas'))
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->header('Pragma', 'no-cache');
     }
 
     public function confirmarVoto(Request $request)

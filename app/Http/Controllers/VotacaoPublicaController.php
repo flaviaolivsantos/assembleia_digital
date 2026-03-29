@@ -93,7 +93,10 @@ class VotacaoPublicaController extends Controller
 
         $confirmRoute = 'votacao.confirmarVoto';
 
-        return view('maquina.votar', compact('eleicaoCidade', 'perguntas', 'confirmRoute'));
+        return response()
+            ->view('maquina.votar', compact('eleicaoCidade', 'perguntas', 'confirmRoute'))
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->header('Pragma', 'no-cache');
     }
 
     public function confirmarVoto(Request $request)
