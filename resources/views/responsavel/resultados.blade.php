@@ -7,20 +7,21 @@
     $mostrarAlianca  = $temAlianca && ($filtro === 'geral' || $filtro === 'alianca');
     $mostrarVida     = $temVida    && ($filtro === 'geral' || $filtro === 'vida');
 
-    // Métricas de aliança para os gráficos: geral → soma todas cidades; aliança → cidade selecionada
+    // Métricas de aliança — base: consagrados (não qtd_membros)
     $compareceram = $filtro === 'geral'
-        ? $todasCidades->sum('qtd_membros')
-        : $aliancaCidade->qtd_membros;
+        ? $todasCidades->sum('qtd_consagrados')
+        : $aliancaCidade->qtd_consagrados;
     $votaram      = $filtro === 'geral'
         ? $todasCidades->sum('votos_registrados')
         : $aliancaCidade->votos_registrados;
-    $pctAderencia = $compareceram > 0 ? round($votaram / $compareceram * 100, 1) : 0;
-    $pctAproveit  = $compareceram > 0 ? round($votaram / $compareceram * 100, 1) : 0;
+    $pctAproveit  = $compareceram > 0 ? floor($votaram / $compareceram * 10000) / 100 : 0;
+    $pctAderencia = $pctAproveit;
 
     // Vida é nacional — soma todas as cidades
+    $vidaConsagrados = $todasCidades->sum('qtd_consagrados_vida');
     $vidaEleitores   = $todasCidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
     $vidaVotaram     = array_sum($vidaVotaramPorCidade);
-    $pctVidaAproveit = $vidaEleitores > 0 ? round($vidaVotaram / $vidaEleitores * 100, 1) : 0;
+    $pctVidaAproveit = $vidaConsagrados > 0 ? floor($vidaVotaram / $vidaConsagrados * 10000) / 100 : 0;
 
     // Auditoria por máquina: vida → todas; aliança → filtra pela cidade aliança selecionada
     $maquinasDaMissao = match($filtro) {
@@ -204,31 +205,42 @@
 @if($filtro === 'geral')
     {{-- GERAL: card consolidado — todas as missões somadas --}}
     @php
-        $geralAliancaAptos   = $todasCidades->sum('qtd_membros');
-        $geralAliancaVotaram = $todasCidades->sum('votos_registrados');
-        $geralAliancaPct     = $geralAliancaAptos > 0 ? round($geralAliancaVotaram / $geralAliancaAptos * 100, 1) : 0;
+        $geralAliancaConsagrados = $todasCidades->sum('qtd_consagrados');
+        $geralAliancaAptos       = $todasCidades->sum('qtd_eleitorado');
+        $geralAliancaVotaram     = $todasCidades->sum('votos_registrados');
+        $geralAliancaFaltaram    = max(0, $geralAliancaConsagrados - $geralAliancaVotaram);
+        $geralAliancaPct         = $geralAliancaConsagrados > 0
+            ? floor($geralAliancaVotaram / $geralAliancaConsagrados * 10000) / 100 : 0;
     @endphp
     <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">
         <span class="badge text-bg-secondary me-1">Aliança</span>Todas as Missões
     </p>
     <div class="row g-3 mb-3">
-        <div class="col-md-3">
+        <div class="col">
             <div class="card res-metric-card">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
                     <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
-                    <div><div class="res-metric-value">{{ $geralAliancaAptos }}</div><div class="res-metric-label">Eleitores Aptos</div></div>
+                    <div><div class="res-metric-value">{{ $geralAliancaConsagrados ?: '—' }}</div><div class="res-metric-label">Total Consagrados</div></div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon"><i class="bi bi-person-check-fill"></i></div>
+                    <div><div class="res-metric-value">{{ $geralAliancaAptos }}</div><div class="res-metric-label">Membros Aptos</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
             <div class="card res-metric-card">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
                     <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
-                    <div><div class="res-metric-value" style="color:#dc3545;">{{ max(0, $geralAliancaAptos - $geralAliancaVotaram) }}</div><div class="res-metric-label">Faltaram</div></div>
+                    <div><div class="res-metric-value" style="color:#dc3545;">{{ $geralAliancaFaltaram }}</div><div class="res-metric-label">Faltaram</div></div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col">
             <div class="card res-metric-card">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
                     <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
@@ -236,11 +248,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col">
             <div class="card res-metric-card">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
                     <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
-                    <div><div class="res-metric-value">{{ $geralAliancaPct }}%</div><div class="res-metric-label">Aderência</div></div>
+                    <div><div class="res-metric-value">{{ number_format($geralAliancaPct, 2, ',', '') }}%</div><div class="res-metric-label">Aderência</div></div>
                 </div>
             </div>
         </div>
@@ -248,31 +260,41 @@
 @else
     {{-- ALIANÇA específica: uma cidade selecionada --}}
     @php
-        $aAptos       = $aliancaCidade->qtd_membros;
+        $aConsagrados = $aliancaCidade->qtd_consagrados;
+        $aAptos       = $aliancaCidade->qtd_eleitorado;
         $aVotaram     = $aliancaCidade->votos_registrados;
-        $aPctAproveit = $aAptos > 0 ? round($aVotaram / $aAptos * 100, 1) : 0;
+        $aFaltaram    = max(0, $aConsagrados - $aVotaram);
+        $aPctAproveit = $aConsagrados > 0 ? floor($aVotaram / $aConsagrados * 10000) / 100 : 0;
     @endphp
     <p class="fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:.5px">
         <span class="badge text-bg-secondary me-1">Aliança</span>{{ $aliancaCidade->cidade->nome }}
     </p>
     <div class="row g-3 mb-3">
-        <div class="col-md-3">
+        <div class="col">
             <div class="card res-metric-card">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
                     <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
-                    <div><div class="res-metric-value">{{ $aAptos }}</div><div class="res-metric-label">Eleitores Aptos</div></div>
+                    <div><div class="res-metric-value">{{ $aConsagrados ?: '—' }}</div><div class="res-metric-label">Total Consagrados</div></div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col">
+            <div class="card res-metric-card">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="res-metric-icon"><i class="bi bi-person-check-fill"></i></div>
+                    <div><div class="res-metric-value">{{ $aAptos }}</div><div class="res-metric-label">Membros Aptos</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
             <div class="card res-metric-card">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
                     <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
-                    <div><div class="res-metric-value" style="color:#dc3545;">{{ max(0, $aAptos - $aVotaram) }}</div><div class="res-metric-label">Faltaram</div></div>
+                    <div><div class="res-metric-value" style="color:#dc3545;">{{ $aFaltaram }}</div><div class="res-metric-label">Faltaram</div></div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col">
             <div class="card res-metric-card">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
                     <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
@@ -280,11 +302,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col">
             <div class="card res-metric-card">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
                     <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
-                    <div><div class="res-metric-value">{{ $aPctAproveit }}%</div><div class="res-metric-label">Aderência</div></div>
+                    <div><div class="res-metric-value">{{ number_format($aPctAproveit, 2, ',', '') }}%</div><div class="res-metric-label">Aderência</div></div>
                 </div>
             </div>
         </div>
@@ -297,29 +319,40 @@
     <span class="badge text-bg-primary me-1">Vida</span> — todas as missões
 </p>
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-people-fill"></i></div>
                 <div>
-                    <div class="res-metric-value">{{ $vidaEleitores }}</div>
-                    <div class="res-metric-label">Eleitores Aptos</div>
+                    <div class="res-metric-value">{{ $vidaConsagrados ?: '—' }}</div>
+                    <div class="res-metric-label">Total Consagrados</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col">
+        <div class="card res-metric-card">
+            <div class="card-body d-flex align-items-center gap-3 py-3">
+                <div class="res-metric-icon"><i class="bi bi-person-check-fill"></i></div>
+                <div>
+                    <div class="res-metric-value">{{ $vidaEleitores }}</div>
+                    <div class="res-metric-label">Membros Aptos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon" style="background:rgba(220,53,69,.1);color:#dc3545;"><i class="bi bi-person-x-fill"></i></div>
                 <div>
-                    <div class="res-metric-value" style="color:#dc3545;">{{ max(0, $vidaEleitores - $vidaVotaram) }}</div>
+                    <div class="res-metric-value" style="color:#dc3545;">{{ max(0, $vidaConsagrados - $vidaVotaram) }}</div>
                     <div class="res-metric-label">Faltaram</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-check2-circle"></i></div>
@@ -330,12 +363,12 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col">
         <div class="card res-metric-card">
             <div class="card-body d-flex align-items-center gap-3 py-3">
                 <div class="res-metric-icon"><i class="bi bi-percent"></i></div>
                 <div>
-                    <div class="res-metric-value">{{ $pctVidaAproveit }}%</div>
+                    <div class="res-metric-value">{{ number_format($pctVidaAproveit, 2, ',', '') }}%</div>
                     <div class="res-metric-label">Aderência</div>
                 </div>
             </div>
@@ -374,20 +407,20 @@
                     <div class="chart-wrap">
                         <canvas id="chartAproveitamento"></canvas>
                         <div class="chart-center-label">
-                            <div class="chart-center-pct">{{ $pctAproveit }}%</div>
+                            <div class="chart-center-pct">{{ number_format($pctAproveit, 2, ',', '') }}%</div>
                             <div class="chart-center-sub">Votaram</div>
                         </div>
                     </div>
                     <div class="chart-legend mt-3">
                         <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $votaram }})</span>
                         &nbsp;&nbsp;
-                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ $compareceram - $votaram }})</span>
+                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ max(0, $compareceram - $votaram) }})</span>
                     </div>
                 </div>
             </div>
         </div>
         @endif
-        @if($mostrarVida && $vidaEleitores > 0)
+        @if($mostrarVida && $vidaConsagrados > 0)
         <div class="col-md-{{ $mostrarAlianca ? '6' : '6 offset-md-3' }}">
             <div class="card chart-card h-100">
                 <div class="card-header"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Aderência <span class="badge text-bg-primary ms-1" style="font-size:.65rem;">Vida — Todas</span></div>
@@ -395,14 +428,14 @@
                     <div class="chart-wrap">
                         <canvas id="chartVidaAproveitamento"></canvas>
                         <div class="chart-center-label">
-                            <div class="chart-center-pct">{{ $pctVidaAproveit }}%</div>
+                            <div class="chart-center-pct">{{ number_format($pctVidaAproveit, 2, ',', '') }}%</div>
                             <div class="chart-center-sub">Votaram</div>
                         </div>
                     </div>
                     <div class="chart-legend mt-3">
                         <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $vidaVotaram }})</span>
                         &nbsp;&nbsp;
-                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ $vidaEleitores - $vidaVotaram }})</span>
+                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ max(0, $vidaConsagrados - $vidaVotaram) }})</span>
                     </div>
                 </div>
             </div>
@@ -483,21 +516,21 @@
                     <div class="chart-wrap">
                         <canvas id="chartAproveitamento"></canvas>
                         <div class="chart-center-label">
-                            <div class="chart-center-pct">{{ $pctAproveit }}%</div>
+                            <div class="chart-center-pct">{{ number_format($pctAproveit, 2, ',', '') }}%</div>
                             <div class="chart-center-sub">Votaram</div>
                         </div>
                     </div>
                     <div class="chart-legend mt-3">
                         <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $votaram }})</span>
                         &nbsp;&nbsp;
-                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ $compareceram - $votaram }})</span>
+                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ max(0, $compareceram - $votaram) }})</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     @endif
-    @if($mostrarVida && $vidaEleitores > 0)
+    @if($mostrarVida && $vidaConsagrados > 0)
     <div class="row g-3 mb-4">
         <div class="col-md-6 offset-md-3">
             <div class="card chart-card h-100">
@@ -506,14 +539,14 @@
                     <div class="chart-wrap">
                         <canvas id="chartVidaAproveitamento"></canvas>
                         <div class="chart-center-label">
-                            <div class="chart-center-pct">{{ $pctVidaAproveit }}%</div>
+                            <div class="chart-center-pct">{{ number_format($pctVidaAproveit, 2, ',', '') }}%</div>
                             <div class="chart-center-sub">Votaram</div>
                         </div>
                     </div>
                     <div class="chart-legend mt-3">
                         <span><span class="chart-legend-dot" style="background:#00BCD4"></span>Votaram ({{ $vidaVotaram }})</span>
                         &nbsp;&nbsp;
-                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ $vidaEleitores - $vidaVotaram }})</span>
+                        <span><span class="chart-legend-dot" style="background:#CED4DA"></span>Faltaram ({{ max(0, $vidaConsagrados - $vidaVotaram) }})</span>
                     </div>
                 </div>
             </div>
@@ -697,8 +730,8 @@ function criarDonut(id, valor, total) {
 @if($mostrarAlianca)
 criarDonut('chartAproveitamento', {{ $votaram }}, {{ $compareceram }});
 @endif
-@if($mostrarVida && $vidaEleitores > 0)
-criarDonut('chartVidaAproveitamento', {{ $vidaVotaram }}, {{ $vidaEleitores }});
+@if($mostrarVida && $vidaConsagrados > 0)
+criarDonut('chartVidaAproveitamento', {{ $vidaVotaram }}, {{ $vidaConsagrados }});
 @endif
 
 @if($filtro === 'geral' && $mostrarAlianca && $mostrarVida)
