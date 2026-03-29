@@ -19,16 +19,17 @@
 @php
     $totalConsagradosGeral = $eleicao->cidades->sum('qtd_consagrados');
     $totalAptosGeral       = $eleicao->cidades->sum('qtd_eleitorado');
-    $totalComparecGeral    = $eleicao->cidades->sum('qtd_membros');
     $totalVotaramGeral     = $eleicao->cidades->sum('votos_registrados');
-    $pctAdGeral = $totalConsagradosGeral > 0 ? round($totalComparecGeral / $totalConsagradosGeral * 100, 1) : 0;
-    $pctApGeral = $totalConsagradosGeral > 0 ? round($totalVotaramGeral  / $totalConsagradosGeral * 100, 1) : 0;
+    $totalFaltaramGeral    = max(0, $totalConsagradosGeral - $totalVotaramGeral);
+    $pctAdGeral = $totalConsagradosGeral > 0
+        ? floor($totalVotaramGeral / $totalConsagradosGeral * 10000) / 100 : 0;
 
     $totalVidaConsagrados = $eleicao->cidades->sum('qtd_consagrados_vida');
     $totalVidaEleitores   = $eleicao->cidades->sum(fn($ec) => ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0));
     $totalVidaVotaram     = array_sum($vidaVotaramPorCidade);
-    $pctVidaAd = $totalVidaConsagrados > 0 ? round($totalVidaEleitores / $totalVidaConsagrados * 100, 1) : 0;
-    $pctVidaAp = $totalVidaConsagrados > 0 ? round($totalVidaVotaram   / $totalVidaConsagrados * 100, 1) : 0;
+    $totalVidaFaltaram    = max(0, $totalVidaConsagrados - $totalVidaVotaram);
+    $pctVidaAd = $totalVidaConsagrados > 0
+        ? floor($totalVidaVotaram / $totalVidaConsagrados * 10000) / 100 : 0;
 @endphp
 
 {{-- Card geral --}}
@@ -40,27 +41,24 @@
         <p class="text-muted small mb-1 fw-semibold"><span class="badge text-bg-secondary me-1">Aliança</span></p>
         <div class="row text-center g-2 mb-3">
             <div class="col-3"><div class="fw-bold fs-5">{{ $totalConsagradosGeral ?: '—' }}</div><div class="text-muted small">Consagrados</div></div>
-            <div class="col-3"><div class="fw-bold fs-5">{{ $totalAptosGeral }}</div><div class="text-muted small">Aptos</div></div>
-            <div class="col-3"><div class="fw-bold fs-5 text-primary">{{ $totalComparecGeral }}</div><div class="text-muted small">Compareceram</div></div>
+            <div class="col-3"><div class="fw-bold fs-5">{{ $totalAptosGeral }}</div><div class="text-muted small">Membros Aptos</div></div>
             <div class="col-3"><div class="fw-bold fs-5 text-success">{{ $totalVotaramGeral }}</div><div class="text-muted small">Votaram</div></div>
+            <div class="col-3"><div class="fw-bold fs-5 text-danger">{{ $totalConsagradosGeral ? $totalFaltaramGeral : '—' }}</div><div class="text-muted small">Faltaram</div></div>
         </div>
-        <div class="d-flex justify-content-between mb-1"><small>Aderência</small><small><strong>{{ $pctAdGeral }}%</strong></small></div>
-        <div class="progress mb-2" style="height:6px"><div class="progress-bar bg-primary" style="width:{{ $pctAdGeral }}%"></div></div>
-        <div class="d-flex justify-content-between mb-1"><small>Aproveitamento</small><small><strong>{{ $pctApGeral }}%</strong></small></div>
-        <div class="progress {{ $temVida ? 'mb-3' : '' }}" style="height:6px"><div class="progress-bar bg-success" style="width:{{ $pctApGeral }}%"></div></div>
+        <div class="d-flex justify-content-between mb-1"><small>Aderência</small><small><strong>{{ number_format($pctAdGeral, 2, ',', '') }}%</strong></small></div>
+        <div class="progress {{ $temVida ? 'mb-3' : '' }}" style="height:6px"><div class="progress-bar bg-primary" style="width:{{ $pctAdGeral }}%"></div></div>
         @endif
 
         @if($temVida)
         <p class="text-muted small mb-1 fw-semibold"><span class="badge text-bg-primary me-1">Vida</span></p>
         <div class="row text-center g-2 mb-3">
-            <div class="col-4"><div class="fw-bold fs-5">{{ $totalVidaConsagrados ?: '—' }}</div><div class="text-muted small">Consagrados</div></div>
-            <div class="col-4"><div class="fw-bold fs-5">{{ $totalVidaEleitores }}</div><div class="text-muted small">Eleitores</div></div>
-            <div class="col-4"><div class="fw-bold fs-5 text-success">{{ $totalVidaVotaram }}</div><div class="text-muted small">Votaram</div></div>
+            <div class="col-3"><div class="fw-bold fs-5">{{ $totalVidaConsagrados ?: '—' }}</div><div class="text-muted small">Consagrados</div></div>
+            <div class="col-3"><div class="fw-bold fs-5">{{ $totalVidaEleitores }}</div><div class="text-muted small">Eleitores</div></div>
+            <div class="col-3"><div class="fw-bold fs-5 text-success">{{ $totalVidaVotaram }}</div><div class="text-muted small">Votaram</div></div>
+            <div class="col-3"><div class="fw-bold fs-5 text-danger">{{ $totalVidaConsagrados ? $totalVidaFaltaram : '—' }}</div><div class="text-muted small">Faltaram</div></div>
         </div>
-        <div class="d-flex justify-content-between mb-1"><small>Aderência</small><small><strong>{{ $pctVidaAd }}%</strong></small></div>
-        <div class="progress mb-2" style="height:6px"><div class="progress-bar bg-primary" style="width:{{ $pctVidaAd }}%"></div></div>
-        <div class="d-flex justify-content-between mb-1"><small>Aproveitamento</small><small><strong>{{ $pctVidaAp }}%</strong></small></div>
-        <div class="progress" style="height:6px"><div class="progress-bar bg-success" style="width:{{ $pctVidaAp }}%"></div></div>
+        <div class="d-flex justify-content-between mb-1"><small>Aderência</small><small><strong>{{ number_format($pctVidaAd, 2, ',', '') }}%</strong></small></div>
+        <div class="progress" style="height:6px"><div class="progress-bar bg-primary" style="width:{{ $pctVidaAd }}%"></div></div>
         @endif
     </div>
 </div>
@@ -72,12 +70,14 @@
             <div class="card text-center h-100">
                 <div class="card-body">
                     @php
-                        $pctAd = $ec->qtd_consagrados > 0 ? round($ec->qtd_membros       / $ec->qtd_consagrados * 100, 1) : 0;
-                        $pctAp = $ec->qtd_consagrados > 0 ? round($ec->votos_registrados  / $ec->qtd_consagrados * 100, 1) : 0;
+                        $faltaramCid    = max(0, $ec->qtd_consagrados - $ec->votos_registrados);
+                        $pctAd          = $ec->qtd_consagrados > 0
+                            ? floor($ec->votos_registrados / $ec->qtd_consagrados * 10000) / 100 : 0;
                         $cidVidaEleit   = ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0);
                         $cidVidaVotaram = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
-                        $pctVidaAdCid   = $ec->qtd_consagrados_vida > 0 ? round($cidVidaEleit   / $ec->qtd_consagrados_vida * 100, 1) : 0;
-                        $pctVidaApCid   = $ec->qtd_consagrados_vida > 0 ? round($cidVidaVotaram / $ec->qtd_consagrados_vida * 100, 1) : 0;
+                        $faltaramVidaCid = max(0, $ec->qtd_consagrados_vida - $cidVidaVotaram);
+                        $pctVidaAdCid   = $ec->qtd_consagrados_vida > 0
+                            ? floor($cidVidaVotaram / $ec->qtd_consagrados_vida * 10000) / 100 : 0;
                     @endphp
                     <h6 class="card-title mb-2">{{ $ec->cidade->nome }}</h6>
 
@@ -86,16 +86,13 @@
                     <div class="d-flex justify-content-around text-center mb-2">
                         <div><div class="fw-bold">{{ $ec->qtd_consagrados ?: '—' }}</div><div class="text-muted" style="font-size:.7rem">Consagr.</div></div>
                         <div><div class="fw-bold">{{ $ec->qtd_eleitorado }}</div><div class="text-muted" style="font-size:.7rem">Aptos</div></div>
-                        <div><div class="fw-bold text-primary">{{ $ec->qtd_membros }}</div><div class="text-muted" style="font-size:.7rem">Comparec.</div></div>
                         <div><div class="fw-bold text-success">{{ $ec->votos_registrados }}</div><div class="text-muted" style="font-size:.7rem">Votaram</div></div>
+                        <div><div class="fw-bold text-danger">{{ $ec->qtd_consagrados ? $faltaramCid : '—' }}</div><div class="text-muted" style="font-size:.7rem">Faltaram</div></div>
                     </div>
-                    <div class="progress mb-1" style="height: 5px;" title="Aderência {{ $pctAd }}%">
+                    <div class="progress {{ $temVida ? 'mb-2' : 'mb-1' }}" style="height: 5px;" title="Aderência {{ number_format($pctAd, 2, ',', '') }}%">
                         <div class="progress-bar bg-primary" style="width: {{ $pctAd }}%"></div>
                     </div>
-                    <div class="progress {{ $temVida ? 'mb-2' : '' }}" style="height: 5px;" title="Aproveitamento {{ $pctAp }}%">
-                        <div class="progress-bar bg-success" style="width: {{ $pctAp }}%"></div>
-                    </div>
-                    <small class="text-muted d-block {{ $temVida ? 'mb-2' : 'mt-1' }}">Ader. {{ $pctAd }}% · Aprov. {{ $pctAp }}%</small>
+                    <small class="text-muted d-block {{ $temVida ? 'mb-2' : 'mt-1' }}">Aderência {{ number_format($pctAd, 2, ',', '') }}%</small>
                     @endif
 
                     @if($temVida)
@@ -104,14 +101,12 @@
                         <div><div class="fw-bold">{{ $ec->qtd_consagrados_vida ?: '—' }}</div><div class="text-muted" style="font-size:.7rem">Consagr.</div></div>
                         <div><div class="fw-bold">{{ $cidVidaEleit }}</div><div class="text-muted" style="font-size:.7rem">Eleitores</div></div>
                         <div><div class="fw-bold text-success">{{ $cidVidaVotaram }}</div><div class="text-muted" style="font-size:.7rem">Votaram</div></div>
+                        <div><div class="fw-bold text-danger">{{ $ec->qtd_consagrados_vida ? $faltaramVidaCid : '—' }}</div><div class="text-muted" style="font-size:.7rem">Faltaram</div></div>
                     </div>
-                    <div class="progress mb-1" style="height: 5px;" title="Aderência Vida {{ $pctVidaAdCid }}%">
+                    <div class="progress mb-1" style="height: 5px;" title="Aderência Vida {{ number_format($pctVidaAdCid, 2, ',', '') }}%">
                         <div class="progress-bar bg-primary" style="width: {{ $pctVidaAdCid }}%"></div>
                     </div>
-                    <div class="progress" style="height: 5px;" title="Aproveitamento Vida {{ $pctVidaApCid }}%">
-                        <div class="progress-bar bg-success" style="width: {{ $pctVidaApCid }}%"></div>
-                    </div>
-                    <small class="text-muted d-block mt-1">Aprov. {{ $pctVidaApCid }}%</small>
+                    <small class="text-muted d-block mt-1">Aderência {{ number_format($pctVidaAdCid, 2, ',', '') }}%</small>
                     @endif
                 </div>
             </div>
@@ -201,7 +196,7 @@
                     </thead>
                     <tbody>
                         @foreach($opcoesVida as $i => $opcao)
-                            <tr @if($i === 0 && $totalVidaVotos > 0) class="table-success" @endif>
+                            <tr>
                                 <td class="text-muted">{{ $loop->iteration }}</td>
                                 <td>{{ $opcao->nome }}</td>
                                 @foreach($eleicao->cidades as $ec)
@@ -242,7 +237,7 @@
                             </thead>
                             <tbody>
                                 @foreach($opcoesCidade as $i => $opcao)
-                                    <tr @if($i === 0 && $totalVotosPergunta > 0) class="table-success" @endif>
+                                    <tr>
                                         <td class="text-muted">{{ $loop->iteration }}</td>
                                         <td>{{ $opcao->nome }}</td>
                                         <td class="text-end fw-semibold">{{ $opcao->total_votos }}</td>
