@@ -339,9 +339,10 @@
 
     @if($mostrarAlianca)
     @php
-        $adPct = $aliancaCidade->qtd_consagrados > 0
+        $faltaram = max(0, $aliancaCidade->qtd_consagrados - $aliancaCidade->votos_registrados);
+        $adPct    = $aliancaCidade->qtd_consagrados > 0
             ? round($aliancaCidade->qtd_membros       / $aliancaCidade->qtd_consagrados * 100, 1) : 0;
-        $apPct = $aliancaCidade->qtd_consagrados > 0
+        $apPct    = $aliancaCidade->qtd_consagrados > 0
             ? round($aliancaCidade->votos_registrados / $aliancaCidade->qtd_consagrados * 100, 1) : 0;
     @endphp
     <p class="nota">Realidade de Aliança — {{ $aliancaCidade->cidade->nome }}</p>
@@ -349,9 +350,9 @@
         <thead>
             <tr>
                 <th class="center">Total de Membros</th>
-                <th class="center">Eleitores Aptos</th>
-                <th class="center">Compareceram</th>
+                <th class="center">Membros Aptos</th>
                 <th class="center">Votaram</th>
+                <th class="center">Faltaram</th>
                 <th class="center">Aderência</th>
                 <th class="center">Aproveit.</th>
             </tr>
@@ -360,8 +361,8 @@
             <tr>
                 <td class="center val-strong">{{ $aliancaCidade->qtd_consagrados ?: '—' }}</td>
                 <td class="center val-strong">{{ $aliancaCidade->qtd_eleitorado }}</td>
-                <td class="center val-strong">{{ $aliancaCidade->qtd_membros }}</td>
                 <td class="center val-strong">{{ $aliancaCidade->votos_registrados }}</td>
+                <td class="center val-strong">{{ $aliancaCidade->qtd_consagrados ? $faltaram : '—' }}</td>
                 <td class="center val-pct">{{ $adPct }}%</td>
                 <td class="center val-pct">{{ $apPct }}%</td>
             </tr>

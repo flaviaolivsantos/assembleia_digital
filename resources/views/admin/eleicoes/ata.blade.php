@@ -188,15 +188,15 @@
 
     {{-- 1. Participação --}}
     <div class="section-title"><span class="si"></span>1. Participação</div>
-    @php $totConsagrados = 0; $totAptos = 0; $totComparec = 0; $totVotos = 0; @endphp
+    @php $totConsagrados = 0; $totAptos = 0; $totVotos = 0; @endphp
     <table class="ata-table">
         <thead>
             <tr>
                 <th>Missão</th>
                 <th class="c">Total de Membros</th>
-                <th class="c">Eleitores Aptos</th>
-                <th class="c">Compareceram</th>
+                <th class="c">Membros Aptos</th>
                 <th class="c">Votaram</th>
+                <th class="c">Faltaram</th>
                 <th class="c">Aderência</th>
                 <th class="c">Aproveit.</th>
             </tr>
@@ -206,8 +206,8 @@
                 @php
                     $totConsagrados += $ec->qtd_consagrados;
                     $totAptos       += $ec->qtd_eleitorado;
-                    $totComparec    += $ec->qtd_membros;
                     $totVotos       += $ec->votos_registrados;
+                    $faltaram = max(0, $ec->qtd_consagrados - $ec->votos_registrados);
                     $adPct = $ec->qtd_consagrados > 0 ? round($ec->qtd_membros       / $ec->qtd_consagrados * 100, 1) : 0;
                     $apPct = $ec->qtd_consagrados > 0 ? round($ec->votos_registrados / $ec->qtd_consagrados * 100, 1) : 0;
                 @endphp
@@ -215,8 +215,8 @@
                     <td>{{ $ec->cidade->nome }}</td>
                     <td class="c val-azul">{{ $ec->qtd_consagrados ?: '—' }}</td>
                     <td class="c val-azul">{{ $ec->qtd_eleitorado }}</td>
-                    <td class="c val-azul">{{ $ec->qtd_membros }}</td>
                     <td class="c val-azul">{{ $ec->votos_registrados }}</td>
+                    <td class="c val-azul">{{ $ec->qtd_consagrados ? $faltaram : '—' }}</td>
                     <td class="c val-ciano">{{ $adPct }}%</td>
                     <td class="c val-ciano">{{ $apPct }}%</td>
                 </tr>
@@ -224,15 +224,16 @@
         </tbody>
         <tfoot>
             @php
-                $adTotalPct = $totConsagrados > 0 ? round($totComparec / $totConsagrados * 100, 1) : 0;
-                $apTotalPct = $totConsagrados > 0 ? round($totVotos    / $totConsagrados * 100, 1) : 0;
+                $totFaltaram    = max(0, $totConsagrados - $totVotos);
+                $adTotalPct     = $totConsagrados > 0 ? round(($totConsagrados - $totFaltaram) / $totConsagrados * 100, 1) : 0;
+                $apTotalPct     = $totConsagrados > 0 ? round($totVotos / $totConsagrados * 100, 1) : 0;
             @endphp
             <tr>
                 <td>Total Geral</td>
                 <td class="c">{{ $totConsagrados ?: '—' }}</td>
                 <td class="c">{{ $totAptos }}</td>
-                <td class="c">{{ $totComparec }}</td>
                 <td class="c">{{ $totVotos }}</td>
+                <td class="c">{{ $totConsagrados ? $totFaltaram : '—' }}</td>
                 <td class="c" style="color:var(--ciano);">{{ $adTotalPct }}%</td>
                 <td class="c" style="color:var(--ciano);">{{ $apTotalPct }}%</td>
             </tr>
