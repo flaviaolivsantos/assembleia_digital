@@ -138,6 +138,9 @@
     </div>
 
     <table class="ata-table">
+        @php
+            $escopoLabels = ['ambos' => 'Aliança e Vida', 'alianca' => 'Apenas Aliança', 'vida' => 'Apenas Vida'];
+        @endphp
         <thead>
             <tr>
                 <th>#</th>
@@ -145,6 +148,7 @@
                 <th>E-mail</th>
                 <th>Perfil</th>
                 <th>Missão</th>
+                <th>Realidade Liberada</th>
             </tr>
         </thead>
         <tbody>
@@ -155,12 +159,19 @@
                 <td>{{ $usuario->email }}</td>
                 <td>{{ ucfirst($usuario->perfil) }}</td>
                 <td>{{ $usuario->cidade->nome ?? '—' }}</td>
+                <td>
+                    @if(in_array($usuario->perfil, ['maquina','mesario']))
+                        {{ $escopoLabels[$usuario->escopo_maquina] ?? '—' }}
+                    @else
+                        —
+                    @endif
+                </td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4">Total</td>
+                <td colspan="5">Total</td>
                 <td>{{ $usuarios->count() }}</td>
             </tr>
         </tfoot>
