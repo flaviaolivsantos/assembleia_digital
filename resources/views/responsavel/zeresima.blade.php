@@ -415,7 +415,7 @@
 
     {{-- ── Rodapé ────────────────────────────────────────────── --}}
     <div class="doc-footer">
-        Zerésima gerada automaticamente pelo sistema Assembleia Digital / Assessoria de Gestão — Comunidade Recado em {{ now()->format('d/m/Y \à\s H:i:s') }}
+        Zerésima gerada automaticamente pelo sistema Assembleia Digital — Assessoria de Gestão — Comunidade Recado em {{ now()->format('d/m/Y \à\s H:i:s') }}
     </div>
 
 </div>
