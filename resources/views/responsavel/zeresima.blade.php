@@ -345,7 +345,7 @@
                     @if($escopo === 'alianca')
                         Realidade de Aliança — {{ $eleicaoCidade->cidade->nome }}
                     @else
-                        Realidade de Vida — Todas as Missões
+                        Realidade de Vida
                     @endif
                 </td>
             </tr>
