@@ -365,7 +365,10 @@ class ResponsavelController extends Controller
             ->count();
 
         $request->validate([
-            'qtd_eleitorado'      => ['required', 'integer', 'min:0'],
+            'qtd_consagrados'      => ['required', 'integer', 'min:0'],
+            'qtd_consagrados_vida' => ['required', 'integer', 'min:0'],
+            'qtd_eleitorado'       => ['required', 'integer', 'min:0'],
+            'qtd_eleitorado_vida'  => ['required', 'integer', 'min:0'],
             'qtd_presencial_vida' => ['required', 'integer', 'min:' . $eleicaoCidade->votos_presenciais_vida],
             'qtd_vida'            => ['required', 'integer', 'min:' . $totalTokensVida],
             'qtd_presencial'      => ['required', 'integer', 'min:0'],
@@ -402,7 +405,10 @@ class ResponsavelController extends Controller
 
         $anterior = $eleicaoCidade->qtd_membros;
         $eleicaoCidade->update([
-            'qtd_eleitorado'      => (int) $request->qtd_eleitorado,
+            'qtd_consagrados'      => (int) $request->qtd_consagrados,
+            'qtd_consagrados_vida' => (int) $request->qtd_consagrados_vida,
+            'qtd_eleitorado'       => (int) $request->qtd_eleitorado,
+            'qtd_eleitorado_vida'  => (int) $request->qtd_eleitorado_vida,
             'qtd_presencial_vida' => $qtdPresencialVida,
             'qtd_vida'            => $qtdVida,
             'qtd_presencial'      => $qtdPresencial,

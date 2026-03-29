@@ -237,12 +237,14 @@ function renderTabela(missoes, k, badgeHtml) {
         <tr>
             <td class="td-nome">${m.nome}</td>
             <td>${statusBadge[m[k.status]] ?? ''}</td>
+            <td class="col-num">${m[k.consagrados] || '—'}</td>
             <td class="col-num td-membros">${m[k.membros]}</td>
             <td class="col-num td-votaram">${m[k.votaram]}</td>
             <td class="col-num td-faltam">${m[k.faltam]}</td>
             <td class="col-progresso">${progressoHtml(m[k.pct])}</td>
         </tr>`).join('');
 
+    const totalC = missoes.reduce((s, m) => s + (m[k.consagrados] || 0), 0);
     const totalM = missoes.reduce((s, m) => s + m[k.membros], 0);
     const totalV = missoes.reduce((s, m) => s + m[k.votaram], 0);
     const totalF = missoes.reduce((s, m) => s + m[k.faltam], 0);
@@ -252,6 +254,7 @@ function renderTabela(missoes, k, badgeHtml) {
         <tfoot>
             <tr class="total-row">
                 <td colspan="2" class="td-total-label">Total</td>
+                <td class="col-num td-total-num">${totalC || '—'}</td>
                 <td class="col-num td-total-num">${totalM}</td>
                 <td class="col-num td-total-num">${totalV}</td>
                 <td class="col-num td-total-num">${totalF}</td>
@@ -270,6 +273,7 @@ function renderTabela(missoes, k, badgeHtml) {
                     <tr>
                         <th>Missão</th>
                         <th>Status</th>
+                        <th class="col-num">Consagrados</th>
                         <th class="col-num">Membros</th>
                         <th class="col-num">Votaram</th>
                         <th class="col-num">Faltam</th>
@@ -292,7 +296,7 @@ function renderEleicao(e) {
         const borderClass = e.tem_vida ? ' has-border-bottom' : '';
         sections += `<div class="painel-section${borderClass}">
             ${renderTabela(e.missoes,
-                { status:'status', membros:'membros', votaram:'votaram', faltam:'faltam', pct:'pct' },
+                { status:'status', consagrados:'consagrados', membros:'membros', votaram:'votaram', faltam:'faltam', pct:'pct' },
                 badge)}
         </div>`;
     }
@@ -300,7 +304,7 @@ function renderEleicao(e) {
     if (e.tem_vida) {
         sections += `<div class="painel-section">
             ${renderTabela(e.missoes,
-                { status:'vida_status', membros:'vida_membros', votaram:'vida_votaram', faltam:'vida_faltam', pct:'vida_pct' },
+                { status:'vida_status', consagrados:'vida_consagrados', membros:'vida_membros', votaram:'vida_votaram', faltam:'vida_faltam', pct:'vida_pct' },
                 '<span class="tipo-badge tipo-vida">Realidade de Vida</span>')}
         </div>`;
     }

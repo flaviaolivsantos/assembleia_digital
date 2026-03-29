@@ -26,6 +26,14 @@
         <form method="POST" action="{{ route('responsavel.membros.update', $eleicaoCidade) }}">
             @csrf
 
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Total de membros consagrados</label>
+                <input type="number" name="qtd_consagrados" class="form-control"
+                       value="{{ old('qtd_consagrados', $eleicaoCidade->qtd_consagrados) }}"
+                       min="0" required>
+                <div class="form-text">Total de membros consagrados da missão. Usado para calcular quantos faltam votar.</div>
+            </div>
+
             <div class="mb-4">
                 <label class="form-label fw-semibold">Total de eleitores aptos</label>
                 <input type="number" name="qtd_eleitorado" class="form-control"
@@ -38,6 +46,22 @@
 
             {{-- Realidade de Vida --}}
             <h6 class="text-primary mb-3"><i class="bi bi-globe me-1"></i>Realidade de Vida</h6>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Consagrados vida</label>
+                <input type="number" name="qtd_consagrados_vida" class="form-control"
+                       value="{{ old('qtd_consagrados_vida', $eleicaoCidade->qtd_consagrados_vida) }}"
+                       min="0" required>
+                <div class="form-text">Total de membros consagrados para realidade de vida.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Aptos vida</label>
+                <input type="number" name="qtd_eleitorado_vida" class="form-control"
+                       value="{{ old('qtd_eleitorado_vida', $eleicaoCidade->qtd_eleitorado_vida) }}"
+                       min="0" required>
+                <div class="form-text">Total de membros aptos para realidade de vida.</div>
+            </div>
 
             <div class="mb-3">
                 <label class="form-label">Votarão presencialmente (vida)</label>

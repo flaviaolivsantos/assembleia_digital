@@ -241,6 +241,7 @@
     {{-- Aliança --}}
     @if($temAlianca)
     @php
+        $totalC   = collect($eleicao['missoes'])->sum('consagrados');
         $totalM   = collect($eleicao['missoes'])->sum('membros');
         $totalV   = collect($eleicao['missoes'])->sum('votaram');
         $totalF   = collect($eleicao['missoes'])->sum('faltam');
@@ -254,6 +255,7 @@
             <tr>
                 <th>Missão</th>
                 <th>Status</th>
+                <th class="center">Consagrados</th>
                 <th class="center">Membros</th>
                 <th class="center">Votaram</th>
                 <th class="center">Faltam</th>
@@ -273,6 +275,7 @@
                         <span class="s-aguardando">Aguardando</span>
                     @endif
                 </td>
+                <td class="center">{{ $m['consagrados'] ?: '—' }}</td>
                 <td class="center"><strong>{{ $m['membros'] }}</strong></td>
                 <td class="center"><strong>{{ $m['votaram'] }}</strong></td>
                 <td class="center">{{ $m['faltam'] }}</td>
@@ -289,6 +292,7 @@
         <tfoot>
             <tr>
                 <td colspan="2">Total</td>
+                <td class="center">{{ $totalC ?: '—' }}</td>
                 <td class="center">{{ $totalM }}</td>
                 <td class="center">{{ $totalV }}</td>
                 <td class="center">{{ $totalF }}</td>
@@ -307,6 +311,7 @@
     {{-- Vida --}}
     @if($temVida)
     @php
+        $totalVC  = collect($eleicao['missoes'])->sum('vida_consagrados');
         $totalVM  = collect($eleicao['missoes'])->sum('vida_membros');
         $totalVV  = collect($eleicao['missoes'])->sum('vida_votaram');
         $totalVF  = collect($eleicao['missoes'])->sum('vida_faltam');
@@ -318,6 +323,7 @@
             <tr>
                 <th>Missão</th>
                 <th>Status</th>
+                <th class="center">Consagrados</th>
                 <th class="center">Membros</th>
                 <th class="center">Votaram</th>
                 <th class="center">Faltam</th>
@@ -337,6 +343,7 @@
                         <span class="s-aguardando">Aguardando</span>
                     @endif
                 </td>
+                <td class="center">{{ $m['vida_consagrados'] ?: '—' }}</td>
                 <td class="center"><strong>{{ $m['vida_membros'] }}</strong></td>
                 <td class="center"><strong>{{ $m['vida_votaram'] }}</strong></td>
                 <td class="center">{{ $m['vida_faltam'] }}</td>
@@ -353,6 +360,7 @@
         <tfoot>
             <tr>
                 <td colspan="2">Total</td>
+                <td class="center">{{ $totalVC ?: '—' }}</td>
                 <td class="center">{{ $totalVM }}</td>
                 <td class="center">{{ $totalVV }}</td>
                 <td class="center">{{ $totalVF }}</td>

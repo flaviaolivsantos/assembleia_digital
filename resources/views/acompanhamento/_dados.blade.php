@@ -9,6 +9,7 @@
     {{-- ── Realidade de Aliança ─────────────────────────────────── --}}
     @if($temAlianca)
     @php
+        $totalC   = $eleicao['missoes']->sum('consagrados');
         $totalM   = $eleicao['missoes']->sum('membros');
         $totalV   = $eleicao['missoes']->sum('votaram');
         $totalF   = $eleicao['missoes']->sum('faltam');
@@ -26,6 +27,7 @@
                     <tr>
                         <th>Missão</th>
                         <th>Status</th>
+                        <th class="col-num">Consagrados</th>
                         <th class="col-num">Membros</th>
                         <th class="col-num">Votaram</th>
                         <th class="col-num">Faltam</th>
@@ -45,6 +47,7 @@
                                 <span class="status-badge status-aguardando">Aguardando</span>
                             @endif
                         </td>
+                        <td class="col-num">{{ $m['consagrados'] ?: '—' }}</td>
                         <td class="col-num td-membros">{{ $m['membros'] }}</td>
                         <td class="col-num td-votaram">{{ $m['votaram'] }}</td>
                         <td class="col-num td-faltam">{{ $m['faltam'] }}</td>
@@ -63,6 +66,7 @@
                 <tfoot>
                     <tr class="total-row">
                         <td colspan="2" class="td-total-label">Total</td>
+                        <td class="col-num td-total-num">{{ $totalC ?: '—' }}</td>
                         <td class="col-num td-total-num">{{ $totalM }}</td>
                         <td class="col-num td-total-num">{{ $totalV }}</td>
                         <td class="col-num td-total-num">{{ $totalF }}</td>
@@ -85,6 +89,7 @@
     {{-- ── Realidade de Vida ────────────────────────────────────── --}}
     @if($temVida)
     @php
+        $totalVC  = $eleicao['missoes']->sum('vida_consagrados');
         $totalVM  = $eleicao['missoes']->sum('vida_membros');
         $totalVV  = $eleicao['missoes']->sum('vida_votaram');
         $totalVF  = $eleicao['missoes']->sum('vida_faltam');
@@ -100,6 +105,7 @@
                     <tr>
                         <th>Missão</th>
                         <th>Status</th>
+                        <th class="col-num">Consagrados</th>
                         <th class="col-num">Membros</th>
                         <th class="col-num">Votaram</th>
                         <th class="col-num">Faltam</th>
@@ -119,6 +125,7 @@
                                 <span class="status-badge status-aguardando">Aguardando</span>
                             @endif
                         </td>
+                        <td class="col-num">{{ $m['vida_consagrados'] ?: '—' }}</td>
                         <td class="col-num td-membros">{{ $m['vida_membros'] }}</td>
                         <td class="col-num td-votaram">{{ $m['vida_votaram'] }}</td>
                         <td class="col-num td-faltam">{{ $m['vida_faltam'] }}</td>
@@ -137,6 +144,7 @@
                 <tfoot>
                     <tr class="total-row">
                         <td colspan="2" class="td-total-label">Total</td>
+                        <td class="col-num td-total-num">{{ $totalVC ?: '—' }}</td>
                         <td class="col-num td-total-num">{{ $totalVM }}</td>
                         <td class="col-num td-total-num">{{ $totalVV }}</td>
                         <td class="col-num td-total-num">{{ $totalVF }}</td>

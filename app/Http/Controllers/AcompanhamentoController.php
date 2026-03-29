@@ -54,19 +54,21 @@ class AcompanhamentoController extends Controller
                         : 0;
 
                     return [
-                        'nome'         => $ec->cidade->nome,
+                        'nome'              => $ec->cidade->nome,
                         // aliança
-                        'membros'      => $ec->qtd_membros,
-                        'votaram'      => $ec->votos_registrados,
-                        'faltam'       => max(0, $ec->qtd_membros - $ec->votos_registrados),
-                        'pct'          => $pct,
-                        'status'       => $ec->aberta ? 'aberta' : ($ec->data_encerramento ? 'encerrada' : 'aguardando'),
+                        'consagrados'       => $ec->qtd_consagrados,
+                        'membros'           => $ec->qtd_membros,
+                        'votaram'           => $ec->votos_registrados,
+                        'faltam'            => max(0, ($ec->qtd_consagrados > 0 ? $ec->qtd_consagrados : $ec->qtd_membros) - $ec->votos_registrados),
+                        'pct'               => $pct,
+                        'status'            => $ec->aberta ? 'aberta' : ($ec->data_encerramento ? 'encerrada' : 'aguardando'),
                         // vida
-                        'vida_membros' => $vidaMembros,
-                        'vida_votaram' => $vidaVotaram,
-                        'vida_faltam'  => max(0, $vidaMembros - $vidaVotaram),
-                        'vida_pct'     => $vidaPct,
-                        'vida_status'  => $eleicao->aberta_vida ? 'aberta' : ($eleicao->data_encerramento_vida ? 'encerrada' : 'aguardando'),
+                        'vida_consagrados'  => $ec->qtd_consagrados_vida,
+                        'vida_membros'      => $vidaMembros,
+                        'vida_votaram'      => $vidaVotaram,
+                        'vida_faltam'       => max(0, ($ec->qtd_consagrados_vida > 0 ? $ec->qtd_consagrados_vida : $vidaMembros) - $vidaVotaram),
+                        'vida_pct'          => $vidaPct,
+                        'vida_status'       => $eleicao->aberta_vida ? 'aberta' : ($eleicao->data_encerramento_vida ? 'encerrada' : 'aguardando'),
                     ];
                 })->values(),
             ];
