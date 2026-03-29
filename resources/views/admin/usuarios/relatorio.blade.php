@@ -126,8 +126,9 @@
     </div>
 
     @php
-        $escopoLabels = ['ambos' => 'Aliança e Vida', 'alianca' => 'Apenas Aliança', 'vida' => 'Apenas Vida'];
+        $escopoLabels = ['ambos' => 'Aliança e Vida', 'alianca' => 'Aliança', 'vida' => 'Vida'];
         $total = $usuarios->flatten()->count();
+        $totalMissoes = $usuarios->keys()->filter(fn($k) => $k !== '— Sem Missão')->count();
     @endphp
 
     <div class="doc-meta">
@@ -137,7 +138,7 @@
         </div>
         <div>
             <div class="meta-label">Missões</div>
-            <div class="meta-value">{{ $usuarios->count() }}</div>
+            <div class="meta-value">{{ $totalMissoes }}</div>
         </div>
         <div>
             <div class="meta-label">Gerado em</div>
