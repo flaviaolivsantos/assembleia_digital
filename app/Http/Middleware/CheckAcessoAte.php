@@ -18,7 +18,7 @@ class CheckAcessoAte
             $request->session()->regenerateToken();
 
             return redirect()->route('login')
-                ->withErrors(['email' => 'Seu acesso expirou em ' . $user->acesso_ate->format('d/m/Y \à\s H:i') . '. Entre em contato com o administrador.']);
+                ->withErrors(['email' => 'Seu acesso expirou. Entre em contato com o administrador.']);
         }
 
         return $next($request);
