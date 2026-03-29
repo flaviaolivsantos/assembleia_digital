@@ -120,7 +120,6 @@
             <img src="{{ asset('images/Coag-Vertical.png') }}" alt="Comunidade Recado">
         </div>
         <div class="doc-head-title">
-            <div class="label-oficial">Documento Oficial</div>
             <h1>Usuários — Detalhado</h1>
         </div>
         <div></div>
