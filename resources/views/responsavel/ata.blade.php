@@ -403,32 +403,32 @@
         <thead>
             <tr>
                 <th>Missão</th>
-                <th class="center">Eleitores</th>
+                <th class="center">Membros</th>
                 <th class="center">Votaram</th>
-                <th class="center">Aproveit.</th>
+                <th class="center">Aderência</th>
             </tr>
         </thead>
         <tbody>
             @foreach($todasCidades as $ec)
             @php
-                $ecEleit = ($ec->qtd_presencial_vida ?? 0) + ($ec->qtd_vida ?? 0);
-                $ecVot   = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
-                $ecAp    = $ecEleit > 0 ? round($ecVot / $ecEleit * 100, 1) : 0;
+                $ecMembros = $ec->qtd_consagrados_vida ?? 0;
+                $ecVot     = $vidaVotaramPorCidade[$ec->cidade_id] ?? 0;
+                $ecAd      = $ecMembros > 0 ? floor($ecVot / $ecMembros * 10000) / 100 : 0;
             @endphp
             <tr>
                 <td>{{ $ec->cidade->nome }}</td>
-                <td class="center">{{ $ecEleit }}</td>
+                <td class="center">{{ $ecMembros ?: '—' }}</td>
                 <td class="center val-strong">{{ $ecVot }}</td>
-                <td class="center val-pct">{{ $ecAp }}%</td>
+                <td class="center val-pct">{{ number_format($ecAd, 2, ',', '') }}%</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td>Total</td>
-                <td class="center">{{ $vidaTotalEleit }}</td>
+                <td class="center">{{ $vidaTotalConsagrados ?: '—' }}</td>
                 <td class="center">{{ $vidaTotalVotaram }}</td>
-                <td class="center">{{ $vidaApPct }}%</td>
+                <td class="center">{{ number_format($vidaAdPct, 2, ',', '') }}%</td>
             </tr>
         </tfoot>
     </table>
