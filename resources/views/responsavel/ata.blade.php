@@ -490,26 +490,36 @@
                 <table class="ata-table">
                     <thead>
                         <tr>
-                            <th>Missão</th>
-                            @foreach($opcoesVida as $opcao)
-                                <th class="center" style="font-size:.68rem;">{{ $opcao->nome }}</th>
+                            <th>#</th>
+                            <th>Candidato</th>
+                            @foreach($todasCidades as $ec)
+                                <th class="center">{{ $ec->cidade->nome }}</th>
                             @endforeach
                             <th class="center">Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($todasCidades as $ec)
-                        @php $totalPorCidade = 0; @endphp
+                        @foreach($opcoesVida as $opcao)
                         <tr>
-                            <td>{{ $ec->cidade->nome }}</td>
-                            @foreach($opcoesVida as $opcao)
-                                @php $v = $votosPorCidade["{$pergunta->id}_{$opcao->id}_{$ec->cidade_id}"] ?? 0; $totalPorCidade += $v; @endphp
-                                <td class="center">{{ $v }}</td>
+                            <td style="width:30px;color:#9ca3af;">{{ $loop->iteration }}</td>
+                            <td>{{ $opcao->nome }}</td>
+                            @foreach($todasCidades as $ec)
+                                <td class="center">{{ $votosPorCidade["{$pergunta->id}_{$opcao->id}_{$ec->cidade_id}"] ?? 0 }}</td>
                             @endforeach
-                            <td class="center val-strong">{{ $totalPorCidade }}</td>
+                            <td class="center val-strong">{{ $opcao->total_votos }}</td>
                         </tr>
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2">Total</td>
+                            @foreach($todasCidades as $ec)
+                                @php $totCid = $opcoesVida->sum(fn($o) => $votosPorCidade["{$pergunta->id}_{$o->id}_{$ec->cidade_id}"] ?? 0); @endphp
+                                <td class="center val-strong">{{ $totCid }}</td>
+                            @endforeach
+                            <td class="center val-strong">{{ $totalVida }}</td>
+                        </tr>
+                    </tfoot>
                 </table>
             @endif
         @else
