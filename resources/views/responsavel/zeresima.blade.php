@@ -357,12 +357,16 @@
                 <td>Horário de Abertura</td>
                 <td><strong>{{ now()->format('d/m/Y H:i:s') }}</strong></td>
             </tr>
-            @if($escopo === 'alianca')
             <tr>
                 <td>Aberta por</td>
-                <td>{{ $eleicaoCidade->abertaPor?->nome ?? auth()->user()->name }}</td>
+                <td>
+                    @if($escopo === 'alianca')
+                        {{ $eleicaoCidade->abertaPor?->nome ?? auth()->user()->nome }}
+                    @else
+                        {{ $eleicao->abertaPorVida?->nome ?? auth()->user()->nome }}
+                    @endif
+                </td>
             </tr>
-            @endif
         </tbody>
     </table>
 
