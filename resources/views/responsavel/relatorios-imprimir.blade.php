@@ -231,22 +231,49 @@
         </tbody>
     </table>
 
-    {{-- ── Votos ────────────────────────────────────────────────── --}}
+    {{-- ── Votos agrupados por máquina / remoto ─────────────────── --}}
+    @php
+        $grupos = $votosFiltrados->groupBy(function($v) {
+            return $v->origem === 'remoto' ? '__remoto__' : ($v->maquina?->name ?? 'Máquina desconhecida');
+        })->sortKeys();
+
+        // Garante que Remoto fique por último
+        if ($grupos->has('__remoto__')) {
+            $remoto = $grupos->pull('__remoto__');
+            $grupos->put('Remoto', $remoto);
+        }
+    @endphp
+
     <div class="section-title">Registro de Votos ({{ $votosFiltrados->count() }} registros)</div>
-    <table class="ata-table">
+
+    @forelse($grupos as $nomeGrupo => $votosGrupo)
+    @php
+        $pessoasGrupo = $votosGrupo->pluck('token_hash')->unique()->count();
+    @endphp
+
+    {{-- Cabeçalho do grupo --}}
+    <div style="margin:1.2rem 0 .4rem;page-break-after:avoid;break-after:avoid;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;border-bottom:1px solid #e5e7eb;padding-bottom:.3rem;">
+            {{ $nomeGrupo }}
+        </div>
+        <div style="font-size:.75rem;color:#374151;margin-top:.3rem;">
+            <strong>{{ $pessoasGrupo }}</strong> {{ $pessoasGrupo === 1 ? 'pessoa votou' : 'pessoas votaram' }} ·
+            <strong>{{ $votosGrupo->count() }}</strong> registros
+        </div>
+    </div>
+
+    <table class="ata-table" style="margin-bottom:.5rem;">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Horário</th>
                 <th>Realidade</th>
-                <th>Origem</th>
-                <th>Máquina</th>
                 <th>Candidato</th>
                 <th>Token</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($votosFiltrados->values() as $i => $voto)
+            @foreach($votosGrupo->values() as $i => $voto)
             <tr>
                 <td style="color:#9ca3af;font-size:.72rem;">{{ $i + 1 }}</td>
                 <td style="white-space:nowrap;">{{ $voto->created_at ? \Carbon\Carbon::parse($voto->created_at)->format('d/m/Y H:i:s') : '—' }}</td>
@@ -257,28 +284,21 @@
                         <span class="b-alianca">Aliança</span>
                     @endif
                 </td>
-                <td>
-                    @if($voto->origem === 'presencial')
-                        <span class="b-presencial">Presencial</span>
-                    @else
-                        <span class="b-remoto">Remoto</span>
-                    @endif
-                </td>
-                <td>{{ $voto->maquina?->name ?? '—' }}</td>
                 <td style="font-weight:600;">{{ $voto->opcao?->nome ?? '—' }}</td>
                 <td><span class="token-mono">{{ substr($voto->token_hash, 0, 4) }}...{{ substr($voto->token_hash, -4) }}</span></td>
             </tr>
-            @empty
-            <tr><td colspan="7" style="text-align:center;color:#9ca3af;padding:1rem;">Nenhum voto encontrado.</td></tr>
-            @endforelse
+            @endforeach
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="6">Total</td>
-                <td>{{ $votosFiltrados->count() }}</td>
+                <td colspan="4">Total</td>
+                <td>{{ $votosGrupo->count() }}</td>
             </tr>
         </tfoot>
     </table>
+    @empty
+        <p style="text-align:center;color:#9ca3af;padding:1rem;">Nenhum voto encontrado.</p>
+    @endforelse
 
     {{-- ── Rodapé ──────────────────────────────────────────────── --}}
     <div class="doc-footer">
