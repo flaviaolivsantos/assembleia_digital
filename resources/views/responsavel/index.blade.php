@@ -360,7 +360,7 @@
                             </div>
                             @endif
                             <div class="metric-cell">
-                                <div class="metric-label">Membros</div>
+                                <div class="metric-label">Membros Aliança</div>
                                 <div class="metric-value">{{ $ec->qtd_membros }}</div>
                             </div>
                             <div class="metric-cell">
