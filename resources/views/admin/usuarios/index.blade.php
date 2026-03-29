@@ -4,7 +4,14 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Usuários</h2>
-    <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primary">+ Novo Usuário</a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('admin.usuarios.relatorio') }}" target="_blank"
+           style="font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:600;background:#00BCD4;color:#fff;padding:.42rem 1rem;border-radius:6px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;"
+           onmouseover="this.style.filter='brightness(.88)'" onmouseout="this.style.filter=''">
+            <i class="bi bi-printer-fill"></i> Relatório
+        </a>
+        <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primary">+ Novo Usuário</a>
+    </div>
 </div>
 
 @if(session('sucesso'))

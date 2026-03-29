@@ -110,6 +110,12 @@ class UsuarioController extends Controller
         return redirect()->route('admin.usuarios.index')->with('sucesso', 'Usuário atualizado com sucesso.');
     }
 
+    public function relatorio()
+    {
+        $usuarios = User::with('cidade')->orderBy('perfil')->orderBy('nome')->get();
+        return view('admin.usuarios.relatorio', compact('usuarios'));
+    }
+
     private function resolverEscopo(Request $request): string
     {
         $alianca = $request->boolean('escopo_alianca');
