@@ -674,12 +674,9 @@
                             $pctOpcao = $totalVotosPergunta > 0 ? round($opcao->total_votos / $totalVotosPergunta * 100, 1) : 0;
                             $isWinner = $i === 0 && $totalVotosPergunta > 0 && $opcao->total_votos === $maxVotos;
                         @endphp
-                        <tr class="{{ $isWinner ? 'winner' : '' }}">
+                        <tr>
                             <td class="text-muted">{{ $loop->iteration }}</td>
-                            <td class="{{ $isWinner ? 'winner-name' : '' }}">
-                                @if($isWinner)<i class="bi bi-trophy-fill me-1" style="color:#00BCD4;font-size:.75rem;"></i>@endif
-                                {{ $opcao->nome }}
-                            </td>
+                            <td>{{ $opcao->nome }}</td>
                             <td class="text-center fw-semibold">{{ $opcao->total_votos }}</td>
                             <td>
                                 <div class="mini-bar">
