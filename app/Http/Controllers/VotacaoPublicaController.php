@@ -147,9 +147,7 @@ class VotacaoPublicaController extends Controller
             Presenca::where('eleicao_id', $eleicaoCidade->eleicao_id)
                 ->where('cidade_id', $eleicaoCidade->cidade_id)
                 ->where('escopo', $escopo)
-                ->where('votou', false)
-                ->orderBy('id')
-                ->limit(1)
+                ->whereRaw('SHA2(token, 256) = ?', [$hash])
                 ->update(['votou' => true]);
 
             foreach ($perguntas as $pergunta) {
