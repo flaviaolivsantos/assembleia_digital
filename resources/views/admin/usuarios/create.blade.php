@@ -138,8 +138,8 @@ const campoCidade = document.getElementById('campo-cidade');
 const campoEscopo = document.getElementById('campo-escopo');
 
 function atualizarCampos() {
-    campoCidade.style.display = perfil.value === 'admin'   ? 'none' : '';
-    campoEscopo.style.display = perfil.value === 'maquina' ? ''     : 'none';
+    campoCidade.style.display = perfil.value === 'admin'                        ? 'none' : '';
+    campoEscopo.style.display = ['maquina','mesario'].includes(perfil.value)    ? ''     : 'none';
 }
 
 perfil.addEventListener('change', atualizarCampos);

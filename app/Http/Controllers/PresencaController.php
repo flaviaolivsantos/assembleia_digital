@@ -13,8 +13,11 @@ class PresencaController extends Controller
     {
         abort_if(auth()->user()->perfil !== 'admin' && $eleicaoCidade->cidade_id !== auth()->user()->cidade_id, 403);
 
+        $escopoMesario = auth()->user()->escopo_maquina ?? 'ambos';
+
         $presencas = Presenca::where('eleicao_id', $eleicaoCidade->eleicao_id)
             ->where('cidade_id', $eleicaoCidade->cidade_id)
+            ->when($escopoMesario !== 'ambos', fn($q) => $q->where('escopo', $escopoMesario))
             ->orderBy('escopo')
             ->orderBy('nome')
             ->get();

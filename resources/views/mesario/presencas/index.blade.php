@@ -104,8 +104,9 @@
 @endif
 
 @php
-    $aliancaAberta = $eleicaoCidade->aberta;
-    $vidaAberta    = $eleicaoCidade->eleicao->aberta_vida;
+    $escopoMesario = auth()->user()->escopo_maquina ?? 'ambos';
+    $aliancaAberta = $eleicaoCidade->aberta       && in_array($escopoMesario, ['ambos','alianca']);
+    $vidaAberta    = $eleicaoCidade->eleicao->aberta_vida && in_array($escopoMesario, ['ambos','vida']);
     $algumAberto   = $aliancaAberta || $vidaAberta;
 
     $faltamGerarAlianca = $eleicaoCidade->qtd_remoto > 0

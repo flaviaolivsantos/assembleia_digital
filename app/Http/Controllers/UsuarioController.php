@@ -63,7 +63,7 @@ class UsuarioController extends Controller
             'email'          => $request->email,
             'password'       => $request->password,
             'perfil'         => $request->perfil,
-            'escopo_maquina' => $request->perfil === 'maquina' ? $this->resolverEscopo($request) : 'ambos',
+            'escopo_maquina' => in_array($request->perfil, ['maquina','mesario']) ? $this->resolverEscopo($request) : 'ambos',
             'cidade_id'      => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
             'acesso_ate'     => $request->acesso_ate ?: null,
         ]);
@@ -94,7 +94,7 @@ class UsuarioController extends Controller
             'nome'           => $request->nome,
             'email'          => $request->email,
             'perfil'         => $request->perfil,
-            'escopo_maquina' => $request->perfil === 'maquina' ? $this->resolverEscopo($request) : 'ambos',
+            'escopo_maquina' => in_array($request->perfil, ['maquina','mesario']) ? $this->resolverEscopo($request) : 'ambos',
             'cidade_id'      => $request->perfil === 'admin' ? null : ($request->cidade_id ?: null),
             'acesso_ate'     => $request->acesso_ate ?: null,
         ];

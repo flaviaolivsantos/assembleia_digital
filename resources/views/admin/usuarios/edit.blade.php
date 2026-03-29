@@ -84,7 +84,7 @@
                 </select>
             </div>
 
-            <div class="mb-3" id="campo-escopo" style="{{ old('perfil', $usuario->perfil) === 'maquina' ? '' : 'display:none;' }}">
+            <div class="mb-3" id="campo-escopo" style="{{ in_array(old('perfil', $usuario->perfil), ['maquina','mesario']) ? '' : 'display:none;' }}">
                 <label class="form-label d-block">Realidade visível</label>
                 @php $escopoAtual = old('escopo_maquina', $usuario->escopo_maquina ?? 'ambos'); @endphp
                 <div class="form-check form-check-inline">
@@ -140,8 +140,8 @@ const campoCidade = document.getElementById('campo-cidade');
 const campoEscopo = document.getElementById('campo-escopo');
 
 function atualizarCampos() {
-    campoCidade.style.display = perfil.value === 'admin'   ? 'none' : '';
-    campoEscopo.style.display = perfil.value === 'maquina' ? ''     : 'none';
+    campoCidade.style.display = perfil.value === 'admin'                        ? 'none' : '';
+    campoEscopo.style.display = ['maquina','mesario'].includes(perfil.value)    ? ''     : 'none';
 }
 
 perfil.addEventListener('change', atualizarCampos);
